@@ -1,0 +1,209 @@
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"<<", "RG`"}], ";"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell["setIndexed", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "setIndexed"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  setIndexed[x] set symbol x as indexed variable, i.e. \
+x[i], x[i, j] will have sub- and superscripts in Traditional form\\n\"\>", 
+  "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info23813416704-2225398"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"setIndexed", "[", "x", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"x", "[", "i", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"x", "[", "i", "]"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"x", "[", "i", "]"}], "//", "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  SubscriptBox["x", "i"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"x", "[", "i", "]"}], "//", "TeXForm"}]], "Input"],
+
+Cell["x_i", "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"x", "[", 
+   RowBox[{"i", ",", "j"}], "]"}], "//", "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  TemplateBox[{SubscriptBox["x", "i"],"j"},
+   "Superscript"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Clear", "[", "x", "]"}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["setPrime", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "setPrime"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  setPrime[x] set symbol prime`x in traditional form to \
+have prime (') as superscript\\n\"\>", "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info93813416704-2225398"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"setPrime", "[", "x", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"prime`x", "//", "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  TemplateBox[{"x","\[Prime]"},
+   "Superscript"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"prime`x", "//", "TeXForm"}]], "Input"],
+
+Cell["x'", "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"setIndexed", "[", "prime`x", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"prime`x", "[", "1", "]"}], "//", "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  SubscriptBox[
+   FormBox[
+    TemplateBox[{"x","\[Prime]"},
+     "Superscript"],
+    TraditionalForm], "1"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"prime`x", "[", "1", "]"}], "//", "TeXForm"}]], "Input"],
+
+Cell["x'_1", "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Clear", "[", "prime`x", "]"}], ";", 
+  RowBox[{"Remove", "[", "prime`x", "]"}]}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["setBar", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "setBar"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  setBar[x] set symbol bar`x in traditional form to have \
+overbar\\n\"\>", "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info173813416704-2225398"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"setBar", "[", "x", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bar`x", "//", "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  OverscriptBox["x", "_"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bar`x", "//", "TeXForm"}]], "Input"],
+
+Cell["\\bar{x}", "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Export", "[", 
+  RowBox[{"\"\</tmp/notation/barx.tex\>\"", ",", 
+   RowBox[{"bar`x", "//", "TraditionalForm"}]}], "]"}]], "Input"],
+
+Cell[BoxData["\<\"/tmp/notation/barx.tex\"\>"], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Run", "[", 
+  RowBox[{
+  "\"\<pdflatex\>\"", ",", " ", "\"\<-output-directory=/tmp/notation\>\"", 
+   ",", " ", "\"\</tmp/notation/barx.tex\>\""}], "]"}]], "Input"],
+
+Cell[BoxData["0"], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Clear", "[", "bar`x", "]"}], ";", 
+  RowBox[{"Remove", "[", "bar`x", "]"}]}]], "Input"]
+}, Open  ]]
+},
+WindowSize->{820, 800},
+WindowMargins->{{Automatic, 332}, {Automatic, -8}},
+FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
+StyleDefinitions->"Default.nb"
+]
+
