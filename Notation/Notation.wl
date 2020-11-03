@@ -26,6 +26,11 @@ matrixElement::usage = "
 Global`\[ScriptCapitalM]::usage = "symbol for matrix element";
 
 
+protect::usage = "
+  protect[symb] clear and protect symbol definition
+";
+
+
 Begin["`Private`"]
 
 
