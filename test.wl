@@ -16,3 +16,4 @@ run[fname_] := (
 run["TestRG.wlt"];
 run["./BaseUtils/TestBaseUtils.wlt"];
 run["./FeynmanDiagrams/TestFeynmanDiagrams.wlt"];
+run["./Notation/TestNotation.wlt"];

@@ -20,6 +20,11 @@ setBar::usage = "
 ";
 
 
+matrixElement::usage = "
+  matrixElement[\"tag\"] or matrixElement[\"tag1\", \"tag2\"] represent matrix element
+";
+Global`\[ScriptCapitalM]::usage = "symbol for matrix element";
+
 
 Begin["`Private`"]
 
@@ -49,6 +54,24 @@ setBar[x_Symbol] := With[{
   symbol /: Format[symbol, TraditionalForm] := OverBar[x];
 ];
 setBar[x__] := setBar[{x}];
+
+
+SetAttributes[protect, HoldAll];
+protect::warn = "value of `` will be cleared";
+protect[symb_] := (
+  If[ValueQ[symb], (
+    Message[protect::warn, HoldForm[symb]];
+    Unprotect[symb];
+    Clear[symb];
+  )];
+  Protect[symb];
+);
+
+protect[Global`\[ScriptCapitalM]];
+setIndexed[matrixElement];
+matrixElement /: Format[matrixElement, TraditionalForm] = (
+  Global`\[ScriptCapitalM]
+);
 
 
 End[]

@@ -16,7 +16,7 @@ Cell[BoxData[
  StyleBox["\<\"\\n  setIndexed[x] set symbol x as indexed variable, i.e. \
 x[i], x[i, j] will have sub- and superscripts in Traditional form\\n\"\>", 
   "MSG"]], "Print", "PrintUsage",
- CellTags->"Info23813416704-2225398"]
+ CellTags->"Info23813424326-8159677"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -80,7 +80,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  setPrime[x] set symbol prime`x in traditional form to \
 have prime (') as superscript\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info93813416704-2225398"]
+ CellTags->"Info93813424327-8159677"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -150,7 +150,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  setBar[x] set symbol bar`x in traditional form to have \
 overbar\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info173813416704-2225398"]
+ CellTags->"Info173813424327-8159677"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -199,10 +199,39 @@ Cell[BoxData[
  RowBox[{
   RowBox[{"Clear", "[", "bar`x", "]"}], ";", 
   RowBox[{"Remove", "[", "bar`x", "]"}]}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["matrixElement", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"matrixElement", "[", "\"\<annihilation\>\"", "]"}], "//", 
+  "TraditionalForm"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  SubscriptBox[
+   FormBox["\[ScriptCapitalM]",
+    TraditionalForm], "\<\"annihilation\"\>"], TraditionalForm]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"matrixElement", "[", "\"\<annihilation\>\"", "]"}], "//", 
+  "TeXForm"}]], "Input"],
+
+Cell["\\mathcal{M}_{\\text{annihilation}}", "Output"]
+}, Open  ]]
 }, Open  ]]
 },
 WindowSize->{820, 800},
-WindowMargins->{{Automatic, 332}, {Automatic, -8}},
+WindowMargins->{{Automatic, 322}, {Automatic, -8}},
 FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
 StyleDefinitions->"Default.nb"
 ]
