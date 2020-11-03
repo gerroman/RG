@@ -1,0 +1,445 @@
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<RG`FeynmanDiagrams`\>\"", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"electronLine", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "2"}], ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"p", ",", 
+     RowBox[{"p", "'"}]}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Arrowheads[{{Automatic, 0.2360679774997897}, {
+      Automatic, 0.7360679774997897}}], 
+    ArrowBox[{{-2, 0}, {0, 0}, {2, 1}}]}, {InsetBox[
+     InterpretationBox["\<\"\\!\\(\\*FormBox[\\\"p\\\", TraditionalForm]\\)\"\
+\>",
+      StringForm["``", $CellContext`p],
+      Editable->False], {-1., 0.}, {0., -2.}], InsetBox[
+     InterpretationBox["\<\"\\!\\(\\*FormBox[SuperscriptBox[\\\"p\\\", \\\"\
+\[Prime]\\\", Rule[MultilineFunction, None]], TraditionalForm]\\)\"\>",
+      StringForm["``", 
+       Derivative[1][$CellContext`p]],
+      Editable->
+       False], {1., 0.5}, {0.8944271909999159, -1.7888543819998317`}]}}]], \
+"Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"photonLine", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}]}], "}"}], ",", "q", ",", "4"}], 
+  "]"}]], "Input"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   BezierCurveBox[{{0, 0}, {0.125, -0.125}, {0.125, 0.125}, {0.25, 0.}, {
+     0.375, -0.125}, {0.375, 0.125}, {0.5, 0.}, {0.625, -0.125}, {0.625, 
+     0.125}, {0.75, 0.}, {0.875, -0.125}, {0.875, 0.125}, {1., 0.}}], {
+    {Arrowheads[Automatic], ArrowBox[{{0.375, 0.125}, {0.625, 0.125}}]}, 
+    InsetBox["q", {0.5, 0.125}, {0., -2.}]}}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"photonArc", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}]}], "}"}], ",", "k", ",", "10"}], 
+  "]"}]], "Input"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   BezierCurveBox[{{-1, 1}, {-1.1428340623376365`, 
+     1.181007133347163}, {-0.8325426188526388, 
+     1.1318617967332991`}, {-0.9510565162951535, 
+     1.3090169943749475`}, {-1.0309655017229054`, 
+     1.5253031606786127`}, {-0.7510475466538301, 
+     1.3826778388004808`}, {-0.8090169943749473, 
+     1.5877852522924734`}, {-0.8181788546405067, 
+     1.8181788546405069`}, {-0.5960347077325883, 
+     1.5960347077325885`}, {-0.587785252292473, 
+     1.8090169943749475`}, {-0.5253031606786126, 
+     2.0309655017229056`}, {-0.38267783880048073`, 
+     1.7510475466538302`}, {-0.30901699437494734`, 
+     1.9510565162951536`}, {-0.18100713334716273`, 
+     2.142834062337637}, {-0.1318617967332989, 1.8325426188526388`}, {
+     6.123233995736766*^-17, 2.}, {0.18100713334716312`, 
+     2.1428340623376365`}, {0.13186179673329917`, 1.8325426188526388`}, {
+     0.30901699437494745`, 1.9510565162951536`}, {0.5253031606786127, 
+     2.030965501722905}, {0.38267783880048084`, 1.75104754665383}, {
+     0.5877852522924731, 1.8090169943749475`}, {0.8181788546405068, 
+     1.8181788546405067`}, {0.5960347077325884, 1.5960347077325883`}, {
+     0.8090169943749475, 1.5877852522924731`}, {1.0309655017229056`, 
+     1.5253031606786127`}, {0.7510475466538302, 1.3826778388004808`}, {
+     0.9510565162951535, 1.3090169943749475`}, {1.1428340623376367`, 
+     1.1810071333471628`}, {0.8325426188526388, 1.131861796733299}, {1., 
+     1.}}], {InsetBox[
+     "k", {6.123233995736766*^-17, 2.1570796326794897`}, {0., -2.}], 
+    {Arrowheads[Automatic], 
+     ArrowBox[{{-0.1570796326794896, 2.1570796326794897`}, {
+      0.1570796326794897, 2.1570796326794897`}}]}}}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"electronArc", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}]}], "}"}], ",", "p"}], "]"}]], "Input"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   CircleBox[{0., 1.}, 1., {3.141592653589793, 0.}], {
+    InsetBox["p", {6.123233995736766*^-17, 2.}, {0., -2.}], 
+    {Arrowheads[Automatic], 
+     ArrowBox[{{-0.03141592653589787, 2.}, {0.031415926535897996`, 
+      2.}}]}}}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fig`electron\[LetterSpace]vertex", "=", 
+  RowBox[{"With", "[", 
+   RowBox[{
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"pIn", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "2"}], ",", 
+         RowBox[{"-", "1.5"}]}], "}"}]}], ",", 
+      RowBox[{"pOut", "=", 
+       RowBox[{"{", 
+        RowBox[{"2", ",", 
+         RowBox[{"-", "1.5"}]}], "}"}]}], ",", 
+      RowBox[{"qOut", "=", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1.7"}], "}"}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"v1", "=", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.7"}], ",", 
+         RowBox[{"-", "1"}]}], "}"}]}], ",", 
+      RowBox[{"v2", "=", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}]}], ",", 
+      RowBox[{"v3", "=", 
+       RowBox[{"{", 
+        RowBox[{"0.7", ",", 
+         RowBox[{"-", "1"}]}], "}"}]}]}], "\[IndentingNewLine]", "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Show", "[", 
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"electronLine", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"pIn", ",", "v1", ",", "v2", ",", "v3", ",", "pOut"}], 
+          "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"p", ",", 
+           RowBox[{"p", "+", "k"}], ",", 
+           RowBox[{
+            RowBox[{"p", "'"}], "+", "k"}], ",", 
+           RowBox[{"p", "'"}]}], "}"}]}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"photonArc", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"v3", ",", "v1"}], "}"}], ",", "k", ",", "6", ",", 
+         RowBox[{"\[Pi]", "/", "2"}]}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"photonLine", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"v2", ",", "qOut"}], "}"}], ",", "q"}], "]"}]}], 
+      "\[IndentingNewLine]", "}"}], "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input"],
+
+Cell[BoxData[
+ GraphicsBox[{{
+    {Arrowheads[{{Automatic, 0.13323529920565952`}, {
+       Automatic, 0.3832352992056595}, {Automatic, 0.6167647007943404}, {
+       Automatic, 0.8667647007943404}}], 
+     ArrowBox[{{-2, -1.5}, {-0.7, -1}, {0, 0}, {0.7, -1}, {2, -1.5}}]}, {
+     InsetBox[
+      InterpretationBox["\<\"\\!\\(\\*FormBox[\\\"p\\\", \
+TraditionalForm]\\)\"\>",
+       StringForm["``", $CellContext`p],
+       Editable->
+        False], {-1.35, -1.25}, {0.717958158617738, -1.866691212406119}], 
+     InsetBox[
+      InterpretationBox["\<\"\\!\\(\\*FormBox[RowBox[{\\\"k\\\", \\\"+\\\", \
+\\\"p\\\"}], TraditionalForm]\\)\"\>",
+       StringForm["``", $CellContext`k + $CellContext`p],
+       Editable->
+        False], {-0.35, -0.5}, {1.638463841038081, -1.1469246887266566`}], 
+     InsetBox[
+      InterpretationBox["\<\"\\!\\(\\*FormBox[RowBox[{\\\"k\\\", \\\"+\\\", \
+SuperscriptBox[\\\"p\\\", \\\"\[Prime]\\\", Rule[MultilineFunction, None]]}], \
+TraditionalForm]\\)\"\>",
+       StringForm["``", $CellContext`k + Derivative[1][$CellContext`p]],
+       Editable->
+        False], {0.35, -0.5}, {-1.638463841038081, -1.1469246887266566`}], 
+     InsetBox[
+      InterpretationBox["\<\"\\!\\(\\*FormBox[SuperscriptBox[\\\"p\\\", \\\"\
+\[Prime]\\\", Rule[MultilineFunction, None]], TraditionalForm]\\)\"\>",
+       StringForm["``", 
+        Derivative[1][$CellContext`p]],
+       Editable->
+        False], {1.35, -1.25}, {-0.717958158617738, -1.866691212406119}]}}, {
+    BezierCurveBox[{{0.7, -1}, {0.6815288615928904, -1.1881857047514373`}, {
+      0.5237572752223717, -0.9825737702799695}, {
+      0.4949747468305833, -1.1573214099741123`}, {
+      0.4284269527964844, -1.3343141599274504`}, {
+      0.3292475874081913, -1.0948739908994767`}, {
+      0.2562177826491072, -1.256217782649107}, {
+      0.14612845517601328`, -1.4099558143893747`}, {
+      0.11230022061950723`, -1.1530048626305631`}, {
+      6.061692393648452*^-17, -1.2899494936611666`}, {-0.14612845517601292`, \
+-1.4099558143893751`}, {-0.11230022061950694`, -1.1530048626305631`}, \
+{-0.2562177826491069, -1.2562177826491072`}, {-0.42842695279648424`, \
+-1.3343141599274504`}, {-0.32924758740819127`, -1.0948739908994767`}, \
+{-0.49497474683058296`, -1.1573214099741125`}, {-0.6815288615928904, \
+-1.1881857047514373`}, {-0.5237572752223717, -0.9825737702799695}, \
+{-0.6999999999999998, -1.}}], {
+     InsetBox["k", {6.061692393648452*^-17, -1.4195335793574522`}, {0., 2.}], \
+
+     {Arrowheads[Automatic], 
+      ArrowBox[{{
+       0.1295840856962857, -1.4195335793574522`}, {-0.1295840856962856, \
+-1.4195335793574522`}}]}}}, {
+    BezierCurveBox[{{0, 0}, {0.2125, 0.2125}, {-0.2125, 0.2125}, {0., 
+      0.425}, {0.2125, 0.6375}, {-0.2125, 0.6375}, {0., 0.85}, {0.2125, 
+      1.0625}, {-0.2125, 1.0625}, {0., 1.275}, {0.2125, 1.4875}, {-0.2125, 
+      1.4875}, {0., 1.7}}], {
+     {Arrowheads[Automatic], 
+      ArrowBox[{{-0.2125, 0.6375}, {-0.2125, 1.0625}}]}, 
+     InsetBox["q", {-0.2125, 0.85}, {2., 0.}]}}}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Manipulate", "[", 
+   RowBox[{
+    RowBox[{"Show", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{"photonArc", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"0", ",", "0"}], "}"}], ",", "x"}], "}"}], ",", "k", ",", 
+         "nWiggles", ",", "arcAngle", ",", "flip"}], "]"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"PlotRange", "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], 
+     "\[IndentingNewLine]", "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"x", ",", 
+        RowBox[{"{", 
+         RowBox[{"0.5", ",", "0.5"}], "}"}]}], "}"}], ",", "Locator"}], "}"}],
+     ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"arcAngle", ",", "\[Pi]"}], "}"}], ",", "0.01", ",", "\[Pi]"}],
+      "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"flip", ",", 
+      RowBox[{"{", 
+       RowBox[{"True", ",", "False"}], "}"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"nWiggles", ",", "8"}], "}"}], ",", "1", ",", "10", ",", "1"}],
+      "}"}]}], "]"}], "\[IndentingNewLine]"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`arcAngle$$ = Pi, $CellContext`flip$$ = 
+    True, $CellContext`nWiggles$$ = 8, $CellContext`x$$ = {0.5, 0.5}, 
+    Typeset`show$$ = True, Typeset`bookmarkList$$ = {}, 
+    Typeset`bookmarkMode$$ = "Menu", Typeset`animator$$, Typeset`animvar$$ = 
+    1, Typeset`name$$ = "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`x$$], {0.5, 0.5}}, Automatic}, {{
+       Hold[$CellContext`arcAngle$$], Pi}, 0.01, Pi}, {
+      Hold[$CellContext`flip$$], {True, False}}, {{
+       Hold[$CellContext`nWiggles$$], 8}, 1, 10, 1}}, Typeset`size$$ = {
+    360., {177., 183.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`arcAngle$2867$$ = 
+    0, $CellContext`flip$2872$$ = False, $CellContext`nWiggles$2873$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`arcAngle$$ = Pi, $CellContext`flip$$ = 
+        True, $CellContext`nWiggles$$ = 8, $CellContext`x$$ = {0.5, 0.5}}, 
+      "ControllerVariables" :> {
+        Hold[$CellContext`arcAngle$$, $CellContext`arcAngle$2867$$, 0], 
+        Hold[$CellContext`flip$$, $CellContext`flip$2872$$, False], 
+        Hold[$CellContext`nWiggles$$, $CellContext`nWiggles$2873$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Show[{
+         RG`FeynmanDiagrams`photonArc[{{0, 
+           0}, $CellContext`x$$}, $CellContext`k, $CellContext`nWiggles$$, \
+$CellContext`arcAngle$$, $CellContext`flip$$]}, 
+        PlotRange -> {{-1, 1}, {-1, 1}}], 
+      "Specifications" :> {{{$CellContext`x$$, {0.5, 0.5}}, Automatic, 
+         ControlType -> Locator}, {{$CellContext`arcAngle$$, Pi}, 0.01, 
+         Pi}, {$CellContext`flip$$, {
+         True, False}}, {{$CellContext`nWiggles$$, 8}, 1, 10, 1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{413., {246., 252.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Manipulate", "[", 
+  RowBox[{
+   RowBox[{"Show", "[", 
+    RowBox[{
+     RowBox[{"{", "\[IndentingNewLine]", 
+      RowBox[{"electronArc", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0"}], "}"}], ",", "x"}], "}"}], ",", "k", ",", 
+        "arcAngle", ",", "flip", ",", "Automatic", ",", "2"}], "]"}], "}"}], 
+     ",", "\[IndentingNewLine]", 
+     RowBox[{"PlotRange", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"-", "1"}], ",", "1"}], "}"}]}], "}"}]}]}], 
+    "\[IndentingNewLine]", "]"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"{", 
+        RowBox[{"0.5", ",", "0.5"}], "}"}]}], "}"}], ",", "Locator"}], "}"}], 
+   ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"arcAngle", ",", "\[Pi]"}], "}"}], ",", "0.01", ",", "\[Pi]"}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"flip", ",", 
+     RowBox[{"{", 
+      RowBox[{"True", ",", "False"}], "}"}]}], "}"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`arcAngle$$ = Pi, $CellContext`flip$$ = 
+    True, $CellContext`x$$ = {0.5, 0.5}, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`x$$], {0.5, 0.5}}, Automatic}, {{
+       Hold[$CellContext`arcAngle$$], Pi}, 0.01, Pi}, {
+      Hold[$CellContext`flip$$], {True, False}}}, Typeset`size$$ = {
+    360., {177., 183.}}, Typeset`update$$ = 0, Typeset`initDone$$, 
+    Typeset`skipInitDone$$ = True, $CellContext`arcAngle$2922$$ = 
+    0, $CellContext`flip$2923$$ = False}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`arcAngle$$ = Pi, $CellContext`flip$$ = 
+        True, $CellContext`x$$ = {0.5, 0.5}}, "ControllerVariables" :> {
+        Hold[$CellContext`arcAngle$$, $CellContext`arcAngle$2922$$, 0], 
+        Hold[$CellContext`flip$$, $CellContext`flip$2923$$, False]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> Show[{
+         RG`FeynmanDiagrams`electronArc[{{0, 
+           0}, $CellContext`x$$}, $CellContext`k, $CellContext`arcAngle$$, \
+$CellContext`flip$$, Automatic, 2]}, PlotRange -> {{-1, 1}, {-1, 1}}], 
+      "Specifications" :> {{{$CellContext`x$$, {0.5, 0.5}}, Automatic, 
+         ControlType -> Locator}, {{$CellContext`arcAngle$$, Pi}, 0.01, 
+         Pi}, {$CellContext`flip$$, {True, False}}}, "Options" :> {}, 
+      "DefaultOptions" :> {}],
+     ImageSizeCache->{413., {234., 240.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output"]
+}, Open  ]]
+},
+WindowSize->{800, 800},
+WindowMargins->{{Automatic, -10}, {Automatic, -8}},
+FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
+StyleDefinitions->"Default.nb"
+]
+

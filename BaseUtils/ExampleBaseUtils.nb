@@ -1,0 +1,107 @@
+Notebook[{
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<RG`BaseUtils`\>\"", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell["assert", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "assert"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  assert[expr] evaluate expr with temporally enabled \
+assertions\\n\"\>", "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info23813405560-2542999"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Assert", "[", 
+  RowBox[{"1", ">", "2"}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"Assert", "[", 
+  RowBox[{"1", ">", "2"}], "]"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"assert", "[", 
+  RowBox[{"1", ">", "2"}], "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Assert", "::", "asrtfl"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Assertion \[NoBreak]\\!\\(\\*RowBox[{\\\"1\\\", \\\">\\\", \
+\\\"2\\\"}]\\)\[NoBreak] at line \[NoBreak]\\!\\(\\*RowBox[{\\\"23\\\"}]\\)\
+\[NoBreak] in \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"RG`BaseUtils`\\\\\\\"\\\"}]\\)\
+\[NoBreak] failed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
+\\\"Link\\\", ButtonFrame->None, ButtonData:>\\\"paclet:ref/Assert\\\", \
+ButtonNote -> \\\"Assert::asrtfl\\\"]\\)\"\>"}]], "Message", "MSG"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["reload", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "reload"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  reload[context] remove definitions context`* and reload \
+it\\n\"\>", "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info53813405560-2542999"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"reload", "[", 
+  RowBox[{"\"\<RG`BaseUtils`\>\"", ",", 
+   RowBox[{"\"\<verbose\>\"", "\[Rule]", "True"}]}], "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"context: \"\>", "\[InvisibleSpace]", "\<\"RG`BaseUtils`\"\>"}],
+  
+  SequenceForm["context: ", "RG`BaseUtils`"],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"list of symbols to remove: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"\<\"assert\"\>", ",", "\<\"reload\"\>"}], "}"}]}],
+  SequenceForm["list of symbols to remove: ", {"assert", "reload"}],
+  Editable->False]], "Print"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"list of loaded symbols: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{"\<\"assert\"\>", ",", "\<\"reload\"\>"}], "}"}]}],
+  SequenceForm["list of loaded symbols: ", {"assert", "reload"}],
+  Editable->False]], "Print"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{820, 800},
+WindowMargins->{{Automatic, -10}, {Automatic, -8}},
+FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
+StyleDefinitions->"Default.nb"
+]
+
