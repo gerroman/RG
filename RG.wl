@@ -9,5 +9,5 @@ Get /@ {
   , "RG`FeynmanDiagrams`"
   , "RG`Kinematics`"
   , "RG`Traces`"
-}
+};
 

@@ -7,11 +7,7 @@ Cell[BoxData[
   3.813362320459558*^9, 3.813362339735833*^9}},
  CellID->2137202271],
 
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{
-  "Null", ",", "Null", ",", "Null", ",", "Null", ",", "Null", ",", "Null", 
-   ",", "Null"}], "}"}]], "ExpectedOutput",
+Cell[BoxData["Null"], "ExpectedOutput",
  CellID->989469340],
 
 Cell[BoxData[
@@ -62,7 +58,6 @@ Cell[BoxData[
             
             GridBoxAlignment->{
              "Columns" -> {{Automatic}}, "Rows" -> {{Center}}},
-            
             GridBoxItemSize->{
              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
            "Grid"]}, Dynamic[
@@ -115,6 +110,7 @@ Cell[BoxData[
                "Grid"], True->
               TagBox[GridBox[{
                  {
+                  
                   DynamicBox[FEPrivate`FrontEndResource[
                    "MUnitExpressions", "Add"]], 
                   StyleBox[
@@ -204,7 +200,7 @@ Cell[BoxData[
    "Grid"],
   Alignment->{Left, Center},
   ImageSize->Full]], "BottomCell",
- CellID->76964874]
+ CellID->701253421]
 }, Open  ]]
 },
 WindowSize->{800, 800},
