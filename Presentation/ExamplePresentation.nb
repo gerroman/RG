@@ -1,0 +1,166 @@
+Notebook[{
+Cell[BoxData[
+ RowBox[{"<<", "\"\<RG`Presentation`\>\""}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell["tagged", "Section"],
+
+Cell["This function automatically add tag to equations", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tagged", "[", 
+  RowBox[{
+   RowBox[{"eq`Einstein", "=", 
+    RowBox[{"\[ScriptCapitalE]", "\[Equal]", 
+     RowBox[{"HoldForm", "[", 
+      RowBox[{"m", " ", 
+       RowBox[{"c", "^", "2"}]}], "]"}]}]}], ",", 
+   RowBox[{"form", "\[Rule]", "TraditionalForm"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
+   TagBox[
+    RowBox[{"m", " ", 
+     SuperscriptBox["c", "2"]}],
+    HoldForm]}], TraditionalForm]], "Output",
+ ShowCellTags->True,
+ CellTags->"eq`Einstein",
+ $CellContext`form -> TraditionalForm]
+}, Open  ]],
+
+Cell["After setting tagged`final to True ", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tagged`final", " ", "=", " ", "True"}]], "Input"],
+
+Cell[BoxData["True"], "Output"]
+}, Open  ]],
+
+Cell["the Input cell can be automatically hidden after evalulation", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tagged", "[", 
+  RowBox[{"eq`Einstein\[LetterSpace]2", "=", 
+   RowBox[{"\[ScriptCapitalE]", "\[Equal]", 
+    RowBox[{"HoldForm", "[", 
+     RowBox[{"m", " ", 
+      RowBox[{"c", "^", "2"}]}], "]"}]}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
+   TagBox[
+    RowBox[{"m", " ", 
+     SuperscriptBox["c", "2"]}],
+    HoldForm]}], TraditionalForm]], "Output",
+ ShowCellTags->True,
+ CellTags->"eq`Einstein\[LetterSpace]2"]
+}, {2}]],
+
+Cell["It allows to modify presentation ", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"tagged`final", "=", "False"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"tagged", "[", 
+  RowBox[{
+   RowBox[{"eq`Einstein\[LetterSpace]3", "=", 
+    RowBox[{"\[ScriptCapitalE]", "\[Equal]", 
+     RowBox[{"m", " ", 
+      RowBox[{"c", "^", "2"}]}]}]}], ",", 
+   RowBox[{"ReplaceAll", "[", 
+    RowBox[{"m", ":>", 
+     RowBox[{"Style", "[", 
+      RowBox[{"m", ",", "Red"}], "]"}]}], "]"}]}], "]"}]}], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
+   RowBox[{
+    SuperscriptBox["c", "2"], " ", 
+    StyleBox["m",
+     StripOnInput->False,
+     LineColor->RGBColor[1, 0, 0],
+     FrontFaceColor->RGBColor[1, 0, 0],
+     BackFaceColor->RGBColor[1, 0, 0],
+     GraphicsColor->RGBColor[1, 0, 0],
+     FontColor->RGBColor[1, 0, 0]]}]}], TraditionalForm]], "Output",
+ ShowCellTags->True,
+ CellTags->"eq`Einstein\[LetterSpace]3"]
+}, Open  ]],
+
+Cell["It also warns about  the usage of the same tags", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tagged", "[", 
+  RowBox[{
+   RowBox[{"eq`Einstein\[LetterSpace]3", "=", 
+    RowBox[{"\[ScriptCapitalE]", "\[Equal]", 
+     RowBox[{
+      RowBox[{"HoldForm", "[", "m", "]"}], " ", 
+      RowBox[{"c", "^", "2"}]}]}]}], ",", 
+   RowBox[{"ReplaceAll", "[", 
+    RowBox[{"hf_HoldForm", ":>", 
+     RowBox[{"Style", "[", 
+      RowBox[{"hf", ",", "Red"}], "]"}]}], "]"}], ",", 
+   RowBox[{"form", "\[Rule]", "TraditionalForm"}]}], "]"}]], "Input"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
+   RowBox[{
+    SuperscriptBox["c", "2"], " ", 
+    StyleBox[
+     TagBox["m",
+      HoldForm],
+     StripOnInput->False,
+     LineColor->RGBColor[1, 0, 0],
+     FrontFaceColor->RGBColor[1, 0, 0],
+     BackFaceColor->RGBColor[1, 0, 0],
+     GraphicsColor->RGBColor[1, 0, 0],
+     FontColor->RGBColor[1, 0, 0]]}]}], TraditionalForm]], "Output",
+ ShowCellTags->True,
+ CellTags->"eq`Einstein\[LetterSpace]3",
+ $CellContext`form -> TraditionalForm],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"tagged", "::", "shdw"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Warning: \
+\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"eq`Einstein\[LetterSpace]3\\\\\\\"\\\"}\
+]\\)\[NoBreak] appeares more than once so can shadow previous result \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
+ButtonNote -> \\\"RG`Presentation`tagged::shdw\\\"]\\)\"\>"}]], "Message", \
+"MSG"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"tagged`final", "=", "False"}]], "Input"],
+
+Cell[BoxData["False"], "Output"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{804, 753},
+WindowMargins->{{Automatic, 196}, {12, Automatic}},
+FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
+StyleDefinitions->"Default.nb"
+]
+
