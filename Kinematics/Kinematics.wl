@@ -1,8 +1,10 @@
 (* ::Package:: *)
-(* Definitions and functions to work with 4 vectors and invariants *)
+
+(* ::Text:: *)
+(*Definitions and functions to work with 4 vectors and invariants*)
 
 
-BeginPackage["RG`Kinematics`", {"RG`Calculation`", "RG`Notation`"}]
+BeginPackage["RG`Kinematics`", {"RG`BaseUtils`", "RG`Notation`"}];
 
 
 energy::usage = "
@@ -37,10 +39,20 @@ replaceMass::usage = "
 ";
 
 
-Begin["`Private`"]
+sp::usage = "
+  sp[a, b] represent scalar product of a, b
+";
 
 
-protect[Global`m];
+setInvariants::usage = "
+  setInvariants[ps, ms, pRules, spRules] set up all scalar products 
+";
+
+
+Begin["`Private`"];
+
+
+RG`Notation`protect[Global`m];
 setIndexed[mass];
 mass /: Format[mass, TraditionalForm] = Global`m;
 
@@ -92,13 +104,54 @@ replaceMass[particle_] := ReplaceAll[#,
   )
 ]&;
 
+
 replaceMass[particle_, All] := ReplaceAll[#,
   mass[particle]^\[Alpha]_. :> (energy[particle]^2 - abs[momentum[particle]]^2)^(\[Alpha]/2)
 ]&;
 
 
+SetAttributes[sp, Orderless];
+sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
+sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
+sp[expr_] := sp[expr, expr];
+sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
 
-End[]
+
+Clear[setInvariants];
+setInvariants[
+    ps:{p1_Symbol, __}, ms_List,
+    pRules:{Rule[_Symbol, _]...}, spRules_List
+  ] := Module[
+  {
+    ruleConservation,
+    ruleMasses,
+    psAll,
+    eqs,
+    spVars,
+    spFixed,
+    spDefinitions,
+    spSolutions
+  },
+  spFixed = Cases[spRules, _sp];
+  spDefinitions = DeleteCases[spRules, Alternatives@@spFixed];
+  ruleConservation = Solve[Total[ps] == 0, p1] // Flatten // First;
+  ruleMasses = Thread[Rule[Map[sp,ps], ms^2]];
+  psAll = ps~Join~Map[First, pRules];
+  eqs = With[{lhs = Flatten[Outer[sp, psAll, psAll]]},
+      Thread[lhs == (lhs // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation])]
+  ] // modify[_sp, Distribute] // ReplaceAll[ruleMasses] // 
+    Union // DeleteCases[True] // modify[Equal[(-1)_sp, _], Map[-#&]];
+  eqs = eqs~Join~(
+    (Equal@@@spDefinitions) // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation] // modify[_sp, Distribute] // 
+    ReplaceAll[ruleMasses]
+  );
+  spVars = Union@Cases[{eqs}, _sp, Infinity] // DeleteCases[#, Alternatives@@spFixed]&;
+  spSolutions = Solve[eqs, spVars] // Flatten // Expand;
+  Return[spSolutions~Join~ruleMasses // Union];
+];
 
 
-EndPackage[]
+End[];
+
+
+EndPackage[];

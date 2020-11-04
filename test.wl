@@ -18,3 +18,4 @@ run["./BaseUtils/TestBaseUtils.wlt"];
 (* run["./FeynmanDiagrams/TestFeynmanDiagrams.wlt"]; *)
 run["./Notation/TestNotation.wlt"];
 run["./Calculation/TestCalculation.wlt"];
+run["./Kinematics/TestKinematics.wlt"];
