@@ -1,13 +1,17 @@
 BeginTestSection["TestCalculation"]
 
+
+Needs["RG`Calculation`"];
+
+
 VerificationTest[(* 1 *)
-	CompoundExpression[Needs["RG`Calculation`"], Equal[UnderBar[f][][x], f[x]]]
+	Equal[OverTilde[f][][x], f[x]]
 	,
 	True	
 ]
 
 VerificationTest[(* 2 *)
-	CompoundExpression[Needs["RG`Calculation`"], Equal[UnderBar[f][x][y], f[y, x]]]
+	Equal[OverTilde[f][x][y], f[y, x]]
 	,
 	True	
 ]

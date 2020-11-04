@@ -1,18 +1,21 @@
 Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Get", "[", "\"\<RG`Calculation`\>\"", "]"}], ";"}]], "Input",
+ CellID->196593712],
 
 Cell[CellGroupData[{
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Needs", "[", "\"\<RG`Calculation`\>\"", "]"}], 
-  ";"}], "\[IndentingNewLine]", 
+
+Cell[BoxData[
  RowBox[{
   RowBox[{
    RowBox[{
-    UnderscriptBox["f", "_"], "[", "]"}], "[", "x", "]"}], "\[Equal]", 
-  RowBox[{"f", "[", "x", "]"}]}]}], "VerificationTest",
+    OverscriptBox["f", "~"], "[", "]"}], "[", "x", "]"}], "\[Equal]", 
+  RowBox[{"f", "[", "x", "]"}]}]], "VerificationTest",
  CellChangeTimes->{{3.8134012032903347`*^9, 3.813401241798964*^9}, {
   3.813401294769149*^9, 3.813401331282583*^9}, {3.8134015813143063`*^9, 
-  3.8134015816668262`*^9}},
+  3.8134015816668262`*^9}, {3.813438406430599*^9, 3.813438417314077*^9}, {
+  3.813438454273961*^9, 3.8134384787616367`*^9}},
  CellID->115820072],
 
 Cell[BoxData["True"], "ExpectedOutput",
@@ -115,6 +118,7 @@ Cell[BoxData[
                 
                 GridBoxAlignment->{
                  "Columns" -> {{Automatic}}, "Rows" -> {{Center}}},
+                
                 GridBoxItemSize->{
                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
                "Grid"], True->
@@ -210,23 +214,21 @@ Cell[BoxData[
    "Grid"],
   Alignment->{Left, Center},
   ImageSize->Full]], "BottomCell",
- CellID->527584997]
+ CellID->681706314]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Needs", "[", "\"\<RG`Calculation`\>\"", "]"}], 
-  ";"}], "\[IndentingNewLine]", 
+Cell[BoxData[
  RowBox[{
   RowBox[{
    RowBox[{
-    UnderscriptBox["f", "_"], "[", "x", "]"}], "[", "y", "]"}], "\[Equal]", 
+    OverscriptBox["f", "~"], "[", "x", "]"}], "[", "y", "]"}], "\[Equal]", 
   RowBox[{"f", "[", 
-   RowBox[{"y", ",", "x"}], "]"}]}]}], "VerificationTest",
+   RowBox[{"y", ",", "x"}], "]"}]}]], "VerificationTest",
  CellChangeTimes->{{3.813401349560816*^9, 3.8134013903007183`*^9}, {
-  3.813401583842526*^9, 3.813401585155012*^9}},
+  3.813401583842526*^9, 3.813401585155012*^9}, {3.813438421281859*^9, 
+  3.813438424273616*^9}, {3.813438458585856*^9, 3.8134384756581078`*^9}},
  CellID->1175312530],
 
 Cell[BoxData["True"], "ExpectedOutput",
@@ -424,11 +426,11 @@ Cell[BoxData[
    "Grid"],
   Alignment->{Left, Center},
   ImageSize->Full]], "BottomCell",
- CellID->2040851759]
+ CellID->1451628917]
 }, Open  ]]
 },
-WindowSize->{550, 657},
-WindowMargins->{{515, Automatic}, {43, Automatic}},
+WindowSize->{1600, 800},
+WindowMargins->{{-1, Automatic}, {Automatic, -1}},
 WindowTitle->"TestCalculation.nb",
 DockedCells->Cell[
   BoxData[
