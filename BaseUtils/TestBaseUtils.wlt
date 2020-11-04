@@ -46,4 +46,16 @@ VerificationTest[(* 7 *)
 	Plus[Power[a, 2], Times[2, a, b], Power[b, 2], Power[Plus[1, d], 2]]	
 ]
 
+VerificationTest[(* 8 *)
+	Equal[OverTilde[f][][x], f[x]]
+	,
+	True	
+]
+
+VerificationTest[(* 9 *)
+	Equal[OverTilde[f][x][y], f[y, x]]
+	,
+	True	
+]
+
 EndTestSection[]

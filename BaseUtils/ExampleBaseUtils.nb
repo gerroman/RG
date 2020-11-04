@@ -14,7 +14,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  assert[expr] evaluate expr with temporally enabled \
 assertions\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info23813469007-1053663"]
+ CellTags->"Info23813471670-8932494"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -40,7 +40,7 @@ Cell[BoxData[
    RowBox[{"Assert", "::", "asrtfl"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"Assertion \[NoBreak]\\!\\(\\*RowBox[{\\\"1\\\", \\\">\\\", \
-\\\"2\\\"}]\\)\[NoBreak] at line \[NoBreak]\\!\\(\\*RowBox[{\\\"29\\\"}]\\)\
+\\\"2\\\"}]\\)\[NoBreak] at line \[NoBreak]\\!\\(\\*RowBox[{\\\"34\\\"}]\\)\
 \[NoBreak] in \
 \[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"RG`BaseUtils`\\\\\\\"\\\"}]\\)\
 \[NoBreak] failed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
@@ -61,7 +61,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  reload[context] remove definitions context`* and reload \
 it\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info53813469008-1053663"]
+ CellTags->"Info53813471670-8932494"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -104,6 +104,79 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
+Cell["OverTilde", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "OverTilde"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox["\<\"\\n  OverTilde[func][args][expr] works as func[expr, args] \
+i.e. it creates operator OverTilde[func][args] for the first argument of func\
+\\n\"\>", "MSG"], "\[NonBreakingSpace]", 
+  ButtonBox[
+   StyleBox["\[RightSkeleton]", "SR"],
+   Active->True,
+   BaseStyle->"Link",
+   ButtonData->"paclet:ref/OverTilde"]}]], "Print", "PrintUsage",
+ CellTags->"Info73813471670-8932494"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"OverTilde", "[", "Sin", "]"}], "[", "]"}], "[", "x", 
+  "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"Sin", "[", "x", "]"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   OverscriptBox["f", "~"], "[", "]"}], "[", "x", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"f", "[", "x", "]"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   OverscriptBox["Labeled", "~"], "[", 
+   RowBox[{"\"\<test\>\"", ",", "Top"}], "]"}], "[", "x", "]"}]], "Input"],
+
+Cell[BoxData[
+ TemplateBox[{"x","\"test\""},
+  "Labeled",
+  DisplayFunction->(GridBox[{{
+      ItemBox[#2, DefaultBaseStyle -> "LabeledLabel"]}, {
+      TagBox[
+       ItemBox[
+        PaneBox[
+         TagBox[#, "SkipImageSizeLevel"], Alignment -> {Center, Baseline}, 
+         BaselinePosition -> Baseline], DefaultBaseStyle -> "Labeled"], 
+       "SkipImageSizeLevel"]}}, 
+    GridBoxAlignment -> {"Columns" -> {{Center}}, "Rows" -> {{Center}}}, 
+    AutoDelete -> False, 
+    GridBoxItemSize -> {"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+    BaselinePosition -> {2, 1}]& ),
+  InterpretationFunction->(RowBox[{"Labeled", "[", 
+     RowBox[{#, ",", #2, ",", "Top"}], "]"}]& )]], "Output"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
 Cell["modify", "Section"],
 
 Cell[CellGroupData[{
@@ -116,11 +189,8 @@ Cell[BoxData[
 matches of the pattern to results of consequent application of functions fs \
 to these matches\\n  modify[{x1, ...}, fs] create function for specific x1, \
 ...\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info73813469008-1053663"]
+ CellTags->"Info113813471670-8932494"]
 }, Open  ]],
-
-Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<RG`Calculation`\>\"", "]"}]], "Input"],
 
 Cell[CellGroupData[{
 

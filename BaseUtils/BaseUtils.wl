@@ -20,6 +20,11 @@ modify::usage = "
 ";
 
 
+OverTilde::usage = "
+  OverTilde[func][args][expr] works as func[expr, args] i.e. it creates operator OverTilde[func][args] for the first argument of func
+";
+
+
 Begin["`Private`"];
 
 
@@ -60,6 +65,9 @@ modify[pattern_, fs_List] := Function[expr,
   ]
 ];
 modify[expr_, fs__] := modify[expr, {fs}]
+
+
+OverTilde[func_Symbol] := Function[expr, func[expr, ##]] &;
 
 
 End[];
