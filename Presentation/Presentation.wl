@@ -13,6 +13,12 @@ tagged::usage = "
 tagged`final = False;
 
 
+colorize::usage = "
+  colorize[pattern] colorize matches for the pattern
+  colorize[{x1, ...}] colorize specific expressions x1, ...
+";
+
+
 Begin["`Private`"]
 
 
@@ -44,8 +50,30 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 
 
-End[]
+colorize[xs_List] := With[{
+    n = Length[xs]
+  },
+  With[{
+      styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]
+    },
+    With[{
+        rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]
+      },
+      ReplaceAll[rules]
+    ]
+  ]
+];
+colorize[pattern_] := Function[expr,
+  With[{
+      xs = Union@Cases[{expr}, pattern, Infinity]
+    },
+    colorize[xs][expr]
+  ]
+];
+colorize[xs__] := colorize[{xs}];
 
+
+End[]
 
 
 EndPackage[]
