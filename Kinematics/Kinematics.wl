@@ -39,11 +39,6 @@ replaceMass::usage = "
 ";
 
 
-sp::usage = "
-  sp[a, b] represent scalar product of a, b
-";
-
-
 setInvariants::usage = "
   setInvariants[ps, ms, pRules, spRules] set up all scalar products 
 ";
@@ -110,14 +105,6 @@ replaceMass[particle_, All] := ReplaceAll[#,
 ]&;
 
 
-SetAttributes[sp, Orderless];
-sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-sp[expr_] := sp[expr, expr];
-sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
-
-
-Clear[setInvariants];
 setInvariants[
     ps:{p1_Symbol, __}, ms_List,
     pRules:{Rule[_Symbol, _]...}, spRules_List

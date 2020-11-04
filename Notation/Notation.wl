@@ -26,13 +26,17 @@ matrixElement::usage = "
 Global`\[ScriptCapitalM]::usage = "symbol for matrix element";
 
 
-protect::usage = "
-  protect[symb] clear and protect symbol definition
+UnderBar::usage = "
+  UnderBar[expr] is equivalent for HoldForm[expr]
 ";
 
 
-UnderBar::usage = "
-  UnderBar[expr] is equivalent for HoldForm[expr]
+sp::usage = "
+  sp[a, b] represent scalar product of a, b
+";
+
+setLorentzIndex::usage = "
+  setLorentzIndex[mu, ...] format mu as Lorentz index
 ";
 
 
@@ -65,19 +69,6 @@ setBar[x_Symbol] := With[{
 ];
 setBar[x__] := setBar[{x}];
 
-
-SetAttributes[protect, HoldAll];
-protect::warn = "value of `` will be cleared";
-protect[symb_] := (
-  If[ValueQ[symb], (
-    Message[protect::warn, HoldForm[symb]];
-    Unprotect[symb];
-    Clear[symb];
-  )];
-  Protect[symb];
-);
-
-protect[Global`\[ScriptCapitalM]];
 setIndexed[matrixElement];
 matrixElement /: Format[matrixElement, TraditionalForm] = (
   Global`\[ScriptCapitalM]
@@ -85,6 +76,29 @@ matrixElement /: Format[matrixElement, TraditionalForm] = (
 
 
 UnderBar = HoldForm;
+
+
+SetAttributes[sp, Orderless];
+sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
+sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
+sp[expr_] := sp[expr, expr];
+sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
+
+
+lorentzIndexes = {};
+SetAttributes[setLorentzIndex, Listable];
+setLorentzIndex[mu_Symbol] := (
+  If[FreeQ[lorentzIndexes, mu], (
+    Function[expr, 
+      Format[sp[expr, mu], TraditionalForm] := Superscript[Global`g, ToString@Row[{expr, mu}]]
+    ] /@ lorentzIndexes;
+    Format[sp[a_Symbol, mu], TraditionalForm] := Superscript[a, mu];
+    Format[sp[a_, mu], TraditionalForm] := Superscript[AngleBracket[a], mu];
+    Format[sp[mu, mu], TraditionalForm] := Superscript[Global`g, ToString@Row[{mu, mu}]];
+    AppendTo[lorentzIndexes, mu];
+  )];
+);
+setLorentzIndex[mu__] := setLorentzIndex[{mu}];
 
 
 End[]
