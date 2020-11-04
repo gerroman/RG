@@ -1,7 +1,6 @@
 Notebook[{
 Cell[BoxData[
- RowBox[{
-  RowBox[{"<<", "RG`"}], ";"}]], "Input"],
+ RowBox[{"Needs", "[", "\"\<RG`Notation`\>\"", "]"}]], "Input"],
 
 Cell[CellGroupData[{
 
@@ -16,7 +15,7 @@ Cell[BoxData[
  StyleBox["\<\"\\n  setIndexed[x] set symbol x as indexed variable, i.e. \
 x[i], x[i, j] will have sub- and superscripts in Traditional form\\n\"\>", 
   "MSG"]], "Print", "PrintUsage",
- CellTags->"Info23813424326-8159677"]
+ CellTags->"Info23813473193-3307547"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -80,7 +79,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  setPrime[x] set symbol prime`x in traditional form to \
 have prime (') as superscript\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info93813424327-8159677"]
+ CellTags->"Info93813473193-3307547"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -150,7 +149,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  setBar[x] set symbol bar`x in traditional form to have \
 overbar\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info173813424327-8159677"]
+ CellTags->"Info173813473194-3307547"]
 }, Open  ]],
 
 Cell[BoxData[
@@ -178,10 +177,10 @@ Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Export", "[", 
-  RowBox[{"\"\</tmp/notation/barx.tex\>\"", ",", 
+  RowBox[{"\"\</tmp/barx.tex\>\"", ",", 
    RowBox[{"bar`x", "//", "TraditionalForm"}]}], "]"}]], "Input"],
 
-Cell[BoxData["\<\"/tmp/notation/barx.tex\"\>"], "Output"]
+Cell[BoxData["\<\"/tmp/barx.tex\"\>"], "Output"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -189,8 +188,8 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"Run", "[", 
   RowBox[{
-  "\"\<pdflatex\>\"", ",", " ", "\"\<-output-directory=/tmp/notation\>\"", 
-   ",", " ", "\"\</tmp/notation/barx.tex\>\""}], "]"}]], "Input"],
+  "\"\<pdflatex\>\"", ",", " ", "\"\<-output-directory=/tmp\>\"", ",", " ", 
+   "\"\</tmp/barx.tex\>\""}], "]"}]], "Input"],
 
 Cell[BoxData["0"], "Output"]
 }, Open  ]],
@@ -228,10 +227,91 @@ Cell[BoxData[
 
 Cell["\\mathcal{M}_{\\text{annihilation}}", "Output"]
 }, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["UnderBar", "Section"],
+
+Cell["UnderBar is shortcut for HoldForm", "Text"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"1", "+", "2", "+", 
+  UnderscriptBox[
+   RowBox[{"a", "+", "b"}], "_"]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"3", "+", 
+  RowBox[{"(", 
+   TagBox[
+    RowBox[{"a", "+", "b"}],
+    HoldForm], ")"}]}]], "Output"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<RG`Presentation`\>\"", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"1", "+", "2", "+", 
+   UnderscriptBox[
+    RowBox[{"a", "+", "b"}], "_"], "+", 
+   SuperscriptBox[
+    RowBox[{"(", 
+     UnderscriptBox[
+      RowBox[{"a", "+", "b"}], "_"], ")"}], "2"], "+", 
+   UnderscriptBox[
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{"c", "+", "d"}], ")"}], "4"], "_"]}], "//", 
+  RowBox[{"colorize", "[", "_HoldForm", "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"3", "+", 
+  RowBox[{"(", 
+   StyleBox[
+    TagBox[
+     RowBox[{"a", "+", "b"}],
+     HoldForm],
+    StripOnInput->False,
+    LineColor->RGBColor[0.624866, 0.673302, 0.264296],
+    FrontFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
+    BackFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
+    GraphicsColor->RGBColor[0.624866, 0.673302, 0.264296],
+    FontColor->RGBColor[0.624866, 0.673302, 0.264296]], ")"}], "+", 
+  SuperscriptBox[
+   RowBox[{"(", 
+    StyleBox[
+     TagBox[
+      RowBox[{"a", "+", "b"}],
+      HoldForm],
+     StripOnInput->False,
+     LineColor->RGBColor[0.624866, 0.673302, 0.264296],
+     FrontFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
+     BackFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
+     GraphicsColor->RGBColor[0.624866, 0.673302, 0.264296],
+     FontColor->RGBColor[0.624866, 0.673302, 0.264296]], ")"}], "2"], "+", 
+  StyleBox[
+   TagBox[
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{"c", "+", "d"}], ")"}], "4"],
+    HoldForm],
+   StripOnInput->False,
+   LineColor->RGBColor[0.72987, 0.239399, 0.230961],
+   FrontFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
+   BackFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
+   GraphicsColor->RGBColor[0.72987, 0.239399, 0.230961],
+   FontColor->RGBColor[0.72987, 0.239399, 0.230961]]}]], "Output"]
+}, Open  ]]
 }, Open  ]]
 },
 WindowSize->{820, 800},
-WindowMargins->{{Automatic, 322}, {Automatic, -8}},
+WindowMargins->{{Automatic, 312}, {Automatic, -8}},
 FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
 StyleDefinitions->"Default.nb"
 ]

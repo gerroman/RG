@@ -31,6 +31,11 @@ protect::usage = "
 ";
 
 
+UnderBar::usage = "
+  UnderBar[expr] is equivalent for HoldForm[expr]
+";
+
+
 Begin["`Private`"]
 
 
@@ -77,6 +82,9 @@ setIndexed[matrixElement];
 matrixElement /: Format[matrixElement, TraditionalForm] = (
   Global`\[ScriptCapitalM]
 );
+
+
+UnderBar = HoldForm;
 
 
 End[]
