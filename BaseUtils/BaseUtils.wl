@@ -14,6 +14,12 @@ reload::usage = "
 ";
 
 
+modify::usage = "
+  modify[pattern, fs] create function to replace all matches of the pattern to results of consequent application of functions fs to these matches
+  modify[{x1, ...}, fs] create function for specific x1, ...
+";
+
+
 Begin["`Private`"];
 
 
@@ -42,6 +48,18 @@ reload[context_String, opts:OptionsPattern[]] := With[{
   Get[context];
   If[verbose, Print[loadedMsg, Names[form]]];
 ];
+
+
+modify[xs_List, fs_List] := With[
+   {rules = Thread[Rule[xs, Map[RightComposition@@fs, xs]]]},
+   ReplaceAll[rules]
+];
+modify[pattern_, fs_List] := Function[expr,
+  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
+    modify[xs, fs][expr]
+  ]
+];
+modify[expr_, fs__] := modify[expr, {fs}]
 
 
 End[];

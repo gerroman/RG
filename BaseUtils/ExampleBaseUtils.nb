@@ -14,7 +14,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  assert[expr] evaluate expr with temporally enabled \
 assertions\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info23813405560-2542999"]
+ CellTags->"Info23813469007-1053663"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -40,7 +40,7 @@ Cell[BoxData[
    RowBox[{"Assert", "::", "asrtfl"}], "MessageName"], 
   RowBox[{
   ":", " "}], "\<\"Assertion \[NoBreak]\\!\\(\\*RowBox[{\\\"1\\\", \\\">\\\", \
-\\\"2\\\"}]\\)\[NoBreak] at line \[NoBreak]\\!\\(\\*RowBox[{\\\"23\\\"}]\\)\
+\\\"2\\\"}]\\)\[NoBreak] at line \[NoBreak]\\!\\(\\*RowBox[{\\\"29\\\"}]\\)\
 \[NoBreak] in \
 \[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"RG`BaseUtils`\\\\\\\"\\\"}]\\)\
 \[NoBreak] failed. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\
@@ -61,7 +61,7 @@ Cell[BoxData[
 Cell[BoxData[
  StyleBox["\<\"\\n  reload[context] remove definitions context`* and reload \
 it\\n\"\>", "MSG"]], "Print", "PrintUsage",
- CellTags->"Info53813405560-2542999"]
+ CellTags->"Info53813469008-1053663"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -84,18 +84,178 @@ Cell[BoxData[
  InterpretationBox[
   RowBox[{"\<\"list of symbols to remove: \"\>", "\[InvisibleSpace]", 
    RowBox[{"{", 
-    RowBox[{"\<\"assert\"\>", ",", "\<\"reload\"\>"}], "}"}]}],
-  SequenceForm["list of symbols to remove: ", {"assert", "reload"}],
+    RowBox[{"\<\"assert\"\>", ",", "\<\"modify\"\>", ",", "\<\"reload\"\>"}], 
+    "}"}]}],
+  SequenceForm["list of symbols to remove: ", {"assert", "modify", "reload"}],
+  
   Editable->False]], "Print"],
 
 Cell[BoxData[
  InterpretationBox[
   RowBox[{"\<\"list of loaded symbols: \"\>", "\[InvisibleSpace]", 
    RowBox[{"{", 
-    RowBox[{"\<\"assert\"\>", ",", "\<\"reload\"\>"}], "}"}]}],
-  SequenceForm["list of loaded symbols: ", {"assert", "reload"}],
+    RowBox[{"\<\"assert\"\>", ",", "\<\"modify\"\>", ",", "\<\"reload\"\>"}], 
+    "}"}]}],
+  SequenceForm["list of loaded symbols: ", {"assert", "modify", "reload"}],
   Editable->False]], "Print"]
 }, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["modify", "Section"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"?", "modify"}]], "Input"],
+
+Cell[BoxData[
+ StyleBox["\<\"\\n  modify[pattern, fs] create function to replace all \
+matches of the pattern to results of consequent application of functions fs \
+to these matches\\n  modify[{x1, ...}, fs] create function for specific x1, \
+...\\n\"\>", "MSG"]], "Print", "PrintUsage",
+ CellTags->"Info73813469008-1053663"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<RG`Calculation`\>\"", "]"}]], "Input"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "a", ",", "b", ",", "2"}], "}"}], "//", 
+   RowBox[{"modify", "[", 
+    RowBox[{"_Integer", ",", 
+     RowBox[{
+      RowBox[{"Style", "[", 
+       RowBox[{"#", ",", "Red"}], "]"}], "&"}]}], "]"}]}], "//", 
+  RowBox[{"modify", "[", 
+   RowBox[{
+    RowBox[{"{", "b", "}"}], ",", 
+    RowBox[{
+     RowBox[{"Style", "[", 
+      RowBox[{"#", ",", "Brown"}], "]"}], "&"}]}], "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   StyleBox["1",
+    StripOnInput->False,
+    LineColor->RGBColor[1, 0, 0],
+    FrontFaceColor->RGBColor[1, 0, 0],
+    BackFaceColor->RGBColor[1, 0, 0],
+    GraphicsColor->RGBColor[1, 0, 0],
+    FontColor->RGBColor[1, 0, 0]], ",", "a", ",", 
+   StyleBox["b",
+    StripOnInput->False,
+    LineColor->RGBColor[0.6, 0.4, 0.2],
+    FrontFaceColor->RGBColor[0.6, 0.4, 0.2],
+    BackFaceColor->RGBColor[0.6, 0.4, 0.2],
+    GraphicsColor->RGBColor[0.6, 0.4, 0.2],
+    FontColor->RGBColor[0.6, 0.4, 0.2]], ",", 
+   StyleBox["2",
+    StripOnInput->False,
+    LineColor->RGBColor[1, 0, 0],
+    FrontFaceColor->RGBColor[1, 0, 0],
+    BackFaceColor->RGBColor[1, 0, 0],
+    GraphicsColor->RGBColor[1, 0, 0],
+    FontColor->RGBColor[1, 0, 0]]}], "}"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"x", "[", 
+    RowBox[{"X", "[", 
+     RowBox[{"x", "[", "x", "]"}], "]"}], "]"}], "//", 
+   RowBox[{"modify", "[", 
+    RowBox[{"_Symbol", ",", 
+     RowBox[{
+      OverscriptBox["Style", "~"], "[", "Brown", "]"}]}], "]"}]}], "//", 
+  RowBox[{"modify", "[", 
+   RowBox[{
+    RowBox[{"{", "X", "}"}], ",", 
+    RowBox[{
+     OverscriptBox["Style", "~"], "[", "Magenta", "]"}]}], "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox["x",
+   StripOnInput->False,
+   LineColor->RGBColor[0.6, 0.4, 0.2],
+   FrontFaceColor->RGBColor[0.6, 0.4, 0.2],
+   BackFaceColor->RGBColor[0.6, 0.4, 0.2],
+   GraphicsColor->RGBColor[0.6, 0.4, 0.2],
+   FontColor->RGBColor[0.6, 0.4, 0.2]], "[", 
+  RowBox[{
+   StyleBox["X",
+    StripOnInput->False,
+    LineColor->RGBColor[1, 0, 1],
+    FrontFaceColor->RGBColor[1, 0, 1],
+    BackFaceColor->RGBColor[1, 0, 1],
+    GraphicsColor->RGBColor[1, 0, 1],
+    FontColor->RGBColor[1, 0, 1]], "[", 
+   RowBox[{
+    StyleBox["x",
+     StripOnInput->False,
+     LineColor->RGBColor[0.6, 0.4, 0.2],
+     FrontFaceColor->RGBColor[0.6, 0.4, 0.2],
+     BackFaceColor->RGBColor[0.6, 0.4, 0.2],
+     GraphicsColor->RGBColor[0.6, 0.4, 0.2],
+     FontColor->RGBColor[0.6, 0.4, 0.2]], "[", 
+    StyleBox["x",
+     StripOnInput->False,
+     LineColor->RGBColor[0.6, 0.4, 0.2],
+     FrontFaceColor->RGBColor[0.6, 0.4, 0.2],
+     BackFaceColor->RGBColor[0.6, 0.4, 0.2],
+     GraphicsColor->RGBColor[0.6, 0.4, 0.2],
+     FontColor->RGBColor[0.6, 0.4, 0.2]], "]"}], "]"}], "]"}]], "Output"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SuperscriptBox["a", "2"], "+", 
+   RowBox[{"2", " ", "a", " ", "b"}], "+", 
+   SuperscriptBox["b", "2"], "+", 
+   SuperscriptBox["c", "2"], "+", 
+   RowBox[{"2", " ", "c", " ", "d"}], "+", 
+   SuperscriptBox["d", "2"]}], "//", 
+  RowBox[{"modify", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"Expand", "[", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"c", "+", "d"}], ")"}], "^", "2"}], "]"}], "}"}], ",", 
+    "Factor", ",", 
+    RowBox[{
+     OverscriptBox["Style", "~"], "[", "Red", "]"}]}], "]"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["a", "2"], "+", 
+  RowBox[{"2", " ", "a", " ", "b"}], "+", 
+  SuperscriptBox["b", "2"], "+", 
+  StyleBox[
+   SuperscriptBox[
+    RowBox[{"(", 
+     RowBox[{"c", "+", "d"}], ")"}], "2"],
+   StripOnInput->False,
+   LineColor->RGBColor[1, 0, 0],
+   FrontFaceColor->RGBColor[1, 0, 0],
+   BackFaceColor->RGBColor[1, 0, 0],
+   GraphicsColor->RGBColor[1, 0, 0],
+   FontColor->RGBColor[1, 0, 0]]}]], "Output"]
 }, Open  ]]
 }, Open  ]]
 },
