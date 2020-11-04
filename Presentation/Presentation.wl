@@ -37,7 +37,10 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
       tag = ToString[HoldForm[expr]],
       form = OptionValue[tagged, "form"]
     },
-    CellPrint[ExpressionCell[expr // func // form, "Output", CellTags -> tag, ShowCellTags -> True, opts]];
+    CellPrint[
+      ExpressionCell[expr // func // colorize[_HoldForm] // form,
+      "Output", CellTags -> tag, ShowCellTags -> True, opts]
+    ];
     NotebookLocate[tag];
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
