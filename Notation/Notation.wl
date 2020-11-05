@@ -55,6 +55,16 @@ setLorentzIndex::usage = "
 ";
 
 
+\[Gamma]::usage = "
+  \[Gamma][\[Mu]] represents gamma matrix
+";
+
+
+id::usage = "
+  id represents identity matrix
+";
+
+
 Begin["`Private`"]
 
 
@@ -120,6 +130,15 @@ setLorentzIndex[mu_Symbol] := (
   )];
 );
 setLorentzIndex[mu__] := setLorentzIndex[{mu}];
+
+
+Format[\[Gamma][mu_], TraditionalForm] := Superscript[\[Gamma], mu];
+
+Unprotect[Times];
+  Format[a_ * id, TraditionalForm] := a;
+Protect[Times];
+
+Format[id, TraditionalForm] := Style[1, Bold];
 
 
 End[]

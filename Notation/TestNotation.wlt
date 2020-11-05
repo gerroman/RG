@@ -81,7 +81,27 @@ VerificationTest[
 VerificationTest[
   (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[\[Nu], a + b]], "TeXFragment"])
   ,
-   "\\[\\langle a+b\\rangle ^{\\nu }\\]\n\n"
+  "\\[\\langle a+b\\rangle ^{\\nu }\\]\n\n"
+]
+
+
+VerificationTest[
+  ExportString[TraditionalForm[\[Gamma][\[Mu]]], "TeXFragment"]
+  ,
+  "\\[\\gamma ^{\\mu }\\]\n\n"
+]
+
+
+VerificationTest[
+  ExportString[TraditionalForm[\[Gamma][p+q]], "TeXFragment"]
+  ,
+  "\\[\\gamma ^{p+q}\\]\n\n"
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[m id], "TeXFragment"]
+  ,
+  "\\[m\\]\n\n"
 ]
 
 EndTestSection[]
