@@ -1,5 +1,8 @@
 #!/usr/bin/env -S WolframScript -sl -script
 
+(* run all test from base directory  *)
+(* find . -name *.wlt | xargs ./run_test.wl *)
+
 run[fname_] := (
   Print["[Running] tests from ", fname];
   report = TestReport[fname];
