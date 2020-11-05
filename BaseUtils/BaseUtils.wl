@@ -14,14 +14,11 @@ reload::usage = "
 ";
 
 
-modify::usage = "
-  modify[pattern, fs] create function to replace all matches of the pattern to results of consequent application of functions fs to these matches
-  modify[{x1, ...}, fs] create function for specific x1, ...
+carryFirst::usage = "
+  carryFirst[func][args] return function f[##, args] &
 ";
-
-
-OverTilde::usage = "
-  OverTilde[func][args][expr] works as func[expr, args] i.e. it creates operator OverTilde[func][args] for the first argument of func
+carryLast::usage = "
+  carryLast[func][args] return function f[args, ##] &
 ";
 
 
@@ -37,14 +34,16 @@ assert[expr__] := (
 
 
 Options[reload] = {"verbose" -> False};
+
+reloadingMsg = "context: ";
+removingMsg = "list of symbols to remove: ";
+loadedMsg = "list of loaded symbols: ";
+
 reload[context_String, opts:OptionsPattern[]] := With[{
     form = StringJoin[{context, "*"}],
-    verbose = OptionValue[reload, "verbose"],
-    reloadingMsg = "context: ",
-    removingMsg = "list of symbols to remove: ",
-    loadedMsg = "list of loaded symbols: "
+    verbose = OptionValue[reload, "verbose"]
   },
-  If[verbose, Print[reloadingMsg, context]]
+  If[verbose, Print[reloadingMsg, context]];
   If[NameQ[form],
     If[verbose,  Print[removingMsg, Names[form]]];
     Unprotect[form];
@@ -55,19 +54,8 @@ reload[context_String, opts:OptionsPattern[]] := With[{
 ];
 
 
-modify[xs_List, fs_List] := With[
-   {rules = Thread[Rule[xs, Map[RightComposition@@fs, xs]]]},
-   ReplaceAll[rules]
-];
-modify[pattern_, fs_List] := Function[expr,
-  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-    modify[xs, fs][expr]
-  ]
-];
-modify[expr_, fs__] := modify[expr, {fs}]
-
-
-OverTilde[func_Symbol] := Function[expr, func[expr, ##]] &;
+carryFirst[func_Symbol] := Function[expr, func[expr, ##]] &;
+carryLast[func_Symbol] := Function[expr, func[##, expr]] &;
 
 
 End[];
