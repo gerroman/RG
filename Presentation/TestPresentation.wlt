@@ -20,4 +20,10 @@ VerificationTest[
   f[x, y1, y2]
 ]
 
+VerificationTest[
+  UnderBar[f]
+  ,
+  HoldForm[f]
+]
+
 EndTestSection[]

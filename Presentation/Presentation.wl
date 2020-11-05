@@ -29,6 +29,11 @@ OverTilde::usage = "
 ";
 
 
+UnderBar::usage = "
+  UnderBar[expr] is equivalent for HoldForm[expr]
+";
+
+
 Begin["`Private`"];
 
 
@@ -141,6 +146,9 @@ getRunner[] := CellPrint[TextCell[
 
 
 OverTilde := carryFirst;
+
+
+UnderBar = HoldForm;
 
 
 End[];
