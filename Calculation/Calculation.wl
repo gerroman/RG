@@ -54,6 +54,11 @@ rewriteIt::usage = "
 ";
 
 
+changeSign::usage = "
+  changeSign[x] change sign of x 
+";
+
+
 Begin["`Private`"];
 
 
@@ -142,6 +147,20 @@ powersPattern[xs_List] := Subsets[xs] // Reverse //
 
 
 rewriteIt[Equal[lhs_, rhs_], func_] := Equal[lhs, func[rhs]]
+
+
+changeSign[xs_List] := With[{
+    rules = Map[x \[Function] (x^(p_.) expr_ :> (-x)^p (-1)^p expr), xs]
+  },
+  ReplaceAll[rules]
+];
+changeSign[pattern_] := Function[{expr},
+  With[
+    {xs = Union@Cases[{expr}, pattern, Infinity] // Flatten},
+    changeSign[xs][expr]
+  ]
+];
+changeSign[xs__] := changeSign[{xs}];
 
 
 End[];

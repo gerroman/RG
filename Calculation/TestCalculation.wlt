@@ -136,4 +136,17 @@ VerificationTest[
   ,
   f == (a + b)^2
 ]
+
+VerificationTest[
+  b (a - b) // changeSign[a - b]
+  ,
+  - b (b - a)
+]
+
+VerificationTest[
+  (a - b) // changeSign[a - b]
+  ,
+  a - b
+]
+
 EndTestSection[]
