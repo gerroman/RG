@@ -6,8 +6,8 @@ Get /@ {
   , "RG`Presentation`"
   , "RG`Calculation`"
   , "RG`Notation`"
-  , "RG`FeynmanDiagrams`"
   , "RG`Kinematics`"
   , "RG`Traces`"
+  , "RG`FeynmanDiagrams`"
 };
 
