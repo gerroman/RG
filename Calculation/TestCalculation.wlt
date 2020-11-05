@@ -85,6 +85,23 @@ VerificationTest[
   ,
   x (a + 5 + 1/x + x)
 ]
+VerificationTest[
+  1 + a x + 5 x + b x+ x^2 // factorIt[{x}]
+  ,
+  1 + x (a + 5 + b) + x^2
+]
+
+VerificationTest[
+  1 + a x + 5 x + x^2 // pullIt[{x}]
+  ,
+  x^2 (a/x + 5/x + 1/x^2 + 1)
+]
+
+VerificationTest[
+  1 + a x + 5 x + x^2 // pullIt[{x}, Identity, Plus, 1]
+  ,
+  x (a + 5 + 1/x + x)
+]
 
 VerificationTest[
   powersPattern[{}]

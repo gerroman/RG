@@ -94,47 +94,45 @@ release = fixedPoint[ReleaseHold];
 groupIt[expr_, func_:Expand] := ReplaceAll[(expr // modify[{expr}, func]) -> expr];
 
 
-factorIt[arg_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    pattern = If[Head[arg] === List,
-      If[Length[arg] == 1, First@arg, Alternatives@@arg],
-      arg
-    ],
-    negPattern = If[Head[arg] === List,
-      If[Length[arg] == 1, (-1) * First@arg, Alternatives@@((-1)*arg)],
-      (-1) * arg
-    ]
+factorIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
+    rules = Map[
+      {
+        func[# * a_., # * b_.] :> # modifier[func[a, b]],
+        func[# * a_., -# * b_.] :> # modifier[func[a, -b]]
+      }&,
+      xs
+    ] // Flatten
   },
-  Function[{expr},
-    FixedPoint[
-      ReplaceAll[{
-        func[(x:pattern) * a_., (x:pattern) * b_.] :> x modifier[func[a, b]],
-        func[(x:pattern) * a_., (y:negPattern) * b_.] :> x modifier[func[a, -b]] /; x === -y
-      }],
-      expr,
-      maxIter
-    ]
-  ]
+  FixedPoint[ReplaceAll[rules], #, maxIter] &
+];
+factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
+    rules = {
+        func[(x:pattern) * a_., x_ * b_.] :> x modifier[func[a, b]]
+      }
+  },
+  FixedPoint[ReplaceAll[rules], #, maxIter] &
 ];
 
 
-pullIt[arg_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    pattern = If[Head[arg] === List,
-      If[Length[arg] == 1, First@arg, Alternatives@@arg],
-      arg
-    ]
+pullIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
+    rules = Map[
+      x \[Function] {
+        func[a__, x * b_., c___] :> x modifier[Map[ (# / x) &, func[a, x b, c]]],
+        func[a___, x * b_., c__] :> x modifier[Map[ (# / x) &, func[a, x b, c]]]
+      },
+      xs
+    ] // Flatten
   },
-  Function[{expr},
-    FixedPoint[
-      ReplaceAll[{
+  FixedPoint[ReplaceAll[rules], #, maxIter] &
+];
+pullIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
+    rules = {
         func[a__, (x:pattern) * b_., c___] :> x modifier[Map[ (# / x) &, func[a, x b, c]]],
         func[a___, (x:pattern) * b_., c__] :> x modifier[Map[ (# / x) &, func[a, x b, c]]]
-      }],
-      expr,
-      maxIter
-    ]
-  ]
+      }
+  },
+  FixedPoint[ReplaceAll[rules], #, maxIter] &
 ];
-
 
 powersPattern[xs_List] := Subsets[xs] // Reverse //
   Map[#^_. &, #, {2}] & //
