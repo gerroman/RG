@@ -2,30 +2,86 @@ BeginTestSection["TestNotation"]
 
 
 Needs["RG`Notation`"];
-tf = TraditionalForm;
 
 VerificationTest[(* 1 *)
-	CompoundExpression[RG`Notation`setIndexed[x], ExportString[tf[x[1]], "TeXFragment"]]
+	CompoundExpression[setIndexed[x], ExportString[TraditionalForm[x[1]], "TeXFragment"]]
 	,
 	"\\[x_1\\]\n\n"	
 ]
 
 VerificationTest[(* 2 *)
-	CompoundExpression[RG`Notation`setPrime[x], ExportString[tf[prime`x], "TeXFragment"]]
+	CompoundExpression[setPrime[x], ExportString[TraditionalForm[prime`x], "TeXFragment"]]
 	,
 	"\\[x'\\]\n\n"	
 ]
 
 VerificationTest[(* 3 *)
-	CompoundExpression[RG`Notation`setBar[x], ExportString[tf[bar`x], "TeXFragment"]]
+	CompoundExpression[setBar[x], ExportString[TraditionalForm[bar`x], "TeXFragment"]]
 	,
 	"\\[\\bar{x}\\]\n\n"	
 ]
 
 VerificationTest[(* 4 *)
-	ExportString[tf[RG`Notation`matrixElement["ann"]], "TeXFragment"]
+	ExportString[TraditionalForm[matrixElement["ann"]], "TeXFragment"]
 	,
 	"\\[\\mathcal{M}_{\\text{ann}}\\]\n\n"	
+]
+
+
+VerificationTest[
+  ExportString[TraditionalForm[mass[e]], "TeXFragment"]
+  ,
+  "\\[m_e\\]\n\n"	
+]
+
+
+VerificationTest[
+  ExportString[TraditionalForm[energy[p]], "TeXFragment"]
+  ,
+  "\\[p^0\\]\n\n"	
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[sp[p]], "TeXFragment"]
+  ,
+  "\\[p^2\\]\n\n"	
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[sp[p, p]], "TeXFragment"]
+  ,
+  "\\[p^2\\]\n\n"	
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[sp[a, b]], "TeXFragment"]
+  ,
+  "\\[\\text{sp}(a,b)\\]\n\n"	
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[abs[x]], "TeXFragment"]
+  ,
+  "\\[\\left| x\\right|\\]\n\n"	
+]
+
+
+VerificationTest[
+  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[\[Mu], \[Nu]]], "TeXFragment"])
+  ,
+   "\\[g^{\\mu \\nu }\\]\n\n"
+]
+
+VerificationTest[
+  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[a, \[Nu]]], "TeXFragment"])
+  ,
+   "\\[a^{\\nu }\\]\n\n"
+]
+
+VerificationTest[
+  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[\[Nu], a + b]], "TeXFragment"])
+  ,
+   "\\[\\langle a+b\\rangle ^{\\nu }\\]\n\n"
 ]
 
 EndTestSection[]

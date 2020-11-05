@@ -1,5 +1,7 @@
 (* ::Package:: *)
-(* Functions to define custom notations *)
+
+(* ::Text:: *)
+(*Custom notation and functions to define it*)
 
 BeginPackage["RG`Notation`"]
 
@@ -26,10 +28,22 @@ matrixElement::usage = "
 Global`\[ScriptCapitalM]::usage = "symbol for matrix element";
 
 
-UnderBar::usage = "
-  UnderBar[expr] is equivalent for HoldForm[expr]
+energy::usage = "
+  energy[p] represent time part of 4-vector
 ";
 
+momentum::usage = "
+  momentum[p] represent spatial part of 4-vector 
+";
+
+mass::usage = "
+  mass[p] represent mass of 4-vector (i.e. energy[p]^2 - abs[momentum[p]]^2 == mass[p]^2) of 4-vector
+";
+Global`m::usage = "symbol for mass";
+
+abs::usage = "
+  abs[p] represent module of spatial vector p
+";
 
 sp::usage = "
   sp[a, b] represent scalar product of a, b
@@ -75,14 +89,20 @@ matrixElement /: Format[matrixElement, TraditionalForm] = (
 );
 
 
-UnderBar = HoldForm;
+setIndexed[mass];
+mass /: Format[mass, TraditionalForm] = Global`m;
 
+energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
 
 SetAttributes[sp, Orderless];
 sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-sp[expr_] := sp[expr, expr];
-sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
+sp /: Format[sp[expr_Symbol, expr_], TraditionalForm] := Superscript[expr, 2];
+
+
+abs /: Format[abs[expr_], TraditionalForm] := BracketingBar[expr];
+
+
+momentum /: Format[momentum[expr_], TraditionalForm] := Style[expr, Bold, Italic];
 
 
 lorentzIndexes = {};
