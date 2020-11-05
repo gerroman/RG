@@ -34,6 +34,12 @@ UnderBar::usage = "
 ";
 
 
+hold::usage = "
+  hold[pattern] apply HoldForm to matches of pattern
+  hold[{x1,...}] apply HoldForm to specific xs
+";
+
+
 Begin["`Private`"];
 
 
@@ -149,6 +155,24 @@ OverTilde := carryFirst;
 
 
 UnderBar = HoldForm;
+
+
+setAttributes[hold, HoldAll];
+hold[xs_List] := With[
+  {
+    rules = Thread[Rule[xs, Thread[HoldForm[xs]]]]
+  },
+  ReplaceAll[rules]
+];
+hold[pattern_] := Function[expr,
+  With[
+    {
+      xs = Union@Cases[{expr}, pattern, Infinity]
+    },
+    hold[xs][expr]
+  ]
+];
+hold[xs__] := hold[{xs}]
 
 
 End[];
