@@ -4,24 +4,11 @@
 (*Definitions and functions to work with 4 vectors and invariants*)
 
 
-BeginPackage["RG`Kinematics`", {"RG`BaseUtils`", "RG`Notation`"}];
+BeginPackage["RG`Kinematics`", {
+  "RG`Notation`", (* energy, mass, momentum, sp, ...*)
+  "RG`Calculation`" (* modify *)
+}];
 
-
-energy::usage = "
-  energy[p] represent time part of 4-vector
-";
-
-momentum::usage = "
-  momentum[p] represent spatial part of 4-vector 
-";
-
-mass::usage = "
-  mass[p] represent mass of 4-vector (i.e. energy[p]^2 - abs[momentum[p]]^2 == mass[p]^2) of 4-vector
-";
-
-abs::usage = "
-  abs[p] represent module of spatial vector p
-";
 
 replaceEnergy::usage = "
   replaceEnergy[p] replace energy[p]^2 to (abs@momentum[p])^2 + mass[p]^2
@@ -47,25 +34,20 @@ setInvariants::usage = "
 Begin["`Private`"];
 
 
-RG`Notation`protect[Global`m];
-setIndexed[mass];
-mass /: Format[mass, TraditionalForm] = Global`m;
+sp[expr_] := sp[expr, expr];
+sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
 
 
-energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
 energy[expr_Plus] := energy /@ expr;
 energy[expr_ * factor_?NumberQ] := factor * energy[expr];
 
-
-momentum /: Format[momentum[expr_], TraditionalForm] := Style[expr, Bold, Italic];
 momentum[expr_Plus] := momentum /@ expr;
 momentum[expr_ * factor_?NumberQ] := factor * momentum[expr];
 
 
-abs /: Format[abs[expr_], TraditionalForm] := BracketingBar[expr];
 abs /: Abs[abs[expr_]] := abs[expr];
 abs /: abs[numb_?NumberQ] := Abs[numb];
-abs /: abs[(numb_?NumberQ) * expr_] := Abs[n] * abs[expr];
+abs /: abs[(factor_?NumberQ) * expr_] := Abs[factor] * abs[expr];
 
 
 replaceEnergy[particle_] := ReplaceAll[#,
@@ -75,17 +57,19 @@ replaceEnergy[particle_] := ReplaceAll[#,
   )
 ]&;
 
+
 replaceEnergy[particle_, All] := ReplaceAll[#,
   energy[particle]^\[Alpha]_. :> (abs[momentum[particle]]^2 + mass[particle]^2)^(\[Alpha]/2)
 ]&;
 
 
 replaceMomentum[particle_] := ReplaceAll[#,
-  abs[momentum[particle]]^\[Alpha]_ :> (
+  abs[momentum[particle]]^\[Alpha]_. :> (
     (energy[particle]^2 - mass[particle]^2)^(Quotient[\[Alpha], 2]) *
     abs[momentum[particle]]^(Mod[\[Alpha], 2])
   )
 ]&;
+
 
 replaceMomentum[particle_, All] := ReplaceAll[#,
   abs[momentum[particle]]^\[Alpha]_. :> (energy[particle]^2 - mass[particle]^2)^(\[Alpha]/2)
@@ -106,8 +90,7 @@ replaceMass[particle_, All] := ReplaceAll[#,
 
 
 setInvariants[
-    ps:{p1_Symbol, __}, ms_List,
-    pRules:{Rule[_Symbol, _]...}, spRules_List
+    ps:{p1_Symbol, __}, ms_List, pRules:{Rule[_Symbol, _]...}, spRules_List
   ] := Module[
   {
     ruleConservation,

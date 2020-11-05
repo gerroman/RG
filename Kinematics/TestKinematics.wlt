@@ -2,10 +2,146 @@ BeginTestSection["TestKinematics"]
 
 Needs["RG`Kinematics`"];
 
-VerificationTest[(* 1 *)
-	setInvariants[List[l, p, Times[-1, prime`l], Times[-1, prime`p]], List[m, M, m, M], List[Rule[q, Plus[l, Times[-1, prime`l]]], Rule[K, Plus[l, prime`l]], Rule[P, Plus[p, prime`p]]], List[sp[l, p], sp[q, q]]]
-	,
-	List[Rule[sp[K, K], Plus[Times[4, Power[m, 2]], Times[-1, sp[q, q]]]], Rule[sp[K, l], Plus[Times[2, Power[m, 2]], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[K, prime`l], Plus[Times[2, Power[m, 2]], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[K, p], Plus[Times[2, sp[l, p]], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[K, prime`p], Plus[Times[2, sp[l, p]], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[K, P], Plus[Times[4, sp[l, p]], sp[q, q]]], Rule[sp[K, q], 0], Rule[sp[l, l], Power[m, 2]], Rule[sp[l, prime`l], Plus[Power[m, 2], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[l, prime`p], Plus[sp[l, p], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[l, P], Plus[Times[2, sp[l, p]], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[l, q], Times[Times[1, Power[2, -1]], sp[q, q]]], Rule[sp[prime`l, prime`l], Power[m, 2]], Rule[sp[prime`l, p], Plus[sp[l, p], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[prime`l, prime`p], sp[l, p]], Rule[sp[prime`l, P], Plus[Times[2, sp[l, p]], Times[Times[1, Power[2, -1]], sp[q, q]]]], Rule[sp[prime`l, q], Times[Times[-1, Times[1, Power[2, -1]]], sp[q, q]]], Rule[sp[p, p], Power[M, 2]], Rule[sp[p, prime`p], Plus[Power[M, 2], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[p, P], Plus[Times[2, Power[M, 2]], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[p, q], Times[Times[-1, Times[1, Power[2, -1]]], sp[q, q]]], Rule[sp[prime`p, prime`p], Power[M, 2]], Rule[sp[prime`p, P], Plus[Times[2, Power[M, 2]], Times[-1, Times[Times[1, Power[2, -1]], sp[q, q]]]]], Rule[sp[prime`p, q], Times[Times[1, Power[2, -1]], sp[q, q]]], Rule[sp[P, P], Plus[Times[4, Power[M, 2]], Times[-1, sp[q, q]]]], Rule[sp[P, q], 0]]	
+
+VerificationTest[
+  sp[a] == sp[a, a]
+  ,
+  True
 ]
 
+VerificationTest[
+  sp[2a, -3b]
+  ,
+  (-6) sp[a, b]
+]
+
+VerificationTest[
+  energy[p + q]
+  ,
+  energy[p] + energy[q]
+]
+
+VerificationTest[
+  energy[x p] // {Identity, pullFactors[x, energy]} // Through
+  ,
+  {energy[x p], x energy[p]}
+]
+
+VerificationTest[
+  momentum[p + q]
+  ,
+  momentum[p] + momentum[q]
+]
+
+VerificationTest[
+  momentum[x p] // {Identity, pullFactors[x, momentum]} // Through
+  ,
+  {momentum[x p], x momentum[p]}
+]
+
+VerificationTest[
+  {abs[1], abs[{a,b}], Abs[abs[momentum[p]]], abs[3 momentum[p]]}
+  ,
+  {1, abs[{a,b}], abs@momentum[p], 3 abs[momentum[p]]}
+]
+
+
+VerificationTest[
+  {
+    energy[p],
+    energy[p]^2,
+    energy[p]^3,
+    energy[p]^(-1),
+    energy[p]^(-2)
+  } // replaceEnergy[p]
+  ,
+  {
+    energy[p],
+    (abs@momentum[p]^2 + mass[p]^2),
+    energy[p] * (abs@momentum[p]^2 + mass[p]^2),
+    energy[p] / (abs@momentum[p]^2 + mass[p]^2), (*!*)
+    1/(abs@momentum[p]^2 + mass[p]^2)
+  }
+]
+
+
+VerificationTest[
+  {
+    abs@momentum[p],
+    abs@momentum[p]^2,
+    abs@momentum[p]^3,
+    abs@momentum[p]^(-1),
+    abs@momentum[p]^(-2)
+  } // replaceMomentum[p]
+  ,
+  {
+    abs@momentum[p],
+    (energy[p]^2 - mass[p]^2),
+    abs@momentum[p] * (energy[p]^2 - mass[p]^2),
+    abs@momentum[p] / (energy[p]^2 - mass[p]^2), (*!*)
+    1/(energy[p]^2 - mass[p]^2)
+  }
+]
+
+
+VerificationTest[
+  {
+    mass[p],
+    mass[p]^2,
+    mass[p]^3,
+    mass[p]^(-1),
+    mass[p]^(-2)
+  } // replaceMass[p]
+  ,
+  {
+    mass[p],
+    (-abs@momentum[p]^2 + energy[p]^2),
+    mass[p] * (-abs@momentum[p]^2 + energy[p]^2),
+    mass[p] / (-abs@momentum[p]^2 + energy[p]^2), (*!*)
+    1/(-abs@momentum[p]^2 + energy[p]^2)
+  }
+]
+
+VerificationTest[
+  energy[p] // replaceEnergy[p, All]
+  ,
+  Sqrt[abs@momentum[p]^2 + mass[p]^2]
+]
+
+VerificationTest[
+  mass[p] // replaceMass[p, All]
+  ,
+  Sqrt[energy[p]^2 - abs@momentum[p]^2]
+]
+
+VerificationTest[
+  abs@momentum[p] // replaceMomentum[p, All]
+  ,
+  Sqrt[energy[p]^2 - mass[p]^2]
+]
+
+VerificationTest[
+  setInvariants[
+    {p1, p2, -p3, -p4},
+    {m1, m2, m3, m4},
+    {},
+    {
+      sp[p1, p2] -> (s - m1^2 - m2^2) / 2,
+      sp[p1, p3] -> (m1^2 + m3^2 - t) / 2
+    }
+  ]
+  ,
+  {
+    sp[p1, p1] -> m1^2,
+    sp[p1, p2] -> s/2 - m1^2/2 - m2^2/2,
+    sp[p1, p3] -> m1^2/2 + m3^2/2 - t/2,
+    sp[p1, p4] -> -m2^2/2 - m3^2/2 + s/2 + t/2,
+    sp[p2, p2] -> m2^2,
+    sp[p2, p3] -> -m1^2/2 - m4^2/2 + s/2 + t/2,
+    sp[p2, p4] -> m2^2/2 + m4^2/2 - t/2,
+    sp[p3, p3] -> m3^2,
+    sp[p3, p4] -> -m3^2/2 - m4^2/2 + s/2,
+    sp[p4, p4] -> m4^2
+  }
+]
 EndTestSection[]
