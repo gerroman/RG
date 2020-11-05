@@ -2,7 +2,7 @@
 (* Utils to present results of evaluation *)
 
 
-BeginPackage["RG`Presentation`"]
+BeginPackage["RG`Presentation`", {"RG`BaseUtils`"}];
 
 
 tagged::usage = "
@@ -19,7 +19,17 @@ colorize::usage = "
 ";
 
 
-Begin["`Private`"]
+getRunner::usage = "
+  getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
+";
+
+
+OverTilde::usage = "
+  OverTilde[func][args][expr] works as func[expr, args] i.e. it creates operator OverTilde[func][args] for the first argument of func
+";
+
+
+Begin["`Private`"];
 
 
 tagged::shdw = "Warning: `` appeares more than once so can shadow previous result";
@@ -76,7 +86,64 @@ colorize[pattern_] := Function[expr,
 colorize[xs__] := colorize[{xs}];
 
 
-End[]
+getRunner[] := CellPrint[TextCell[
+  PaletteNotebook[{
+   Button["Evaluate Cells", (
+     NotebookLocate["in"];
+     FrontEndTokenExecute["ExpandSelection"];
+     FrontEndTokenExecute["SelectionOpenAllGroups"];
+     FrontEndTokenExecute["EvaluateCells"];
+     NotebookLocate["in"];
+     )],
+   Button["Hide Code", {
+     NotebookLocate["in"];
+     NotebookFind[SelectedNotebook[], "Output", All, CellStyle];
+     FrontEndExecute[
+      FrontEndToken[SelectedNotebook[], "SelectionCloseUnselectedCells"]
+     ];
+     NotebookLocate["in"];
+     }],
+   Button["Show Code", (
+     NotebookLocate["in"];
+     NotebookFind[SelectedNotebook[], "Input", All, CellStyle];
+     NotebookLocate["in"];
+     )],
+   Button["Clear All Outputs", (
+     NotebookLocate["in"];
+     FrontEndTokenExecute["ExpandSelection"];
+     FrontEndTokenExecute["SelectionOpenAllGroups"]; 
+     FrontEndTokenExecute["DeleteGeneratedCells"];
+     NotebookLocate["in"];
+     )],
+   Button["Clear & Quit", (
+     NotebookLocate["in"];
+     FrontEndTokenExecute["ExpandSelection"];
+     FrontEndTokenExecute["SelectionOpenAllGroups"]; 
+     FrontEndTokenExecute["DeleteGeneratedCells"];
+     NotebookLocate["in"];
+     Quit[];
+     )],
+   Button["Get handouts", (
+      Module[
+        {
+          nb = CreateDocument[{TextCell["Handouts", "Title"]}], 
+          temp = CreateTemporary[]
+        },
+        temp = RenameFile[temp, temp <> ".nb"];
+        NotebookSave[nb, temp]
+      ]
+    )]
+   } // Column],
+   GeneratedCell -> False,
+   TextAlingment -> Center
+   ]
+];
 
 
-EndPackage[]
+OverTilde := carryFirst;
+
+
+End[];
+
+
+EndPackage[];

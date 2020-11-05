@@ -2,54 +2,28 @@ Notebook[{
 Cell[BoxData[
  RowBox[{"<<", "\"\<RG`Presentation`\>\""}]], "Input"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{"?", "RG`Presentation`*"}]], "Input"],
 
+Cell[CellGroupData[{
+
+Cell["getRunner", "Section"],
+
 Cell[BoxData[
- DynamicModuleBox[{Typeset`open$$ = True}, 
-  PaneSelectorBox[{False->
-   RowBox[{
-    OpenerBox[Dynamic[Typeset`open$$],
-     ImageSize->Small], 
-    StyleBox["RG`Presentation`", "InfoHeading"]}], True->GridBox[{
-     {
-      RowBox[{
-       OpenerBox[Dynamic[Typeset`open$$],
-        ImageSize->Small], 
-       StyleBox["RG`Presentation`", "InfoHeading"]}]},
-     {GridBox[{
-        {
-         ButtonBox["colorize",
-          BaseStyle->"InformationLink",
-          
-          ButtonData:>{
-           "Info23813474804-2849667", {"colorize", "RG`Presentation`"}},
-          ButtonNote->"RG`Presentation`"], 
-         ButtonBox["tagged",
-          BaseStyle->"InformationLink",
-          
-          ButtonData:>{
-           "Info23813474804-2849667", {"tagged", "RG`Presentation`"}},
-          ButtonNote->"RG`Presentation`"]}
-       },
-       DefaultBaseStyle->"InfoGrid",
-       GridBoxItemSize->{"Columns" -> {{
-            Scaled[0.475]}}}]}
-    },
-    GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}}]}, 
-   Dynamic[Typeset`open$$],
-   ImageSize->Automatic]]], "Print", "InfoCell"]
+ RowBox[{"?", "getRunner"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"getRunner", "[", "]"}]], "Input"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["tagged", "Section"],
 
-Cell["This function automatically add tag to equations", "Text"],
+Cell[BoxData[
+ RowBox[{"?", "tagged"}]], "Input"],
 
-Cell[CellGroupData[{
+Cell["This function automatically add tag to equations", "Text"],
 
 Cell[BoxData[
  RowBox[{"tagged", "[", 
@@ -61,31 +35,12 @@ Cell[BoxData[
        RowBox[{"c", "^", "2"}]}], "]"}]}]}], ",", 
    RowBox[{"form", "\[Rule]", "TraditionalForm"}]}], "]"}]], "Input"],
 
-Cell[BoxData[
- FormBox[
-  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
-   TagBox[
-    RowBox[{"m", " ", 
-     SuperscriptBox["c", "2"]}],
-    HoldForm]}], TraditionalForm]], "Output",
- ShowCellTags->True,
- CellTags->"eq`Einstein",
- $CellContext`form -> TraditionalForm]
-}, Open  ]],
-
 Cell["After setting tagged`final to True ", "Text"],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"tagged`final", " ", "=", " ", "True"}]], "Input"],
 
-Cell[BoxData["True"], "Output"]
-}, Open  ]],
-
 Cell["the Input cell can be automatically hidden after evalulation", "Text"],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"tagged", "[", 
@@ -95,20 +50,7 @@ Cell[BoxData[
      RowBox[{"m", " ", 
       RowBox[{"c", "^", "2"}]}], "]"}]}]}], "]"}]], "Input"],
 
-Cell[BoxData[
- FormBox[
-  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
-   TagBox[
-    RowBox[{"m", " ", 
-     SuperscriptBox["c", "2"]}],
-    HoldForm]}], TraditionalForm]], "Output",
- ShowCellTags->True,
- CellTags->"eq`Einstein\[LetterSpace]2"]
-}, {2}]],
-
 Cell["It allows to modify presentation ", "Text"],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
@@ -124,25 +66,7 @@ Cell[BoxData[{
      RowBox[{"Style", "[", 
       RowBox[{"m", ",", "Red"}], "]"}]}], "]"}]}], "]"}]}], "Input"],
 
-Cell[BoxData[
- FormBox[
-  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
-   RowBox[{
-    SuperscriptBox["c", "2"], " ", 
-    StyleBox["m",
-     StripOnInput->False,
-     LineColor->RGBColor[1, 0, 0],
-     FrontFaceColor->RGBColor[1, 0, 0],
-     BackFaceColor->RGBColor[1, 0, 0],
-     GraphicsColor->RGBColor[1, 0, 0],
-     FontColor->RGBColor[1, 0, 0]]}]}], TraditionalForm]], "Output",
- ShowCellTags->True,
- CellTags->"eq`Einstein\[LetterSpace]3"]
-}, Open  ]],
-
 Cell["It also warns about  the usage of the same tags", "Text"],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"tagged", "[", 
@@ -159,131 +83,24 @@ Cell[BoxData[
    RowBox[{"form", "\[Rule]", "TraditionalForm"}]}], "]"}]], "Input"],
 
 Cell[BoxData[
- FormBox[
-  RowBox[{"\[ScriptCapitalE]", "\[LongEqual]", 
-   RowBox[{
-    SuperscriptBox["c", "2"], " ", 
-    StyleBox[
-     TagBox["m",
-      HoldForm],
-     StripOnInput->False,
-     LineColor->RGBColor[1, 0, 0],
-     FrontFaceColor->RGBColor[1, 0, 0],
-     BackFaceColor->RGBColor[1, 0, 0],
-     GraphicsColor->RGBColor[1, 0, 0],
-     FontColor->RGBColor[1, 0, 0]]}]}], TraditionalForm]], "Output",
- ShowCellTags->True,
- CellTags->"eq`Einstein\[LetterSpace]3",
- $CellContext`form -> TraditionalForm],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"tagged", "::", "shdw"}], "MessageName"], 
-  RowBox[{
-  ":", " "}], "\<\"Warning: \
-\[NoBreak]\\!\\(\\*RowBox[{\\\"\\\\\\\"eq`Einstein\[LetterSpace]3\\\\\\\"\\\"}\
-]\\)\[NoBreak] appeares more than once so can shadow previous result \
-\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
-ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/shdw\\\", \
-ButtonNote -> \\\"RG`Presentation`tagged::shdw\\\"]\\)\"\>"}]], "Message", \
-"MSG"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"tagged`final", "=", "False"}]], "Input"],
-
-Cell[BoxData["False"], "Output"]
-}, Open  ]]
+ RowBox[{"tagged`final", "=", "False"}]], "Input"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["colorize", "Section"],
 
-Cell[CellGroupData[{
-
 Cell[BoxData[
  RowBox[{"?", "colorize"}]], "Input"],
-
-Cell[BoxData[
- StyleBox["\<\"\\n  colorize[pattern] colorize matches for the pattern\\n  \
-colorize[{x1, ...}] colorize specific expressions x1, ...\\n\"\>", 
-  "MSG"]], "Print", "PrintUsage",
- CellTags->"Info103813474804-2849667"]
-}, Open  ]],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"1", "//", 
   RowBox[{"colorize", "[", "1", "]"}]}]], "Input"],
 
 Cell[BoxData[
- StyleBox["1",
-  StripOnInput->False,
-  LineColor->RGBColor[0.237736, 0.340215, 0.575113],
-  FrontFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-  BackFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-  GraphicsColor->RGBColor[0.237736, 0.340215, 0.575113],
-  FontColor->RGBColor[0.237736, 0.340215, 0.575113]]], "Output"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
  RowBox[{
   RowBox[{"Range", "[", "5", "]"}], "//", 
   RowBox[{"colorize", "[", "_Integer", "]"}]}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"{", 
-  RowBox[{
-   StyleBox["1",
-    StripOnInput->False,
-    LineColor->RGBColor[0.237736, 0.340215, 0.575113],
-    FrontFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-    BackFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-    GraphicsColor->RGBColor[0.237736, 0.340215, 0.575113],
-    FontColor->RGBColor[0.237736, 0.340215, 0.575113]], ",", 
-   StyleBox["2",
-    StripOnInput->False,
-    LineColor->RGBColor[0.277947, 0.45009699999999997`, 0.32815550000000004`],
-    
-    FrontFaceColor->RGBColor[
-     0.277947, 0.45009699999999997`, 0.32815550000000004`],
-    BackFaceColor->RGBColor[
-     0.277947, 0.45009699999999997`, 0.32815550000000004`],
-    GraphicsColor->RGBColor[
-     0.277947, 0.45009699999999997`, 0.32815550000000004`],
-    FontColor->RGBColor[0.277947, 0.45009699999999997`, 0.32815550000000004`]],
-    ",", 
-   StyleBox["3",
-    StripOnInput->False,
-    LineColor->RGBColor[0.624866, 0.673302, 0.264296],
-    FrontFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
-    BackFaceColor->RGBColor[0.624866, 0.673302, 0.264296],
-    GraphicsColor->RGBColor[0.624866, 0.673302, 0.264296],
-    FontColor->RGBColor[0.624866, 0.673302, 0.264296]], ",", 
-   StyleBox["4",
-    StripOnInput->False,
-    LineColor->RGBColor[0.8453409999999999, 0.6248695, 0.3151775],
-    FrontFaceColor->RGBColor[0.8453409999999999, 0.6248695, 0.3151775],
-    BackFaceColor->RGBColor[0.8453409999999999, 0.6248695, 0.3151775],
-    GraphicsColor->RGBColor[0.8453409999999999, 0.6248695, 0.3151775],
-    FontColor->RGBColor[0.8453409999999999, 0.6248695, 0.3151775]], ",", 
-   StyleBox["5",
-    StripOnInput->False,
-    LineColor->RGBColor[0.72987, 0.239399, 0.230961],
-    FrontFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
-    BackFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
-    GraphicsColor->RGBColor[0.72987, 0.239399, 0.230961],
-    FontColor->RGBColor[0.72987, 0.239399, 0.230961]]}], "}"}]], "Output"]
-}, Open  ]],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{
@@ -292,32 +109,11 @@ Cell[BoxData[
    RowBox[{"Cos", "[", "y", "]"}], "+", 
    RowBox[{"Exp", "[", "z", "]"}]}], "//", 
   RowBox[{"colorize", "[", 
-   RowBox[{"_Sin", "|", "_Cos"}], "]"}]}]], "Input"],
-
-Cell[BoxData[
- RowBox[{
-  SuperscriptBox["\[ExponentialE]", "z"], "+", 
-  StyleBox[
-   RowBox[{"Cos", "[", "y", "]"}],
-   StripOnInput->False,
-   LineColor->RGBColor[0.237736, 0.340215, 0.575113],
-   FrontFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-   BackFaceColor->RGBColor[0.237736, 0.340215, 0.575113],
-   GraphicsColor->RGBColor[0.237736, 0.340215, 0.575113],
-   FontColor->RGBColor[0.237736, 0.340215, 0.575113]], "+", 
-  StyleBox[
-   RowBox[{"Sin", "[", "x", "]"}],
-   StripOnInput->False,
-   LineColor->RGBColor[0.72987, 0.239399, 0.230961],
-   FrontFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
-   BackFaceColor->RGBColor[0.72987, 0.239399, 0.230961],
-   GraphicsColor->RGBColor[0.72987, 0.239399, 0.230961],
-   FontColor->RGBColor[0.72987, 0.239399, 0.230961]]}]], "Output"]
-}, Open  ]]
+   RowBox[{"_Sin", "|", "_Cos"}], "]"}]}]], "Input"]
 }, Open  ]]
 },
 WindowSize->{804, 753},
-WindowMargins->{{Automatic, 186}, {-10, Automatic}},
+WindowMargins->{{Automatic, 64}, {Automatic, -8}},
 FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
 StyleDefinitions->"Default.nb"
 ]
