@@ -3,6 +3,7 @@
 (* ::Text:: *)
 (*Custom notation and functions to define it*)
 
+
 BeginPackage["RG`Notation`"]
 
 
