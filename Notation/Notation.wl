@@ -26,7 +26,7 @@ setBar::usage = "
 matrixElement::usage = "
   matrixElement[\"tag\"] or matrixElement[\"tag1\", \"tag2\"] represent matrix element
 ";
-Global`\[ScriptCapitalM]::usage = "symbol for matrix element";
+\[ScriptCapitalM]::usage = "symbol for matrix element";
 
 
 energy::usage = "
@@ -40,7 +40,7 @@ momentum::usage = "
 mass::usage = "
   mass[p] represent mass of 4-vector (i.e. energy[p]^2 - abs[momentum[p]]^2 == mass[p]^2) of 4-vector
 ";
-Global`m::usage = "symbol for mass";
+m::usage = "symbol for mass";
 
 abs::usage = "
   abs[p] represent module of spatial vector p
@@ -49,6 +49,9 @@ abs::usage = "
 sp::usage = "
   sp[a, b] represent scalar product of a, b
 ";
+Global`g::usage = "
+  g is symbol for metric tensor
+"
 
 setLorentzIndex::usage = "
   setLorentzIndex[mu, ...] format mu as Lorentz index
@@ -62,6 +65,28 @@ setLorentzIndex::usage = "
 
 id::usage = "
   id represents identity matrix
+";
+
+
+theta::usage = "
+  theta \[LongDash] polar angle
+";
+\[Theta]::usage = "
+  \[Theta] \[LongDash] symbol for polar angle
+";
+
+phi::usage = "
+  phi \[LongDash] azimuthal angle
+";
+\[CurlyPhi]::usage = "
+  \[CurlyPhi] \[LongDash] symbol for azimuthal angle 
+";
+
+omega::usage = "
+  omega \[LongDash] body angle
+";
+\[CapitalOmega]::usage = "
+  \[CapitalOmega] \[LongDash] symbol for spherical angle
 ";
 
 
@@ -96,19 +121,19 @@ setBar[x__] := setBar[{x}];
 
 setIndexed[matrixElement];
 matrixElement /: Format[matrixElement, TraditionalForm] = (
-  Global`\[ScriptCapitalM]
+  \[ScriptCapitalM]
 );
 
 
 setIndexed[mass];
-mass /: Format[mass, TraditionalForm] = Global`m;
+mass /: Format[mass, TraditionalForm] = m;
 
 energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
 
 SetAttributes[sp, Orderless];
 sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
 sp /: Format[sp[expr_Symbol, expr_], TraditionalForm] := Superscript[expr, 2];
-
+sp /: Format[sp, TraditionalForm] := "";
 
 abs /: Format[abs[expr_], TraditionalForm] := BracketingBar[expr];
 
@@ -139,6 +164,11 @@ Unprotect[Times];
 Protect[Times];
 
 Format[id, TraditionalForm] := Style[1, Bold];
+
+
+Format[theta,  TraditionalForm] := \[Theta];
+Format[phi, TraditionalForm] := \[CurlyPhi];
+Format[omega, TraditionalForm] := \[CapitalOmega];
 
 
 End[]

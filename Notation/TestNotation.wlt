@@ -56,7 +56,7 @@ VerificationTest[
 VerificationTest[
   ExportString[TraditionalForm[sp[a, b]], "TeXFragment"]
   ,
-  "\\[\\text{sp}(a,b)\\]\n\n"	
+  "\\[\\text{}(a,b)\\]\n\n"	
 ]
 
 VerificationTest[
@@ -104,4 +104,27 @@ VerificationTest[
   "\\[m\\]\n\n"
 ]
 
+VerificationTest[
+  ExportString[TraditionalForm[id], "TeXFragment"]
+  ,
+  "\\[1\\]\n\n"
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[theta], "TeXFragment"]
+  ,
+  "\\[\\theta\\]\n\n"
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[phi], "TeXFragment"]
+  ,
+  "\\[\\varphi\\]\n\n"
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[omega], "TeXFragment"]
+  ,
+  "\\[\\Omega\\]\n\n"
+]
 EndTestSection[]
