@@ -96,19 +96,26 @@ fixedPoint[func_, args___] := FixedPoint[func, #, args]&;
 release = fixedPoint[ReleaseHold];
 
 
-groupIt[expr_, func_:Expand] := ReplaceAll[(expr // modify[{expr}, func]) -> expr];
+groupIt[xs_List, func_:Expand] := With[
+  {rules = Map[x \[Function] ((x // modify[{x}, func]) -> x), xs]},
+  ReplaceAll[#, rules] &
+];
+groupIt[x_] := groupIt[{x}, Expand];
+groupIt[expr__] := groupIt[{expr}];
 
 
 factorIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
     rules = Map[
       {
         func[# * a_., # * b_.] :> # modifier[func[a, b]],
-        func[# * a_., -# * b_.] :> # modifier[func[a, -b]]
+        func[# * a_., (-1) * # * b_.] :> # modifier[func[a, -b]]
       }&,
       xs
     ] // Flatten
   },
-  FixedPoint[ReplaceAll[rules], #, maxIter] &
+  With[{replacer=ReplaceAll[#, rules] &},
+    FixedPoint[replacer, #, maxIter] &
+  ]
 ];
 factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
     rules = {
