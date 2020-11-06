@@ -40,15 +40,24 @@ hold::usage = "
 ";
 
 
+row::usage = "
+  row is shortcut for Row[#, \",\t\"]&
+";
+
+
 Begin["`Private`"];
 
 
-tagged::shdw = "Warning: `` appeares more than once so can shadow previous result";
+
 SetAttributes[tagged, HoldAll];
+
+tagged::shdw = "Warning: `` appeares more than once so can shadow previous result";
+
 Options[tagged] = {"form" -> TraditionalForm};
 tagged[expr:Set[lhs_, _], args___] := (
   expr; tagged[lhs, args];
 );
+
 tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks],
     Return[expr]
@@ -172,7 +181,10 @@ hold[pattern_] := Function[expr,
     hold[xs][expr]
   ]
 ];
-hold[xs__] := hold[{xs}]
+hold[xs__] := hold[{xs}];
+
+
+row = Row[#, ",\t"] &;
 
 
 End[];
