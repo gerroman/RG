@@ -144,4 +144,22 @@ VerificationTest[
     sp[p4, p4] -> m4^2
   }
 ]
+
+VerificationTest[
+  theta[a, b] == theta[b, a]
+  ,
+  True
+]
+
+VerificationTest[
+  (
+    energy[a] = energy[b] = \[ScriptCapitalE];
+    abs@momentum[a] = abs@momentum[b] = \[ScriptP];
+    mass[a] = mass[b] = m;
+    theta[momentum[a], momentum[b]] = \[Pi];
+    sp[a + b] // modify[_sp, Distribute] // expandScalarProduct // Expand
+  )
+  ,
+  4 \[ScriptCapitalE]^2
+]
 EndTestSection[]

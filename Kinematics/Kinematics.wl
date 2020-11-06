@@ -31,6 +31,11 @@ setInvariants::usage = "
 ";
 
 
+expandScalarProduct::usage = "
+  expandScalarProduct[expr] replace scalar products using energies, momenta and spherical angles
+";
+
+
 Begin["`Private`"];
 
 
@@ -119,6 +124,17 @@ setInvariants[
   spSolutions = Solve[eqs, spVars] // Flatten // Expand;
   Return[spSolutions~Join~ruleMasses // Union];
 ];
+
+
+SetAttributes[theta, Orderless];
+theta[x_, x_] = 0;
+
+expandScalarProduct := ReplaceAll[{
+  sp[a_, b_] :> (
+    energy[a] * energy[b]
+    - abs[momentum[a]] * abs[momentum[b]] * Cos[theta[momentum[a], momentum[b]]]
+  )
+}];
 
 
 End[];
