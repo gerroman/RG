@@ -9,7 +9,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-	modify[x, f, g][x]
+	modify[x, f /* g][x]
 	,
 	g[f[x]]	
 ]

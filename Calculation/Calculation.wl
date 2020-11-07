@@ -8,8 +8,8 @@ BeginPackage["RG`Calculation`"];
 
 
 modify::usage = "
-  modify[pattern, fs] create function to replace all matches of the pattern to results of consequent application of functions fs to these matches
-  modify[{x1, ...}, fs] create function for specific x1, ...
+  modify[pattern, func] create function to replace all matches of the pattern to results of application of the function func to these matches
+  modify[{x1, ...}, func] create function for specific x1, ...
 ";
 
 
@@ -62,16 +62,18 @@ changeSign::usage = "
 Begin["`Private`"];
 
 
-modify[xs_List, fs_List] := With[
-   {rules = Thread[Rule[xs, Map[RightComposition@@fs, xs]]]},
-   ReplaceAll[rules]
+modify[xs_List, func_] := With[{
+    rules = Thread[Rule[xs, Map[func, xs]]]
+  },
+  ReplaceAll[rules]
 ];
-modify[pattern_, fs_List] := Function[expr,
-  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-    modify[xs, fs][expr]
+modify[pattern_, func_] := Function[expr,
+  With[{
+      xs = Union@Cases[{expr}, pattern, Infinity]
+    },
+    modify[xs, func][expr]
   ]
 ];
-modify[expr_, fs__] := modify[expr, {fs}];
 
 
 pullFactors[arg_, func_, maxIter_:$IterationLimit] := With[{
