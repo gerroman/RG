@@ -102,8 +102,7 @@ groupIt[xs_List, func_:Expand] := With[
   {rules = Map[x \[Function] ((x // modify[{x}, func]) -> x), xs]},
   ReplaceAll[#, rules] &
 ];
-groupIt[x_] := groupIt[{x}, Expand];
-groupIt[expr__] := groupIt[{expr}];
+groupIt[x_] := groupIt[{x}];
 
 
 factorIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
