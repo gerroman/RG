@@ -27,6 +27,11 @@ contractLorentzIndices::usage = "
 ";
 
 
+diracConjugate::usage = "
+  diracConjugate[expr] perform conjugation for fermion line
+";
+
+
 Begin["`Private`"]
 
 
@@ -84,6 +89,17 @@ contractLorentzIndices[indices_List] := With[
   ]
 ];
 contractLorentzIndices[indices__] := contractLorentzIndices[{indices}];
+
+
+diracConjugate = With[
+  {
+    rule = Conjugate[expr:(Dot[(_bar`u|_bar`v), ___\[Gamma], (_u|_v)])] :> ReplaceAll[
+        Reverse[expr],
+	{u -> bar`u, v -> bar`v, bar`u -> u, bar`v -> v}
+     ]
+  },
+  ReplaceAll[#, rule] & 
+];
 
 
 End[]

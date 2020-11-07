@@ -54,4 +54,29 @@ VerificationTest[
   sp[\[Mu], \[Nu]](m^2 - sp[p1, p2]) + sp[p1, \[Mu]] sp[p2, \[Nu]] + sp[p1, \[Nu]] sp[p2, \[Mu]]
 ]
 
+
+VerificationTest[
+  Conjugate[Dot[a, b]] // diracConjugate
+  ,
+  Conjugate[Dot[a, b]]
+]
+
+VerificationTest[
+  Conjugate[bar`u[p1].u[p2]] // diracConjugate
+  ,
+  bar`u[p2].u[p1]
+]
+
+VerificationTest[
+  Conjugate[Dot[bar`u[p1], \[Gamma][\[Mu]], u[p2]]] // diracConjugate
+  ,
+  Dot[bar`u[p2], \[Gamma][\[Mu]], u[p1]]
+]
+
+VerificationTest[
+  Conjugate[Dot[bar`v[p1], \[Gamma][\[Mu]], \[Gamma][\[Nu]], u[p2]]] // diracConjugate
+  ,
+  Dot[bar`u[p2], \[Gamma][\[Nu]], \[Gamma][\[Mu]], v[p1]]
+]
+
 EndTestSection[]
