@@ -38,6 +38,8 @@ factorIt::usage = "
   factorIt[pattern, modifier] factor out factors matches pattern apply modifier to the rest
   factorIt[{x1, ...}, modifier] factor out concrete xs
 ";
+
+
 pullIt::usage = "
   pullIt[pattern, modifier] pull out factors matches pattern apply modifier to the rest
   pullIt[{x1, ...}, func] pull out concrete xs
@@ -49,14 +51,17 @@ powersPattern::usage = "
 ";
 
 
-rewriteIt::usage = "
-  rewrite[eq, func] rewrite equation applying func to the right hand side
-";
-
-
 changeSign::usage = "
   changeSign[x] change sign of x 
 ";
+
+
+rewriteIt::usage = "
+  rewriteIt[func] rewrite equation (or rule, or expression) using func for the right hand side
+  rewriteIt[funcL, funcR] rewrite equation (or rule, or expression) using funcL for the left hand side \
+and funcR for the right hand side
+";
+
 
 
 Begin["`Private`"];
@@ -169,6 +174,17 @@ changeSign[pattern_] := Function[{expr},
   ]
 ];
 changeSign[xs__] := changeSign[{xs}];
+
+
+rewriteIt[funcL_, funcR_] := Function[
+  {expr},
+  Switch[expr,
+    _Equal, funcL[First[expr]] == funcR[Last[expr]],
+    _Rule, funcL[First[expr]] -> funcR[Last[expr]],
+    _, funcL[expr] == funcR[expr]
+  ]
+];
+rewriteIt[func_] := rewriteIt[Identity, func];
 
 
 End[];

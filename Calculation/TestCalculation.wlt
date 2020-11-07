@@ -149,4 +149,21 @@ VerificationTest[
   a - b
 ]
 
+VerificationTest[
+  a == b // rewriteIt[ReplaceAll[b -> c]]
+  ,
+  a == c
+]
+
+VerificationTest[
+  a == b * a // rewriteIt@@ReplaceAll/@{a -> d, b -> c}
+  ,
+  d == c * a
+]
+
+VerificationTest[
+  a // rewriteIt[ReplaceAll[a -> b]]
+  ,
+  a == b
+]
 EndTestSection[]
