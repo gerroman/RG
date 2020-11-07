@@ -32,6 +32,11 @@ diracConjugate::usage = "
 ";
 
 
+spinSum::usage = "
+  spinSum[p] perform sum over fermion p spin states
+  spinSum[] perform sum over spin states for all found fermions
+";
+
 Begin["`Private`"]
 
 
@@ -54,6 +59,9 @@ pullTraceScalars = Function[expr,
     {
        tr[Dot[a___, b_ * f_, c___]] :>
        f tr[Dot[a, b, c]] /; (
+         NumberQ[f] || MatchQ[f, Alternatives@@(powersPattern[traceScalars])]
+       ),
+       tr[f_*expr_] :> f tr[expr] /; (
          NumberQ[f] || MatchQ[f, Alternatives@@(powersPattern[traceScalars])]
        )
     }
@@ -99,6 +107,27 @@ diracConjugate = With[
      ]
   },
   ReplaceAll[#, rule] & 
+];
+
+spinSum[p_] = With[{
+    rules = {
+      Dot[a__, u[p]] Dot[bar`u[p], b__] :> Dot[a, (\[Gamma][p] + mass[p] id), b],
+      Dot[a__, v[p]] Dot[bar`v[p], b__] :> Dot[a, (\[Gamma][p] - mass[p] id), b],
+      Dot[bar`u[p], a___, u[p]] :>  tr[Dot[a, (\[Gamma][p] + mass[p] id)]],
+      Dot[bar`v[p], a___, v[p]] :> tr[Dot[a, (\[Gamma][p] - mass[p] id)]]
+    }
+  },
+  ReplaceAll[#, rules] &
+];
+spinSum[] = With[{
+    rules = {
+      Dot[a__, u[p_]] Dot[bar`u[p_], b__] :> Dot[a, (\[Gamma][p] + mass[p] id), b],
+      Dot[a__, v[p_]] Dot[bar`v[p_], b__] :> Dot[a, (\[Gamma][p] - mass[p] id), b],
+      Dot[bar`u[p_], a__, u[p_]] :>  tr[Dot[a, (\[Gamma][p] + mass[p] id)]],
+      Dot[bar`v[p_], a__, v[p_]] :> tr[Dot[a, (\[Gamma][p] - mass[p] id)]]
+    }
+  },
+  ReplaceRepeated[#, rules] &
 ];
 
 
