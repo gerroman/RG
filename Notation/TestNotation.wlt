@@ -127,4 +127,17 @@ VerificationTest[
   ,
   "\\[\\Omega\\]\n\n"
 ]
+
+VerificationTest[
+  ExportString[TraditionalForm[bar`u], "TeXFragment"]
+  ,
+  "\\[\\bar{u}\\]\n\n"	
+]
+
+VerificationTest[
+  ExportString[TraditionalForm[bar`v], "TeXFragment"]
+  ,
+  "\\[\\bar{v}\\]\n\n"	
+]
+
 EndTestSection[]

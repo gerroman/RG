@@ -90,6 +90,20 @@ omega::usage = "
 ";
 
 
+u::usage = "
+  u[p] represent initial particle bispinor
+";
+v::usage = "
+  v[p] represent final anti-particle bispinor
+";
+bar`u::usage = "
+  bar`u represent final particle bispinor
+";
+bar`v::usage = "
+  bar`v represent initial anti-particle bispinor
+";
+
+
 Begin["`Private`"]
 
 
@@ -169,6 +183,9 @@ Format[id, TraditionalForm] := Style[1, Bold];
 Format[theta,  TraditionalForm] := \[Theta];
 Format[phi, TraditionalForm] := \[CurlyPhi];
 Format[omega, TraditionalForm] := \[CapitalOmega];
+
+
+setBar[u, v];
 
 
 End[]
