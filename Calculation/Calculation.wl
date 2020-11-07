@@ -63,6 +63,10 @@ and funcR for the right hand side
 ";
 
 
+toRules::usage = "
+  toRules shortcut for replacing equations to rules
+";
+
 
 Begin["`Private`"];
 
@@ -185,6 +189,9 @@ rewriteIt[funcL_, funcR_] := Function[
   ]
 ];
 rewriteIt[func_] := rewriteIt[Identity, func];
+
+
+toRules = ReplaceAll[#, Equal -> Rule] &;
 
 
 End[];
