@@ -42,13 +42,16 @@ mass::usage = "
 ";
 m::usage = "symbol for mass";
 
+
 abs::usage = "
   abs[p] represent module of spatial vector p
 ";
 
+
 sp::usage = "
   sp[a, b] represent scalar product of a, b
 ";
+
 Global`g::usage = "
   g is symbol for metric tensor
 "
@@ -103,6 +106,11 @@ bar`v::usage = "
   bar`v represent initial anti-particle bispinor
 ";
 
+
+crossSection::usage = "
+  crossSection[\"tag\"] or crossSection[\"tag1\", \"tag2\"] represent cross section
+";
+\[Sigma]::usage = "symbol for cross sections";
 
 Begin["`Private`"]
 
@@ -186,6 +194,13 @@ Format[omega, TraditionalForm] := \[CapitalOmega];
 
 
 setBar[u, v];
+
+
+setIndexed[crossSection];
+Format[crossSection, TraditionalForm] := \[Sigma];
+
+
+Protect[\[ScriptCapitalM], m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma]];
 
 
 End[]

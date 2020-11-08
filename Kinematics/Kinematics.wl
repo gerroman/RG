@@ -5,8 +5,8 @@
 
 
 BeginPackage["RG`Kinematics`", {
-  "RG`Notation`", (* energy, mass, momentum, sp, ...*)
-  "RG`Calculation`" (* modify *)
+  "RG`Calculation`", (* modify *)
+  "RG`Notation`" (* energy, mass, momentum, sp, ...*)
 }];
 
 

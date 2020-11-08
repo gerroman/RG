@@ -1,4 +1,4 @@
-#!/usr/bin/env -S WolframScript -sl -script
+#!/usr/bin/env -S WolframScript -script
 
 (* run all test from base directory  *)
 (* find . -name *.wlt | xargs ./run_test.wl *)

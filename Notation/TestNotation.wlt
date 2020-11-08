@@ -3,6 +3,7 @@ BeginTestSection["TestNotation"]
 
 Needs["RG`Notation`"];
 
+
 VerificationTest[(* 1 *)
 	CompoundExpression[setIndexed[x], ExportString[TraditionalForm[x[1]], "TeXFragment"]]
 	,
