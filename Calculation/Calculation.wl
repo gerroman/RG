@@ -112,7 +112,7 @@ release = fixedPoint[ReleaseHold];
 
 groupIt[xs_List, func_:Expand] := With[
   {rules = Map[x \[Function] ((x // modify[{x}, func]) -> x), xs]},
-  ReplaceAll[#, rules] &
+  ReplaceRepeated[#, rules] &
 ];
 groupIt[x_] := groupIt[{x}];
 
