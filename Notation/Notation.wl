@@ -59,7 +59,9 @@ Global`g::usage = "
 setLorentzIndex::usage = "
   setLorentzIndex[mu, ...] format mu as Lorentz index
 ";
-
+lorentzIndexes::usage = "
+  lorentzIndexes return list of current symbols used for Lorentz indexes
+";
 
 \[Gamma]::usage = "
   \[Gamma][\[Mu]] represents gamma matrix
