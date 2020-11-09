@@ -66,8 +66,9 @@ and funcR for the right hand side
 toRules::usage = "
   toRules shortcut for replacing equations to rules
 ";
-toRules::usage = "
-  toRules shortcut for replacing rules to equations
+
+toEquals::usage = "
+  toEquals shortcut for replacing rules to equations
 ";
 
 
