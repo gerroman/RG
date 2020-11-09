@@ -43,11 +43,11 @@ Begin["`Private`"]
 id /: Dot[x___, id, y__] := Dot[x, y];
 id /: Dot[x__, id, y___] := Dot[x, y];
 
-
-tr[\[Gamma][\[Mu]_Symbol]] = 0;
+gamma = \[Gamma];
+tr[gamma[\[Mu]_Symbol]] = 0;
 tr[expr_Dot] := 0 /; (
   OddQ[Length[List@@expr]]
-  && MatchQ[Map[Head, List@@expr], {\[Gamma]...}]
+  && MatchQ[Map[Head, List@@expr], {gamma...}]
   && Not@MemberQ[Map[First, List@@expr], _Integer]
 );
 
@@ -61,7 +61,7 @@ pullTraceScalars = Function[expr,
        f tr[Dot[a, b, c]] /; (
          NumberQ[f] || MatchQ[f, Alternatives@@(powersPattern[traceScalars])]
        ),
-       tr[f_*expr_] :> f tr[expr] /; (
+       tr[f_* a_] :> f tr[a] /; (
          NumberQ[f] || MatchQ[f, Alternatives@@(powersPattern[traceScalars])]
        )
     }
@@ -70,7 +70,7 @@ pullTraceScalars = Function[expr,
 
 
 traceLongRule = (
-  tr[Dot[\[Gamma][a_], l__ /; MatchQ[{l}, {_\[Gamma]...}]]] :> Plus @@ MapIndexed[
+  tr[Dot[gamma[a_], l__ /; MatchQ[{l}, {_gamma...}]]] :> Plus @@ MapIndexed[
     (-(-1)^First[#2] sp[a, First[#1]] tr[Dot[id, Dot@@(Drop[{l}, #2])]])&,
     {l}
   ]
@@ -101,7 +101,7 @@ contractLorentzIndices[indices__] := contractLorentzIndices[{indices}];
 
 diracConjugate = With[
   {
-    rule = Conjugate[expr:(Dot[(_bar`u|_bar`v), ___\[Gamma], (_u|_v)])] :> ReplaceAll[
+    rule = Conjugate[expr:(Dot[(_bar`u|_bar`v), ___gamma, (_u|_v)])] :> ReplaceAll[
         Reverse[expr],
 	{u -> bar`u, v -> bar`v, bar`u -> u, bar`v -> v}
      ]
@@ -109,22 +109,22 @@ diracConjugate = With[
   ReplaceAll[#, rule] & 
 ];
 
-spinSum[p_] = With[{
+spinSum[p_] := With[{
     rules = {
-      Dot[a__, u[p]] Dot[bar`u[p], b__] :> Dot[a, (\[Gamma][p] + mass[p] id), b],
-      Dot[a__, v[p]] Dot[bar`v[p], b__] :> Dot[a, (\[Gamma][p] - mass[p] id), b],
-      Dot[bar`u[p], a___, u[p]] :>  tr[Dot[a, (\[Gamma][p] + mass[p] id)]],
-      Dot[bar`v[p], a___, v[p]] :> tr[Dot[a, (\[Gamma][p] - mass[p] id)]]
+      Dot[a__, u[p]] Dot[bar`u[p], b__] :> Dot[a, (gamma[p] + mass[p] id), b],
+      Dot[a__, v[p]] Dot[bar`v[p], b__] :> Dot[a, (gamma[p] - mass[p] id), b],
+      Dot[bar`u[p], a___, u[p]] :>  tr[Dot[a, (gamma[p] + mass[p] id)]],
+      Dot[bar`v[p], a___, v[p]] :> tr[Dot[a, (gamma[p] - mass[p] id)]]
     }
   },
   ReplaceAll[#, rules] &
 ];
 spinSum[] = With[{
     rules = {
-      Dot[a__, u[p_]] Dot[bar`u[p_], b__] :> Dot[a, (\[Gamma][p] + mass[p] id), b],
-      Dot[a__, v[p_]] Dot[bar`v[p_], b__] :> Dot[a, (\[Gamma][p] - mass[p] id), b],
-      Dot[bar`u[p_], a__, u[p_]] :>  tr[Dot[a, (\[Gamma][p] + mass[p] id)]],
-      Dot[bar`v[p_], a__, v[p_]] :> tr[Dot[a, (\[Gamma][p] - mass[p] id)]]
+      Dot[a__, u[p_]] Dot[bar`u[p_], b__] :> Dot[a, (gamma[p] + mass[p] id), b],
+      Dot[a__, v[p_]] Dot[bar`v[p_], b__] :> Dot[a, (gamma[p] - mass[p] id), b],
+      Dot[bar`u[p_], a__, u[p_]] :>  tr[Dot[a, (gamma[p] + mass[p] id)]],
+      Dot[bar`v[p_], a__, v[p_]] :> tr[Dot[a, (gamma[p] - mass[p] id)]]
     }
   },
   ReplaceRepeated[#, rules] &
