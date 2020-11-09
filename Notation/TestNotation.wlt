@@ -141,4 +141,21 @@ VerificationTest[
   "\\[\\bar{v}\\]\n\n"	
 ]
 
+VerificationTest[
+  setPrime[\[Mu]]
+  ,
+  prime`\[Mu]
+]
+
+VerificationTest[
+  setBar[\[Mu]]
+  ,
+  bar`\[Mu]
+]
+
+VerificationTest[
+  setLorentzIndex[a]
+  ,
+  {\[Mu], prime`\[Mu], \[Nu], prime`\[Nu], a, prime`a}
+]
 EndTestSection[]

@@ -131,6 +131,7 @@ setPrime[x_Symbol] := With[{
     symbol = ToExpression["prime`" <> ToString[x]]
   },
   symbol /: Format[symbol, TraditionalForm] := Superscript[x, Global`\[Prime]];
+  symbol
 ];
 setPrime[x__] := setPrime[{x}];
 
@@ -140,6 +141,7 @@ setBar[x_Symbol] := With[{
     symbol = ToExpression["bar`" <> ToString[x]]
   },
   symbol /: Format[symbol, TraditionalForm] := OverBar[x];
+  symbol
 ];
 setBar[x__] := setBar[{x}];
 
@@ -177,6 +179,10 @@ setLorentzIndex[mu_Symbol] := (
     Format[sp[mu, mu], TraditionalForm] := Superscript[Global`g, ToString@Row[{mu, mu}]];
     AppendTo[lorentzIndexes, mu];
   )];
+  If[Context[mu] == "Global`", (
+    With[{primeMu = setPrime[mu]}, setLorentzIndex[primeMu]]
+  )];
+  lorentzIndexes
 );
 setLorentzIndex[mu__] := setLorentzIndex[{mu}];
 
