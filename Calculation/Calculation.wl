@@ -72,6 +72,17 @@ toEquals::usage = "
 ";
 
 
+powerExpand::usage = "
+  powerExpand shortcut for PowerExpand, but it leaves Logs unchanged
+";
+collectLogs::usage = "
+  collectLogs reduce sums of logarithms assuming real positive arguments
+";
+changeLogPower::usage = "
+  changeLogPower[power] change arguments of logarithms exponenting them to the power,\
+assuming real positive arguments
+";
+
 Begin["`Private`"];
 
 
@@ -197,6 +208,19 @@ rewriteIt[func_] := rewriteIt[Identity, func];
 
 toRules = ReplaceAll[#, Equal -> Rule] &;
 toEquals = ReplaceAll[#, Rule -> Equal] &;
+
+
+powerExpand = modify[_Power, PowerExpand];
+collectLogs = With[
+  {
+    rules = {
+      a_. Log[x_] + a_. Log[y_] :> a Log[x y]
+      , a_. Log[x_] + b_. Log[y_] :> a Log[x/y] /; a == (-b)
+    }
+  },
+  ReplaceRepeated[#, rules] &
+];
+changeLogPower[power_] := ReplaceAll[#, Log[x_] :> (1/power) * Log[x^power]] &;
 
 
 End[];

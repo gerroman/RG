@@ -166,4 +166,37 @@ VerificationTest[
   ,
   a == b
 ]
+
+VerificationTest[
+  Sqrt[a^2] + Log[b^2] // powerExpand
+  ,
+  a + Log[b^2]
+]
+
+VerificationTest[
+  Log[a] + Log[b] // collectLogs
+  ,
+  Log[a b]
+]
+
+VerificationTest[
+  2 c Log[a] - 2 c Log[b] // collectLogs
+  ,
+  2 c Log[a/b]
+]
+
+VerificationTest[
+  Log[m] // changeLogPower[2]
+  ,
+  1/2 Log[m^2]
+]
+
+VerificationTest[
+  -2 Log[m] + Log[s] //
+    modify[{Log[m]}, changeLogPower[2]] //
+    collectLogs // changeLogPower[-1]
+  ,
+  Log[s/m^2]
+]
+
 EndTestSection[]
