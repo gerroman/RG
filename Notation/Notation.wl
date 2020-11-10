@@ -40,7 +40,7 @@ momentum::usage = "
 mass::usage = "
   mass[p] represent mass of 4-vector (i.e. energy[p]^2 - abs[momentum[p]]^2 == mass[p]^2) of 4-vector
 ";
-m::usage = "symbol for mass";
+Global`m::usage = "symbol for mass";
 
 
 abs::usage = "
@@ -152,7 +152,7 @@ matrixElement /: Format[matrixElement, TraditionalForm] = (
 
 
 setIndexed[mass];
-mass /: Format[mass, TraditionalForm] = m;
+mass /: Format[mass, TraditionalForm] = Global`m;
 
 energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
 
@@ -208,7 +208,7 @@ setIndexed[crossSection];
 Format[crossSection, TraditionalForm] := \[Sigma];
 
 
-Protect[\[ScriptCapitalM], m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma]];
+Protect[\[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma]];
 
 
 End[]
