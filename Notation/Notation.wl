@@ -130,6 +130,35 @@ prime`pcms::usage = "
 ";
 
 
+electron::usage = "
+  electron
+";
+positron::usage = "
+  positron
+";
+Global`e::usage = "
+  e symbol for electron
+";
+bar`e::usage = "
+  bar`e symbol for positron
+";
+photon::usage = "
+  photon
+";
+muon::usage = "
+  muon
+";
+antimuon::usage = "
+  antimuon
+";
+Global`\[Mu]::usage = "
+  \[Mu] symbol for muon
+";
+bar`\[Mu]::usage = "
+  bar`mu symbol for antimuon
+";
+
+
 Begin["`Private`"]
 
 
@@ -230,10 +259,17 @@ setIndexed[\[ScriptP]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
 prime`pcms /: Format[prime`pcms, TraditionalForm] := \[ScriptP]["cms", "\[Prime]"];
 
+electron /: Format[electron, TraditionalForm] = Global`e;
+positron /: Format[positron, TraditionalForm] = OverBar[Global`e];
+
+muon /: Format[muon, TraditionalForm] = Global`\[Mu];
+antimuon /: Format[antimuon, TraditionalForm] = OverBar[Global`\[Mu]];
+photon /: Format[photon, TraditionalForm] = \[Gamma];
 
 Protect[
-  \[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
-  Global`d, \[ScriptP], pcms, prime`pcms
+  \[ScriptCapitalM], Global`m, Global`g, Global`e, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
+  Global`d, \[ScriptP], pcms, prime`pcms, Global`e, Global`\[Mu], bar`e, bar`\[Mu],
+  electron, positron, muon, antimuon
 ];
 
 

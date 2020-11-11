@@ -68,28 +68,28 @@ VerificationTest[
 
 
 VerificationTest[
-  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[\[Mu], \[Nu]]], "TeXFragment"])
+  (setLorentzIndex[\[Rho], \[Nu]]; ExportString[TraditionalForm[sp[\[Rho], \[Nu]]], "TeXFragment"])
   ,
-   "\\[g^{\\mu \\nu }\\]\n\n"
+   "\\[g^{\\rho \\nu }\\]\n\n"
 ]
 
 VerificationTest[
-  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[a, \[Nu]]], "TeXFragment"])
+  (setLorentzIndex[\[Rho], \[Nu]]; ExportString[TraditionalForm[sp[a, \[Nu]]], "TeXFragment"])
   ,
    "\\[a^{\\nu }\\]\n\n"
 ]
 
 VerificationTest[
-  (setLorentzIndex[\[Mu], \[Nu]]; ExportString[TraditionalForm[sp[\[Nu], a + b]], "TeXFragment"])
+  (setLorentzIndex[\[Rho], \[Nu]]; ExportString[TraditionalForm[sp[\[Nu], a + b]], "TeXFragment"])
   ,
   "\\[\\langle a+b\\rangle ^{\\nu }\\]\n\n"
 ]
 
 
 VerificationTest[
-  ExportString[TraditionalForm[\[Gamma][\[Mu]]], "TeXFragment"]
+  ExportString[TraditionalForm[\[Gamma][\[Rho]]], "TeXFragment"]
   ,
-  "\\[\\gamma ^{\\mu }\\]\n\n"
+  "\\[\\gamma ^{\\rho }\\]\n\n"
 ]
 
 
@@ -142,21 +142,21 @@ VerificationTest[
 ]
 
 VerificationTest[
-  setPrime[\[Mu]]
+  setPrime[\[Rho]]
   ,
-  prime`\[Mu]
+  prime`\[Rho]
 ]
 
 VerificationTest[
-  setBar[\[Mu]]
+  setBar[\[Rho]]
   ,
-  bar`\[Mu]
+  bar`\[Rho]
 ]
 
 VerificationTest[
   setLorentzIndex[a]
   ,
-  {\[Mu], prime`\[Mu], \[Nu], prime`\[Nu], a, prime`a}
+  {\[Rho], prime`\[Rho], \[Nu], prime`\[Nu], a, prime`a}
 ]
 
 VerificationTest[
@@ -170,10 +170,18 @@ VerificationTest[
   ,
   "\\[\\mathit{p}_{\\text{cms}}\\]\n\n"
 ]
+
+
 VerificationTest[
   ExportString[TraditionalForm[prime`pcms], "TeXFragment"]
   ,
   "\\[\\mathit{p}_{\\text{cms}}{}^{\\prime }\\]\n\n"
+]
+
+VerificationTest[
+  ExportString[TraditionalForm/@{electron, positron, muon, antimuon, photon}, "TeXFragment"]
+  ,
+  "\\[\\left\\{e,\\bar{e},\\mu ,\\bar{\\mu },\\gamma \\right\\}\\]\n\n"
 ]
 
 EndTestSection[]
