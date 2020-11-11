@@ -165,5 +165,15 @@ VerificationTest[
   "\\[\\frac{dr}{dx}\\]\n\n"	
 ]
 
+VerificationTest[
+  ExportString[TraditionalForm[pcms], "TeXFragment"]
+  ,
+  "\\[\\mathit{p}_{\\text{cms}}\\]\n\n"
+]
+VerificationTest[
+  ExportString[TraditionalForm[prime`pcms], "TeXFragment"]
+  ,
+  "\\[\\mathit{p}_{\\text{cms}}{}^{\\prime }\\]\n\n"
+]
 
 EndTestSection[]

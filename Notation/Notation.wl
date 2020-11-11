@@ -118,6 +118,18 @@ Global`d::usage = "
   d symbol to use as differential
 ";
 
+
+pcms::usage = "
+  pcms symbol for intitial particles momentum in the center of mass frame for the process 2->2
+";
+prime`pcms::usage = "
+  prime`pcms symbol for final particles momentum in the center of mass frame for the process 2->2
+";
+\[ScriptP]::usage = "
+  \[ScriptP] represent symbol for momentum
+";
+
+
 Begin["`Private`"]
 
 
@@ -214,7 +226,15 @@ Format[crossSection, TraditionalForm] := \[Sigma];
 Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
 
 
-Protect[\[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v, Global`d];
+setIndexed[\[ScriptP]];
+pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
+prime`pcms /: Format[prime`pcms, TraditionalForm] := \[ScriptP]["cms", "\[Prime]"];
+
+
+Protect[
+  \[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
+  Global`d, \[ScriptP], pcms, prime`pcms
+];
 
 
 End[]
