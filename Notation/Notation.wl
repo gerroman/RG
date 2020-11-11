@@ -114,6 +114,10 @@ crossSection::usage = "
 ";
 \[Sigma]::usage = "symbol for cross sections";
 
+Global`d::usage = "
+  d symbol to use as differential
+";
+
 Begin["`Private`"]
 
 
@@ -186,7 +190,6 @@ setLorentzIndex[mu_Symbol] := (
 );
 setLorentzIndex[mu__] := setLorentzIndex[{mu}];
 
-
 Format[\[Gamma][mu_], TraditionalForm] := Superscript[\[Gamma], mu];
 
 Unprotect[Times];
@@ -208,7 +211,10 @@ setIndexed[crossSection];
 Format[crossSection, TraditionalForm] := \[Sigma];
 
 
-Protect[\[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma]];
+Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
+
+
+Protect[\[ScriptCapitalM], Global`m, Global`g, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v, Global`d];
 
 
 End[]

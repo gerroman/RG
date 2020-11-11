@@ -158,4 +158,12 @@ VerificationTest[
   ,
   {\[Mu], prime`\[Mu], \[Nu], prime`\[Nu], a, prime`a}
 ]
+
+VerificationTest[
+  ExportString[TraditionalForm[d[r]/d[x]], "TeXFragment"]
+  ,
+  "\\[\\frac{dr}{dx}\\]\n\n"	
+]
+
+
 EndTestSection[]
