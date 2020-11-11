@@ -121,7 +121,7 @@ VerificationTest[
 
 VerificationTest[
   setInvariants[
-    {p1, p2, -p3, -p4},
+    {{p1, p2}, {p3, p4}},
     {m1, m2, m3, m4},
     {},
     {
@@ -163,7 +163,7 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Normal[getKinematicsCMS[{p1, p2}, {p3, p4}, {s, \[Theta]}]]
+  Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
   ,
   {
     abs[momentum[p1]] -> pcms,
@@ -191,7 +191,7 @@ VerificationTest[Block[{p1, p2, p3, p4},
   p2 /: mass[p2] = 0;
   p3 /: mass[p3] = 0;
   p4 /: mass[p4] = 0;
-  Normal[getKinematicsCMS[{p1, p2}, {p3, p4}, {s, \[Theta]}]]
+  Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
   ]
   ,
   {
@@ -211,6 +211,82 @@ VerificationTest[Block[{p1, p2, p3, p4},
     theta[momentum[p3], momentum[p4]] -> Pi,
     pcms^2 -> s/4,
     prime`pcms^2 -> s/4
+  }
+]
+
+VerificationTest[
+  Block[
+    {
+      l1, p1,l2, p2, rules, q, r, m, M, s, t, u
+    },
+    With[{momenta = {{l1, p1}, {l2, p2}}},
+    l1 /: mass[l1] = m;
+    l2 /: mass[l2] = m;
+    p1 /: mass[p1] = M;
+    p2 /: mass[p2] = M;
+    rules = setInvariants[
+      momenta,
+      mass /@ Join@@momenta,
+      {r -> l1 + p1, q -> l1 - l2},
+      {sp[r] -> s, sp[q] -> t}
+    ];
+    getMandelstam[momenta, {s, t, u}] //
+      {Identity, modify[_sp, Distribute] /* ReplaceAll[rules] /* Expand} // Through
+    ]
+  ]
+  ,
+  {
+    {
+      s + t + u == 2m^2 + 2M^2,
+      s == sp[l1 + p1],
+      t == sp[l1 - l2],
+      u == sp[l1 - p2]
+    },
+    {
+      s + t + u == 2m^2 + 2M^2,
+      True,
+      True,
+      u == 2m^2 + 2M^2 - s - t
+    }
+  }
+]
+
+VerificationTest[
+  Block[
+    {
+      l1, p1,l2, p2, rules
+    },
+    With[
+      {
+        momenta = {{l1, p1}, {l2, p2}}
+      },
+      l1 /: mass[l1] = 0;
+      p1 /: mass[p1] = 0;
+      l2 /: mass[l2] = m;
+      p2 /: mass[p2] = m;
+      rules = getKinematicsCMS[momenta, {s, \[Theta]}];
+      getMandelstam[momenta, {s, t, u}] //
+        {
+	  Identity,
+	  modify[_sp, Distribute] /* expandScalarProduct /*
+	  ReplaceAll[rules] /* Expand /* powerExpand /* factorIt[{(-2)*pcms}]
+	} // Through
+    ]
+  ]
+  ,
+  {
+    {
+      s + t + u == 2*m^2,
+      s == sp[l1 + p1],
+      t == sp[l1 - l2],
+      u == sp[l1 - p2]
+    },
+    {
+      s + t + u == 2*m^2,
+      s == 4*pcms^2,
+      t == m^2 - 2 * pcms * (Sqrt[m^2 + prime`pcms^2] - prime`pcms*Cos[θ]),
+      u == m^2 - 2 * pcms * (Sqrt[m^2 + prime`pcms^2] + prime`pcms*Cos[θ])
+    }
   }
 ]
 

@@ -39,6 +39,9 @@ getKinematicsCMS::usage = "
   getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}] return kinematics \ 
 rules for the center of mass frame
 ";
+getMandelstam::usage = "
+  getMandelstam[{{li, pi}, {lf, pf}}] return equations for mandelstam variables
+";
 
 Begin["`Private`"];
 
@@ -99,9 +102,13 @@ replaceMass[particle_, All] := ReplaceAll[#,
 
 
 setInvariants[
-    ps:{p1_Symbol, __}, ms_List, pRules:{Rule[_Symbol, _]...}, spRules_List
+    {pIn:{p1_Symbol, ___Symbol}, pOut:{___Symbol}},
+    ms_List,
+    pRules:{Rule[_Symbol, _]...},
+    spRules_List
   ] := Module[
   {
+    ps = Join[pIn, pOut],
     ruleConservation,
     ruleMasses,
     psAll,
@@ -113,16 +120,20 @@ setInvariants[
   },
   spFixed = Cases[spRules, _sp];
   spDefinitions = DeleteCases[spRules, Alternatives@@spFixed];
-  ruleConservation = Solve[Total[ps] == 0, p1] // Flatten // First;
-  ruleMasses = Thread[Rule[Map[sp,ps], ms^2]];
+  ruleConservation = p1 -> Total[Join[(-1) * Rest[pIn], pOut]];
+  ruleMasses = Thread[Rule[Map[sp, ps], ms^2]];
+
   psAll = ps~Join~Map[First, pRules];
-  eqs = With[{lhs = Flatten[Outer[sp, psAll, psAll]]},
-      Thread[lhs == (lhs // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation])]
+  eqs = With[
+    {
+      lhs = Flatten[Outer[sp, psAll, psAll]]
+    },
+    Thread[lhs == (lhs // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation])]
   ] // modify[_sp, Distribute] // ReplaceAll[ruleMasses] // 
-    Union // DeleteCases[True] // modify[Equal[(-1)_sp, _], Map[-#&]];
+    Union // DeleteCases[True] // modify[Equal[(-1) * (_sp), _], Map[-#&]];
   eqs = eqs~Join~(
-    (Equal@@@spDefinitions) // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation] // modify[_sp, Distribute] // 
-    ReplaceAll[ruleMasses]
+    (Equal@@@spDefinitions) // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation]
+    // modify[_sp, Distribute] // ReplaceAll[ruleMasses]
   );
   spVars = Union@Cases[{eqs}, _sp, Infinity] // DeleteCases[#, Alternatives@@spFixed]&;
   spSolutions = Solve[eqs, spVars] // Flatten // Expand;
@@ -140,7 +151,7 @@ expandScalarProduct := ReplaceAll[{
   )
 }];
 
-getKinematicsCMS[{p1_, p2_}, {p3_, p4_}, {s_, \[Theta]_}] := Module[
+getKinematicsCMS[{{p1_, p2_}, {p3_, p4_}}, {s_, \[Theta]_}] := Module[
   {rule, var},
   rule = Association[{
     abs@momentum[p1] -> pcms,
@@ -174,6 +185,14 @@ getKinematicsCMS[{p1_, p2_}, {p3_, p4_}, {s_, \[Theta]_}] := Module[
   
   Return[rule]
 ];
+
+
+getMandelstam[{pIn:{li_, pi_}, pOut:{lf_, pf_}}, {s_, t_, u_}] := {
+  s + t + u == Total[(mass[#]^2)& /@ (pIn~Join~pOut)],
+  s == sp[li + pi],
+  t == sp[li - lf],
+  u == sp[li - pf]
+};
 
 
 End[];
