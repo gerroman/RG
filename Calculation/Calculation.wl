@@ -83,6 +83,11 @@ changeLogPower::usage = "
 assuming real positive arguments
 ";
 
+complexToAbs::usage = "
+  complexToAbs replace products expr * Conjugate[expr] to Abs[expr]
+";
+
+
 Begin["`Private`"];
 
 
@@ -221,6 +226,13 @@ collectLogs = With[
   ReplaceRepeated[#, rules] &
 ];
 changeLogPower[power_] := ReplaceAll[#, Log[x_] :> (1/power) * Log[x^power]] &;
+
+
+complexToAbs[pattern_] = ReplaceAll[#,
+  {
+    product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
+  }
+]&;
 
 
 End[];

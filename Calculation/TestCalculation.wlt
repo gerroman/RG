@@ -199,4 +199,17 @@ VerificationTest[
   Log[s/m^2]
 ]
 
+VerificationTest[
+  a Conjugate[a] // {Identity, complexToAbs[a]} // Through
+  ,
+  {a Conjugate[a], Abs[a]^2}
+]
+
+VerificationTest[
+  c a b Conjugate[a b] // {Identity, complexToAbs[a b]} // Through
+  ,
+  {c a b Conjugate[a b], c Abs[a b]^2}
+]
+
+
 EndTestSection[]
