@@ -8,11 +8,11 @@ run[fname_] := (
   report = TestReport[fname];
   succeed = report["TestsSucceededCount"];
   failed = report["TestsFailedCount"];
-  If[failed == 0,
-    Print[ToString@StringForm["[Success] for `` tests", succeed]],
+  If[report["AllTestsSucceeded"],
+    Print[ToString@StringForm["[Success] `` tests for ``", succeed, report["TimeElapsed"]]],
     (
       Print[ToString@StringForm["[Failed] for `` tests of ``", failed, failed + succeed]];
-      Throw[{fname, report["TestsFailedWrongResults"] // First}];
+     Throw[{fname, report["TestsFailedWrongResults"] // First}];
     )
   ];
 );
