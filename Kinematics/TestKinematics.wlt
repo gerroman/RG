@@ -2,7 +2,6 @@ BeginTestSection["TestKinematics"]
 
 Needs["RG`Kinematics`"];
 
-
 VerificationTest[
   sp[a] == sp[a, a]
   ,
@@ -162,4 +161,57 @@ VerificationTest[
   ,
   4 \[ScriptCapitalE]^2
 ]
+
+VerificationTest[
+  Normal[getKinematicsCMS[{p1, p2}, {p3, p4}, {s, \[Theta]}]]
+  ,
+  {
+    abs[momentum[p1]] -> pcms,
+    abs[momentum[p2]] -> pcms,
+    abs[momentum[p3]] -> prime`pcms,
+    abs[momentum[p4]] -> prime`pcms,
+    energy[p1] -> Sqrt[mass[p1]^2 + pcms^2],
+    energy[p2] -> Sqrt[mass[p2]^2 + pcms^2],
+    energy[p3] -> Sqrt[mass[p3]^2 + prime`pcms^2],
+    energy[p4] -> Sqrt[mass[p4]^2 + prime`pcms^2],
+    theta[momentum[p1], momentum[p2]] -> Pi,
+    theta[momentum[p1], momentum[p3]] -> θ,
+    theta[momentum[p1], momentum[p4]] -> Pi - θ,
+    theta[momentum[p2], momentum[p3]] -> Pi - θ,
+    theta[momentum[p2], momentum[p4]] -> θ,
+    theta[momentum[p3], momentum[p4]] -> Pi,
+    pcms^2 -> ((s - (mass[p1] - mass[p2])^2)*(s - (mass[p1] + mass[p2])^2))/(4*s),
+    prime`pcms^2 -> ((s - (mass[p3] - mass[p4])^2)*(s - (mass[p3] + mass[p4])^2))/(4*s)
+  }
+]
+
+
+VerificationTest[Block[{p1, p2, p3, p4},
+  p1 /: mass[p1] = 0;
+  p2 /: mass[p2] = 0;
+  p3 /: mass[p3] = 0;
+  p4 /: mass[p4] = 0;
+  Normal[getKinematicsCMS[{p1, p2}, {p3, p4}, {s, \[Theta]}]]
+  ]
+  ,
+  {
+    abs[momentum[p1]] -> pcms,
+    abs[momentum[p2]] -> pcms,
+    abs[momentum[p3]] -> prime`pcms,
+    abs[momentum[p4]] -> prime`pcms,
+    energy[p1] -> Sqrt[pcms^2],
+    energy[p2] -> Sqrt[pcms^2],
+    energy[p3] -> Sqrt[prime`pcms^2],
+    energy[p4] -> Sqrt[prime`pcms^2],
+    theta[momentum[p1], momentum[p2]] -> Pi,
+    theta[momentum[p1], momentum[p3]] -> θ,
+    theta[momentum[p1], momentum[p4]] -> Pi - θ,
+    theta[momentum[p2], momentum[p3]] -> Pi - θ,
+    theta[momentum[p2], momentum[p4]] -> θ,
+    theta[momentum[p3], momentum[p4]] -> Pi,
+    pcms^2 -> s/4,
+    prime`pcms^2 -> s/4
+  }
+]
+
 EndTestSection[]

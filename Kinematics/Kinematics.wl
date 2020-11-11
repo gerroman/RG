@@ -35,6 +35,10 @@ expandScalarProduct::usage = "
   expandScalarProduct[expr] replace scalar products using energies, momenta and spherical angles
 ";
 
+getKinematicsCMS::usage = "
+  getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}] return kinematics \ 
+rules for the center of mass frame
+";
 
 Begin["`Private`"];
 
@@ -135,6 +139,41 @@ expandScalarProduct := ReplaceAll[{
     - abs[momentum[a]] * abs[momentum[b]] * Cos[theta[momentum[a], momentum[b]]]
   )
 }];
+
+getKinematicsCMS[{p1_, p2_}, {p3_, p4_}, {s_, \[Theta]_}] := Module[
+  {rule, var},
+  rule = Association[{
+    abs@momentum[p1] -> pcms,
+    abs@momentum[p2] -> pcms,
+    abs@momentum[p3] -> prime`pcms,
+    abs@momentum[p4] -> prime`pcms
+  }];
+
+  Scan[
+    AppendTo[
+      rule,
+      energy[#] // rewriteIt[replaceEnergy[#, All] /* ReplaceAll[rule]] // toRules
+    ] &,
+    {p1, p2, p3, p4}
+  ];
+
+  AppendTo[rule, theta[momentum[p1], momentum[p2]] -> \[Pi]];
+  AppendTo[rule, theta[momentum[p1], momentum[p3]] -> \[Theta]];
+  AppendTo[rule, theta[momentum[p1], momentum[p4]] -> \[Pi] - \[Theta]];
+  AppendTo[rule, theta[momentum[p2], momentum[p3]] -> \[Pi] - \[Theta]];
+  AppendTo[rule, theta[momentum[p2], momentum[p4]] -> \[Theta]];
+  AppendTo[rule, theta[momentum[p3], momentum[p4]] -> \[Pi]];
+
+  AppendTo[rule,
+    pcms^2 -> ((s - (mass[p1] - mass[p2])^2)*(s - (mass[p1] + mass[p2])^2))/(4*s)
+  ];
+
+  AppendTo[rule,
+    prime`pcms^2 -> ((s - (mass[p3] - mass[p4])^2)*(s - (mass[p3] + mass[p4])^2))/(4*s)
+  ];
+  
+  Return[rule]
+];
 
 
 End[];
