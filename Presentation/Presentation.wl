@@ -155,7 +155,7 @@ getRunner[] := CellPrint[TextCell[
     )]
    } // Column],
    GeneratedCell -> False,
-   TextAlingment -> Center
+   TextAlignment -> Center
    ]
 ];
 
