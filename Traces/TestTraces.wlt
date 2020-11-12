@@ -4,31 +4,31 @@ BeginTestSection["TestTraces"]
 Needs["RG`Traces`"];
 
 
-VerificationTest[
+VerificationTest[(* #1 *)
   tr[id] // traceCalc
   ,
   4
 ]
 
-VerificationTest[
+VerificationTest[(* #2 *)
   tr[\[Gamma][\[Mu]]] // traceCalc
   ,
   0
 ]
 
-VerificationTest[
+VerificationTest[(* #3 *)
   tr[Dot[\[Gamma][\[Mu]],\[Gamma][\[Nu]]]] // traceCalc
   ,
   4 * sp[\[Mu], \[Nu]]
 ]
 
-VerificationTest[
+VerificationTest[(* #4 *)
   tr[Dot[\[Gamma][\[Mu]], \[Gamma][\[Nu]], \[Gamma][\[Rho]]]] // traceCalc
   ,
   0
 ]
 
-VerificationTest[
+VerificationTest[(* #5 *)
   tr[Dot[\[Gamma][a], \[Gamma][b], \[Gamma][c], \[Gamma][d]]] // traceCalc
   ,
   4 sp[a, b] sp[c, d]
@@ -36,7 +36,7 @@ VerificationTest[
   + 4 sp[a, d] sp[b, c]
 ]
 
-VerificationTest[
+VerificationTest[(* #6 *)
   Block[{
       traceScalars = {m},
       rule`sp = {
@@ -52,32 +52,32 @@ VerificationTest[
 ]
 
 
-VerificationTest[
+VerificationTest[(* #7 *)
   Conjugate[Dot[a, b]] // diracConjugate
   ,
   Conjugate[Dot[a, b]]
 ]
 
-VerificationTest[
+VerificationTest[(* #8 *)
   Conjugate[bar`u[p1].u[p2]] // diracConjugate
   ,
   bar`u[p2].u[p1]
 ]
 
-VerificationTest[
+VerificationTest[(* #9 *)
   Conjugate[Dot[bar`u[p1], \[Gamma][\[Mu]], u[p2]]] // diracConjugate
   ,
   Dot[bar`u[p2], \[Gamma][\[Mu]], u[p1]]
 ]
 
-VerificationTest[
+VerificationTest[(* #10 *)
   Conjugate[Dot[bar`v[p1], \[Gamma][\[Mu]], \[Gamma][\[Nu]], u[p2]]] // diracConjugate
   ,
   Dot[bar`u[p2], \[Gamma][\[Nu]], \[Gamma][\[Mu]], v[p1]]
 ]
 
 
-VerificationTest[
+VerificationTest[(* #11 *)
   Block[{p, traceScalars={m}},
     p /: mass[p] = m;
     bar`u[p].u[p] // spinSum[p] // traceCalc
@@ -86,7 +86,7 @@ VerificationTest[
   4*m
 ]
 
-VerificationTest[
+VerificationTest[(* #12 *)
   Block[{p, traceScalars={m}},
     p /: mass[p] = m;
     bar`v[p].v[p] // spinSum[p] // traceCalc
@@ -95,19 +95,19 @@ VerificationTest[
   -4*m
 ]
 
-VerificationTest[
+VerificationTest[(* #13 *)
   bar`u[p1].u[p2] * bar`u[p2].u[p1] // spinSum[p2]
   ,
   bar`u[p1].(\[Gamma][p2] + mass[p2] * id).u[p1]
 ]
 
-VerificationTest[
+VerificationTest[(* #14 *)
   bar`u[p1].u[p2] * bar`u[p2].u[p1] // spinSum[p1]
   ,
   bar`u[p2].(\[Gamma][p1] + mass[p1] * id).u[p2]
 ]
 
-VerificationTest[
+VerificationTest[(* #15 *)
   bar`u[p1].v[p2] * bar`v[p2].u[p1] // spinSum[]
   ,
   tr[

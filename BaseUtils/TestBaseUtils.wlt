@@ -2,7 +2,7 @@ BeginTestSection["TestBaseUtils"]
 
 Needs["RG`BaseUtils`"];
 
-VerificationTest[
+VerificationTest[(* #1 *)
   assert[Greater[1, 2]]
   ,
   Null
@@ -10,31 +10,31 @@ VerificationTest[
   {Assert::asrtfl}
 ]
 
-VerificationTest[
+VerificationTest[(* #2 *)
   assert[Greater[2, 1]]
   ,
   Null	
 ]
 
-VerificationTest[
+VerificationTest[(* #3 *)
   carryFirst[f][y1, y2][x]
   ,
   f[x, y1, y2]
 ]
 
-VerificationTest[
+VerificationTest[(* #4 *)
   carryLast[f][y1, y2][x]
   ,
   f[y1, y2, x]
 ]
 
-VerificationTest[
+VerificationTest[(* #5 *)
   carryFirst[f][][x]
   ,
   f[x]
 ]
 
-VerificationTest[
+VerificationTest[(* #6 *)
   carryLast[f][][x]
   ,
   f[x]
