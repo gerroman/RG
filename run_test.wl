@@ -32,8 +32,6 @@ If[result === Null,
     Print["Actual output  :\n", ToString@InputForm[result[[2]]["ActualOutput"]]];
     Print[];
     Print["Expected output:\n", ToString@InputForm[result[[2]]["ExpectedOutput"]]];
-    Print[];
-    Print["Actual output (InputForm):\n", ToString@InputForm[result[[2]]["ActualOutput"]]];
     Quit[255]
   )
 ];
