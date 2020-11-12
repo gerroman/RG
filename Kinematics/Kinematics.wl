@@ -27,7 +27,8 @@ replaceMass::usage = "
 
 
 setInvariants::usage = "
-  setInvariants[ps, ms, pRules, spRules] set up all scalar products 
+  setInvariants[{{l1, p1}, {l2, p2}}, {m1, M1, m2, m2}, {pRules}, {spRules}] set up all scalar products
+  setInvariants[ps, {}, pRules, spRules] automatically evalate masses applying mass on ps
 ";
 
 
@@ -101,11 +102,14 @@ replaceMass[particle_, All] := ReplaceAll[#,
 ]&;
 
 
+setInvariants[ps_List, {}, pRules_, spRules_] :=
+  setInvariants[ps, Map[mass, Flatten[ps]], pRules, spRules];
+
 setInvariants[
     {pIn:{p1_Symbol, ___Symbol}, pOut:{___Symbol}},
     ms_List,
     pRules:{Rule[_Symbol, _]...},
-    spRules_List
+    spRules:{(Rule[_sp, _]|_sp)...}
   ] := Module[
   {
     ps = Join[pIn, pOut],
@@ -116,30 +120,45 @@ setInvariants[
     spVars,
     spFixed,
     spDefinitions,
-    spSolutions
+    spSolutions,
+    result
   },
+  
   spFixed = Cases[spRules, _sp];
   spDefinitions = DeleteCases[spRules, Alternatives@@spFixed];
+
   ruleConservation = p1 -> Total[Join[(-1) * Rest[pIn], pOut]];
   ruleMasses = Thread[Rule[Map[sp, ps], ms^2]];
 
   psAll = ps~Join~Map[First, pRules];
+  
   eqs = With[
     {
       lhs = Flatten[Outer[sp, psAll, psAll]]
     },
-    Thread[lhs == (lhs // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation])]
-  ] // modify[_sp, Distribute] // ReplaceAll[ruleMasses] // 
-    Union // DeleteCases[True] // modify[Equal[(-1) * (_sp), _], Map[-#&]];
-  eqs = eqs~Join~(
-    (Equal@@@spDefinitions) // ReplaceRepeated[#, pRules]& // ReplaceAll[ruleConservation]
-    // modify[_sp, Distribute] // ReplaceAll[ruleMasses]
-  );
-  spVars = Union@Cases[{eqs}, _sp, Infinity] // DeleteCases[#, Alternatives@@spFixed]&;
-  spSolutions = Solve[eqs, spVars] // Flatten // Expand;
-  Return[spSolutions~Join~ruleMasses // Union];
-];
+    Thread@Equal[
+      (
+        (* do not use conservation law *)
+        lhs // ReplaceAll[#, ruleMasses]& // ReplaceAll[#, spDefinitions]&
+      ),
+      (
+        (* use conservation law & pRules*)
+        lhs // ReplaceAll[#, pRules]& // modify[_sp, ReplaceAll[#, ruleConservation]&] //
+	  modify[_sp, Distribute] // ReplaceAll[#, ruleMasses]& // ReplaceAll[#, spDefinitions]&
+      )
+    ] // Union// DeleteCases[True] (* drop m^2 == m^2 *)
+  ]; 
 
+  spVars = Union@Cases[eqs, _sp, Infinity] //
+    DeleteCases[#, Alternatives@@spFixed]&;
+  Assert[Length[spVars] == Length[eqs]];
+
+  spSolutions = Solve[eqs, spVars] // Flatten;
+  Assert[Length[spSolutions] == Length[spVars]];
+
+  result = Sort[Join[spSolutions, ruleMasses, spDefinitions] // Expand];
+  Return[result];
+];
 
 SetAttributes[theta, Orderless];
 theta[x_, x_] = 0;

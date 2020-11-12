@@ -2,50 +2,50 @@ BeginTestSection["TestKinematics"]
 
 Needs["RG`Kinematics`"];
 
-VerificationTest[
+VerificationTest[(* #1 *)
   sp[a] == sp[a, a]
   ,
   True
 ]
 
-VerificationTest[
+VerificationTest[(* #2 *)
   sp[2a, -3b]
   ,
   (-6) sp[a, b]
 ]
 
-VerificationTest[
+VerificationTest[(* #3 *)
   energy[p + q]
   ,
   energy[p] + energy[q]
 ]
 
-VerificationTest[
+VerificationTest[(* #4 *)
   energy[x p] // {Identity, pullFactors[x, energy]} // Through
   ,
   {energy[x p], x energy[p]}
 ]
 
-VerificationTest[
+VerificationTest[(* #5 *)
   momentum[p + q]
   ,
   momentum[p] + momentum[q]
 ]
 
-VerificationTest[
+VerificationTest[(* #6 *)
   momentum[x p] // {Identity, pullFactors[x, momentum]} // Through
   ,
   {momentum[x p], x momentum[p]}
 ]
 
-VerificationTest[
+VerificationTest[(* #7 *)
   {abs[1], abs[{a,b}], Abs[abs[momentum[p]]], abs[3 momentum[p]]}
   ,
   {1, abs[{a,b}], abs@momentum[p], 3 abs[momentum[p]]}
 ]
 
 
-VerificationTest[
+VerificationTest[(* #8 *)
   {
     energy[p],
     energy[p]^2,
@@ -64,7 +64,7 @@ VerificationTest[
 ]
 
 
-VerificationTest[
+VerificationTest[(* #9 *)
   {
     abs@momentum[p],
     abs@momentum[p]^2,
@@ -83,7 +83,7 @@ VerificationTest[
 ]
 
 
-VerificationTest[
+VerificationTest[(* #10 *)
   {
     mass[p],
     mass[p]^2,
@@ -101,25 +101,25 @@ VerificationTest[
   }
 ]
 
-VerificationTest[
+VerificationTest[(* #11 *)
   energy[p] // replaceEnergy[p, All]
   ,
   Sqrt[abs@momentum[p]^2 + mass[p]^2]
 ]
 
-VerificationTest[
+VerificationTest[(* #12 *)
   mass[p] // replaceMass[p, All]
   ,
   Sqrt[energy[p]^2 - abs@momentum[p]^2]
 ]
 
-VerificationTest[
+VerificationTest[(* #13 *)
   abs@momentum[p] // replaceMomentum[p, All]
   ,
   Sqrt[energy[p]^2 - mass[p]^2]
 ]
 
-VerificationTest[
+VerificationTest[(* #14 *)
   setInvariants[
     {{p1, p2}, {p3, p4}},
     {m1, m2, m3, m4},
@@ -144,13 +144,13 @@ VerificationTest[
   }
 ]
 
-VerificationTest[
+VerificationTest[(* #15 *)
   theta[a, b] == theta[b, a]
   ,
   True
 ]
 
-VerificationTest[
+VerificationTest[(* #16 *)
   (
     energy[a] = energy[b] = \[ScriptCapitalE];
     abs@momentum[a] = abs@momentum[b] = \[ScriptP];
@@ -162,7 +162,8 @@ VerificationTest[
   4 \[ScriptCapitalE]^2
 ]
 
-VerificationTest[
+
+VerificationTest[(* #17 *)
   Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
   ,
   {
@@ -185,36 +186,38 @@ VerificationTest[
   }
 ]
 
-
-VerificationTest[Block[{p1, p2, p3, p4},
+Block[
+  {p1, p2, p3, p4, s, \[Theta]},
   p1 /: mass[p1] = 0;
   p2 /: mass[p2] = 0;
   p3 /: mass[p3] = 0;
   p4 /: mass[p4] = 0;
-  Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
+
+  VerificationTest[(* #18 *)
+    Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
+    ,
+    {
+      abs[momentum[p1]] -> pcms,
+      abs[momentum[p2]] -> pcms,
+      abs[momentum[p3]] -> prime`pcms,
+      abs[momentum[p4]] -> prime`pcms,
+      energy[p1] -> Sqrt[pcms^2],
+      energy[p2] -> Sqrt[pcms^2],
+      energy[p3] -> Sqrt[prime`pcms^2],
+      energy[p4] -> Sqrt[prime`pcms^2],
+      theta[momentum[p1], momentum[p2]] -> Pi,
+      theta[momentum[p1], momentum[p3]] -> θ,
+      theta[momentum[p1], momentum[p4]] -> Pi - θ,
+      theta[momentum[p2], momentum[p3]] -> Pi - θ,
+      theta[momentum[p2], momentum[p4]] -> θ,
+      theta[momentum[p3], momentum[p4]] -> Pi,
+      pcms^2 -> s/4,
+      prime`pcms^2 -> s/4
+    }
   ]
-  ,
-  {
-    abs[momentum[p1]] -> pcms,
-    abs[momentum[p2]] -> pcms,
-    abs[momentum[p3]] -> prime`pcms,
-    abs[momentum[p4]] -> prime`pcms,
-    energy[p1] -> Sqrt[pcms^2],
-    energy[p2] -> Sqrt[pcms^2],
-    energy[p3] -> Sqrt[prime`pcms^2],
-    energy[p4] -> Sqrt[prime`pcms^2],
-    theta[momentum[p1], momentum[p2]] -> Pi,
-    theta[momentum[p1], momentum[p3]] -> θ,
-    theta[momentum[p1], momentum[p4]] -> Pi - θ,
-    theta[momentum[p2], momentum[p3]] -> Pi - θ,
-    theta[momentum[p2], momentum[p4]] -> θ,
-    theta[momentum[p3], momentum[p4]] -> Pi,
-    pcms^2 -> s/4,
-    prime`pcms^2 -> s/4
-  }
 ]
 
-VerificationTest[
+VerificationTest[(* #19 *)
   Block[
     {
       l1, p1,l2, p2, rules, q, r, m, M, s, t, u
@@ -251,7 +254,7 @@ VerificationTest[
   }
 ]
 
-VerificationTest[
+VerificationTest[(* #20 *)
   Block[
     {
       l1, p1,l2, p2, rules
@@ -288,6 +291,68 @@ VerificationTest[
       u == m^2 - 2 * pcms * (Sqrt[m^2 + prime`pcms^2] + prime`pcms*Cos[θ])
     }
   }
+]
+
+VerificationTest[(* #21 *)
+  setInvariants[
+    {{l, p}, {l1, p1}},
+    {},
+    {},
+    {
+      sp[l, p] -> mass[p] energy[l],
+      sp[l, l1] -> (mass[l]^2 + mass[l1]^2 - t) / 2
+    }
+  ]
+  ,
+  {
+    sp[l, l] -> mass[l]^2,
+    sp[l, l1] -> -t/2 + mass[l]^2/2 + mass[l1]^2/2,
+    sp[l, p] -> energy[l]*mass[p],
+    sp[l, p1] -> t/2 + mass[l]^2/2 - mass[l1]^2/2 + energy[l]*mass[p],
+    sp[l1, l1] -> mass[l1]^2,
+    sp[l1, p] -> t/2 + energy[l]*mass[p] + mass[p]^2/2 - mass[p1]^2/2,
+    sp[l1, p1] -> mass[l]^2/2 - mass[l1]^2/2 + energy[l]*mass[p] + mass[p]^2/2 - mass[p1]^2/2,
+    sp[p, p] -> mass[p]^2,
+    sp[p, p1] -> -t/2 + mass[p]^2/2 + mass[p1]^2/2,
+    sp[p1, p1] -> mass[p1]^2
+  }
+]
+
+Block[{p1, p2, p3, p4, k, \[Kappa], \[CapitalDelta], rules, \[Nu], m, M, \[Lambda]},
+VerificationTest[(* #22 *)
+  (
+    rules = setInvariants[
+      {
+        {p1, p2},
+        {p3, p4, k}
+      },
+      {m, M, m, M, \[Lambda]},
+      {},
+      {
+        sp[p1, p2] -> \[Nu],
+        sp[k, p2] -> \[Kappa][2] + \[Lambda]^2 / 2,
+        sp[k, p4] -> \[Kappa][4] - \[Lambda]^2 / 2,
+        sp[p1, p3] -> (\[CapitalDelta][1]^2 + 2 m^2) / 2,
+        sp[k, p1] -> \[Kappa] - (\[Kappa][2] + \[Lambda]^2 / 2) + \[Lambda]^2 /2
+      }
+    ];
+    {
+      sp[p1 + p2],
+      sp[p1 + p2 - k],
+      sp[p2 - k],
+      sp[p1 - p3],
+      sp[p4 + k]
+    } // modify[_sp, Distribute] // ReplaceAll[rules] // Expand
+  )
+  ,
+  {
+    2 \[Nu] + m^2 + M^2,
+    2 \[Nu]  + m^2 + M^2 - 2 \[Kappa],
+    M^2 - 2 \[Kappa][2],
+    - \[CapitalDelta][1]^2,
+    2 \[Kappa][4] + M^2
+  }
+  ]
 ]
 
 EndTestSection[]
