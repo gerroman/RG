@@ -29,11 +29,11 @@ If[result === Null,
     Print["[Failed]: first failed test in the file ", result[[1]]];
     Print["\n[Test]: #", result[[2]]["TestIndex"]];
     Print[];
-    Print["Actual output  :\n", ToString[result[[2]]["ActualOutput"]]];
+    Print["Actual output  :\n", ToString@InputForm[result[[2]]["ActualOutput"]]];
     Print[];
-    Print["Expected output:\n", ToString[result[[2]]["ExpectedOutput"]]];
+    Print["Expected output:\n", ToString@InputForm[result[[2]]["ExpectedOutput"]]];
     Print[];
-    Print["Actual output (InputForm):\n", InputForm[result[[2]]["ActualOutput"]]];
+    Print["Actual output (InputForm):\n", ToString@InputForm[result[[2]]["ActualOutput"]]];
     Quit[255]
   )
 ];
