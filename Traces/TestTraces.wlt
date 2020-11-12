@@ -116,4 +116,17 @@ VerificationTest[(* #15 *)
   ]
 ]
 
+VerificationTest[(* #16 *)
+  {sp[a, b] * sp[b, c], sp[a, b]^2, sp[b, b]} // contractLorentzIndices[{b}]
+  ,
+  {sp[a, c], sp[a, a], 4}
+]
+
+VerificationTest[(* #17 *)
+  setLorentzIndex[\[Mu], \[Nu]];
+  sp[a, \[Nu]] sp[b, \[Mu]] sp[\[Mu], \[Nu]] // contractLorentzIndices[]
+  ,
+  sp[a, b]
+]
+
 EndTestSection[]

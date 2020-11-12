@@ -19,13 +19,14 @@ tr::usage = "
 traceScalars::usage = "
   traceScalars = {...} set scalars to pull out of traces
 ";
+
 traceCalc::usage = "
   traceCalc[expr] calculate trace of \[Gamma] matrices dot product
 ";
+
 contractLorentzIndices::usage = "
   contractLorentzIndices[indexes][expr] contracts free Lorentz indices
 ";
-
 
 diracConjugate::usage = "
   diracConjugate[expr] perform conjugation for fermion line
@@ -97,7 +98,7 @@ contractLorentzIndices[indices_List] := With[
   ]
 ];
 contractLorentzIndices[indices__] := contractLorentzIndices[{indices}];
-
+contractLorentzIndices[] := contractLorentzIndices[RG`Notation`lorentzIndexes];
 
 diracConjugate = With[
   {
