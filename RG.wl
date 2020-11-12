@@ -1,7 +1,7 @@
 (* ::Text:: *)
 (*RG.wl: base file to load all subpackages*)
 
-Get /@ {
+Needs /@ {
   "RG`BaseUtils`"
   , "RG`Presentation`"
   , "RG`Calculation`"
