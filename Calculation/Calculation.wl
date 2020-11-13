@@ -159,8 +159,7 @@ factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := 
 pullIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
     rules = Map[
       x \[Function] {
-        func[a__, x * b_., c___] :> x modifier[Map[ (# / x) &, func[a, x b, c]]],
-        func[a___, x * b_., c__] :> x modifier[Map[ (# / x) &, func[a, x b, c]]]
+        func[x * b_., a__] :> x modifier[Map[ (# / x) &, func[x b, a]]]
       },
       xs
     ] // Flatten
@@ -169,8 +168,7 @@ pullIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := Wit
 ];
 pullIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
     rules = {
-        func[a__, (x:pattern) * b_., c___] :> x modifier[Map[ (# / x) &, func[a, x b, c]]],
-        func[a___, (x:pattern) * b_., c__] :> x modifier[Map[ (# / x) &, func[a, x b, c]]]
+        func[(x:pattern) * b_., a__] :> x modifier[Map[ (# / x) &, func[x b, a]]]
       }
   },
   FixedPoint[ReplaceAll[rules], #, maxIter] &
