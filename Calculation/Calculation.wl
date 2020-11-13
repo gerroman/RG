@@ -156,30 +156,23 @@ factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := 
 ];
 
 
-pullIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    rules = Map[
-      x \[Function] {
-        func[x * b_., a_] :> x modifier[Map[ (# / x) &, func[x b, a]]]
-      },
-      xs
-    ] // Flatten
-  },
-  FixedPoint[ReplaceAll[rules], #, maxIter] &
-];
-pullIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
+pullIt[xs:{_, __}, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] :=
+  pullIt[Alternatives@@xs, modifier, func, maxIter];
+pullIt[{x_}, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] :=
+  pullIt[x, modifier, func, maxIter];
+pullIt[x_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
     rules = {
-        func[x_ * b_., a_] :> x modifier[Map[ (# / x) &, func[x b, a]]] /; MatchQ[x, pattern]
+        func[x * b_., a_] :> x modifier[Map[ (# / x) &, func[x b, a]]] 
       }
   },
   FixedPoint[ReplaceAll[rules], #, maxIter] &
 ];
 
+
 powersPattern[xs_List] := Subsets[xs] // Reverse //
   Map[#^_. &, #, {2}] & //
   Apply[Times, #, {1}] & // 
   PowerExpand // ReplaceAll[x_ y_Optional :> y];
-
-
 
 rewriteIt[Equal[lhs_, rhs_], func_] := Equal[lhs, func[rhs]]
 
