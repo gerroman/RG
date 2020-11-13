@@ -106,7 +106,8 @@ colorize[pattern_] := Function[expr,
 colorize[xs__] := colorize[{xs}];
 
 getRunner[] := getRunner[EvaluationNotebook[]];
-getRunner[nb_NotebookObject] := CreatePalette[{
+getRunner[nb_NotebookObject] := CreateWindow[PaletteNotebook[
+  Grid[{{
    Button["Evaluate Cells", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
@@ -130,12 +131,20 @@ getRunner[nb_NotebookObject] := CreatePalette[{
      ];
      NotebookFind[nb, "in", All, CellTags];
      }],
+   Button["Print to PDF", (
+     SetSelectedNotebook[nb];
+     NotebookPrint[nb, Interactive->True]
+   )],
+   Button["Help",
+     FrontEndExecute[FrontEndTokenExecute[nb, "SelectionHelpDialog"]]
+   ]},
+   {
    Button["Show Code", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
      NotebookFind[nb, "Input", All, CellStyle];
      NotebookFind[nb, "in", All, CellTags];
-     )],
+   )],
    Button["Clear All Outputs", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
@@ -149,26 +158,6 @@ getRunner[nb_NotebookObject] := CreatePalette[{
        FrontEndToken[nb, "DeleteGeneratedCells"]
      ];
      NotebookFind[nb, "in", All, CellTags];
-     )],
-   (* TODO: it does not work properly
-   Button["Clear & Quit", (
-     SetSelectedNotebook[nb];
-     NotebookFind[nb, "in", All, CellTags];
-     FrontEndExecute[
-       FrontEndToken[nb, "ExpandSelection"]
-     ];
-     FrontEndExecute[
-       FrontEndToken[nb, "SelectionOpenAllGroups"]
-     ]; 
-     FrontEndExecute[
-       FrontEndToken[nb, "DeleteGeneratedCells"]
-     ];
-     NotebookFind[nb, "in", All, CellTags];
-     Quit[];
-     )],*)
-   Button["Print to PDF", (
-     SetSelectedNotebook[nb];
-     NotebookPrint[nb, Interactive->True]
    )],
    Button["Get handouts", (
       Module[
@@ -180,8 +169,17 @@ getRunner[nb_NotebookObject] := CreatePalette[{
         NotebookSave[nb2, temp]
 	SetSelectedNotebook[nb2];
       ]
-    )]
-   } // Column];
+    )],
+   Button["Quit", (
+       SetSelectedNotebook[nb];
+       NotebookClose[ButtonNotebook[]];
+       Quit[];
+     )]
+  }} // Transpose, Spacings -> {0, 0}]
+  ],
+  WindowTitle -> "Run_" <> Last[FileNameSplit[NotebookFileName[nb]]],
+  WindowFloating -> True
+];
 
 
 OverTilde := carryFirst;
