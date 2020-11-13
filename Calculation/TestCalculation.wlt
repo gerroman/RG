@@ -212,4 +212,10 @@ VerificationTest[(* #33 *)
 ]
 
 
+VerificationTest[(* #34 *)
+  (a - b)^2 // changeSign[a - _]
+  ,
+  (b - a)^2
+]
+
 EndTestSection[]

@@ -187,7 +187,7 @@ rewriteIt[Equal[lhs_, rhs_], func_] := Equal[lhs, func[rhs]]
 
 
 changeSign[xs_List] := With[{
-    rules = Map[x \[Function] (x^(p_.) expr_ :> (-x)^p (-1)^p expr), xs]
+    rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
   },
   ReplaceAll[rules]
 ];
