@@ -105,59 +105,83 @@ colorize[pattern_] := Function[expr,
 ];
 colorize[xs__] := colorize[{xs}];
 
-
-getRunner[] := CellPrint[TextCell[
-  PaletteNotebook[{
+getRunner[] := getRunner[EvaluationNotebook[]];
+getRunner[nb_NotebookObject] := CreatePalette[{
    Button["Evaluate Cells", (
-     NotebookLocate["in"];
-     FrontEndTokenExecute["ExpandSelection"];
-     FrontEndTokenExecute["SelectionOpenAllGroups"];
-     FrontEndTokenExecute["EvaluateCells"];
-     NotebookLocate["in"];
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     FrontEndExecute[
+       FrontEndToken[nb, "ExpandSelection"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[nb, "SelectionOpenAllGroups"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[nb, "EvaluateCells"]
+     ];
+     NotebookFind[nb, "in", All, CellTags];
      )],
    Button["Hide Code", {
-     NotebookLocate["in"];
-     NotebookFind[SelectedNotebook[], "Output", All, CellStyle];
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     NotebookFind[nb, "Output", All, CellStyle];
      FrontEndExecute[
-      FrontEndToken[SelectedNotebook[], "SelectionCloseUnselectedCells"]
+      FrontEndToken[nb, "SelectionCloseUnselectedCells"]
      ];
-     NotebookLocate["in"];
+     NotebookFind[nb, "in", All, CellTags];
      }],
    Button["Show Code", (
-     NotebookLocate["in"];
-     NotebookFind[SelectedNotebook[], "Input", All, CellStyle];
-     NotebookLocate["in"];
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     NotebookFind[nb, "Input", All, CellStyle];
+     NotebookFind[nb, "in", All, CellTags];
      )],
    Button["Clear All Outputs", (
-     NotebookLocate["in"];
-     FrontEndTokenExecute["ExpandSelection"];
-     FrontEndTokenExecute["SelectionOpenAllGroups"]; 
-     FrontEndTokenExecute["DeleteGeneratedCells"];
-     NotebookLocate["in"];
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     FrontEndExecute[
+       FrontEndToken[nb, "ExpandSelection"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[nb, "SelectionOpenAllGroups"]
+     ]; 
+     FrontEndExecute[
+       FrontEndToken[nb, "DeleteGeneratedCells"]
+     ];
+     NotebookFind[nb, "in", All, CellTags];
      )],
+   (* TODO: it does not work properly
    Button["Clear & Quit", (
-     NotebookLocate["in"];
-     FrontEndTokenExecute["ExpandSelection"];
-     FrontEndTokenExecute["SelectionOpenAllGroups"]; 
-     FrontEndTokenExecute["DeleteGeneratedCells"];
-     NotebookLocate["in"];
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     FrontEndExecute[
+       FrontEndToken[nb, "ExpandSelection"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[nb, "SelectionOpenAllGroups"]
+     ]; 
+     FrontEndExecute[
+       FrontEndToken[nb, "DeleteGeneratedCells"]
+     ];
+     NotebookFind[nb, "in", All, CellTags];
      Quit[];
-     )],
+     )],*)
+   Button["Print to PDF", (
+     SetSelectedNotebook[nb];
+     NotebookPrint[nb, Interactive->True]
+   )],
    Button["Get handouts", (
       Module[
         {
-          nb = CreateDocument[{TextCell["Handouts", "Title"]}], 
+          nb2 = CreateDocument[{TextCell["Handouts", "Title"]}], 
           temp = CreateTemporary[]
         },
         temp = RenameFile[temp, temp <> ".nb"];
-        NotebookSave[nb, temp]
+        NotebookSave[nb2, temp]
+	SetSelectedNotebook[nb2];
       ]
     )]
-   } // Column],
-   GeneratedCell -> False,
-   TextAlignment -> Center
-   ]
-];
+   } // Column];
 
 
 OverTilde := carryFirst;
