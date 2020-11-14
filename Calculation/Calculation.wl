@@ -41,8 +41,8 @@ factorIt::usage = "
 
 
 pullIt::usage = "
-  pullIt[pattern, modifier] pull out factors matches pattern apply modifier to the rest
-  pullIt[{x1, ...}, func] pull out concrete xs
+  pullIt[pattern] pull out factors matches pattern
+  pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments
 ";
 
 
@@ -156,16 +156,18 @@ factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := 
 ];
 
 
-pullIt[xs:{_, __}, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] :=
-  pullIt[Alternatives@@xs, modifier, func, maxIter];
-pullIt[{x_}, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] :=
-  pullIt[x, modifier, func, maxIter];
-pullIt[x_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    rules = {
-        func[x * b_., a_] :> x modifier[Map[ (# / x) &, func[x b, a]]] 
-      }
+pullIt[xs_List, func_:Plus, maxIter_:$IterationLimit] := With[
+  {
+    rules = (x \[Function] (func[x * b_., a_] :> x Map[(# / x) &, func[x b, a]])) /@ xs
   },
   FixedPoint[ReplaceAll[rules], #, maxIter] &
+]
+
+pullIt[pattern_, func_:Plus, maxIter_:$IterationLimit][expr_] := With[
+  {
+    xs = Union@Cases[{expr}, pattern, Infinity]
+  },
+  pullIt[xs, func, maxIter][expr]
 ];
 
 

@@ -81,7 +81,7 @@ VerificationTest[(* #13 *)
 ]
 
 VerificationTest[(* #14 *)
-  1 + a x + 5 x + x^2 // pullIt[x, Identity, Plus, 1]
+  1 + a x + 5 x + x^2 // pullIt[x, Plus, 1]
   ,
   x (a + 5 + 1/x + x)
 ]
@@ -98,7 +98,7 @@ VerificationTest[(* #16 *)
 ]
 
 VerificationTest[(* #17 *)
-  1 + a x + 5 x + x^2 // pullIt[{x}, Identity, Plus, 1]
+  1 + a x + 5 x + x^2 // pullIt[{x}, Plus, 1]
   ,
   x (a + 5 + 1/x + x)
 ]
@@ -216,6 +216,17 @@ VerificationTest[(* #34 *)
   (a - b)^2 // changeSign[a - _]
   ,
   (b - a)^2
+]
+
+VerificationTest[(* #35 *)
+  1 + a x + b x^2 + c x // pullIt[_Symbol]
+  ,
+  a*b*c*(
+    1/(a*c)
+    + 1/(a*b*c*x^2)
+    + 1/(a*b*x)
+    + 1/(b*c*x)
+  )*x^2
 ]
 
 EndTestSection[]
