@@ -139,6 +139,13 @@ positron::usage = "
 Global`e::usage = "
   e symbol for electron
 ";
+Global`\[Alpha]::usage = "
+  \[Alpha] symbol for electromagnetic coupling constant
+";
+rule`alpha::usage = "
+  rule`alpha substitute powers of electron charge to electromagnetic coupling constant
+";
+
 bar`e::usage = "
   bar`e symbol for positron
 ";
@@ -266,10 +273,15 @@ muon /: Format[muon, TraditionalForm] = Global`\[Mu];
 antimuon /: Format[antimuon, TraditionalForm] = OverBar[Global`\[Mu]];
 photon /: Format[photon, TraditionalForm] = \[Gamma];
 
+
+rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
+
+
 Protect[
   \[ScriptCapitalM], Global`m, Global`g, Global`e, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
-  Global`d, \[ScriptP], pcms, prime`pcms, Global`e, Global`\[Mu], bar`e, bar`\[Mu],
-  electron, positron, muon, antimuon
+  Global`d, \[ScriptP], pcms, prime`pcms, Global`\[Mu], bar`e, bar`\[Mu],
+  electron, positron, muon, antimuon,
+  Global`\[Alpha]
 ];
 
 
