@@ -45,7 +45,7 @@ VerificationTest[(* #6 *)
       }
     },
     (1/4) * tr[Dot[(\[Gamma][p1] + m id), \[Gamma][\[Mu]], (\[Gamma][p2] + m id),  \[Gamma][\[Nu]]]] //
-      traceCalc // ReplaceAll[rule`sp] // factorIt[_sp]
+      traceCalc // Expand // ReplaceAll[rule`sp] // factorIt[_sp]
   ]
   ,
   sp[\[Mu], \[Nu]](m^2 - sp[p1, p2]) + sp[p1, \[Mu]] sp[p2, \[Nu]] + sp[p1, \[Nu]] sp[p2, \[Mu]]

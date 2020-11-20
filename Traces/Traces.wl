@@ -78,13 +78,18 @@ traceLongRule = (
 );
 
 
-traceCalc := FixedPoint[(
-  modify[_Dot, Distribute] /*
-  modify[_tr, Distribute] /*
-  pullTraceScalars /*
-  (ReplaceRepeated[#, {tr[id] -> 4, traceLongRule}] &) /*
-  Expand
-), #] &;
+traceCalc := modify[_tr,
+  FixedPoint[(
+    modify[_Dot, Distribute] /*
+    modify[_tr, Distribute] /*
+    pullTraceScalars /*
+    (
+      ReplaceRepeated[
+        #, {tr[id] -> 4, traceLongRule}
+      ] &
+    ) /* Expand
+  ), #] &
+];
 
 
 contractLorentzIndices[indices_List] := With[
@@ -102,12 +107,17 @@ contractLorentzIndices[] := contractLorentzIndices[RG`Notation`lorentzIndexes];
 
 diracConjugate = With[
   {
-    rule = Conjugate[expr:(Dot[(_bar`u|_bar`v), ___gamma, (_u|_v)])] :> ReplaceAll[
-        Reverse[expr],
-	{u -> bar`u, v -> bar`v, bar`u -> u, bar`v -> v}
-     ]
+    rule = RuleDelayed[
+      Conjugate[expr:(
+        Dot[
+          (_bar`u|_bar`v)
+          , RepeatedNull[Alternatives[\[Gamma][_], \[Gamma][_] + mass[_] * id]]
+          , (_u|_v)]
+      )]
+      , ReplaceAll[Reverse[expr], {u -> bar`u, v -> bar`v, bar`u -> u, bar`v -> v}]
+    ]
   },
-  ReplaceAll[#, rule] & 
+  ReplaceAll[#, rule] &
 ];
 
 spinSum[p_] := With[{
