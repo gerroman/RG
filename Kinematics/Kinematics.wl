@@ -106,10 +106,10 @@ setInvariants[ps_List, {}, pRules_, spRules_] :=
   setInvariants[ps, Map[mass, Flatten[ps]], pRules, spRules];
 
 setInvariants[
-    {pIn:{p1_Symbol, ___Symbol}, pOut:{___Symbol}},
+    {pIn:{p1_, ___}, pOut:{___}},
     ms_List,
-    pRules:{Rule[_Symbol, _]...},
-    spRules:{(Rule[_sp, _]|_sp)...}
+    pRules:{Rule[_, _]...},
+    spRules:{(Rule[_sp, _] | (_sp))...}
   ] := Module[
   {
     ps = Join[pIn, pOut],
