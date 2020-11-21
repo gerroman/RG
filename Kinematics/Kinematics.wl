@@ -103,60 +103,65 @@ replaceMass[particle_, All] := ReplaceAll[#,
 
 
 setInvariants[ps_List, {}, pRules_, spRules_] :=
-  setInvariants[ps, Map[mass, Flatten[ps]], pRules, spRules];
+  setInvariants[ps, Map[mass, ps, {2}], pRules, spRules];
 
 setInvariants[
-    {pIn:{p1_, ___}, pOut:{___}},
-    ms_List,
-    pRules:{Rule[_, _]...},
-    spRules:{(Rule[_sp, _] | (_sp))...}
+    {pIn:{p1_, ___}, pOut:{___}}
+    , {mIn:{___}, mOut:{___}}
+    , pRules:{_Rule...}
+    , spRules:{Rule[_sp, _]...}
   ] := Module[
   {
-    ps = Join[pIn, pOut],
-    ruleConservation,
-    ruleMasses,
-    psAll,
-    eqs,
-    spVars,
-    spFixed,
-    spDefinitions,
-    spSolutions,
-    result
+    ps = Join[pIn, pOut]
+    , ms = Join[mIn, mOut]
+    , ruleConservation
+    , ruleMasses
+    , psAll
+    , spAll
+    , eqs
+    , vars
+    , solution
+    , result
   },
-  
-  spFixed = Cases[spRules, _sp];
-  spDefinitions = DeleteCases[spRules, Alternatives@@spFixed];
+  psAll = ps ~ Join ~ Map[First, pRules];
+  spAll = Union@@Outer[sp, psAll, psAll];
 
-  ruleConservation = p1 -> Total[Join[(-1) * Rest[pIn], pOut]];
   ruleMasses = Thread[Rule[Map[sp, ps], ms^2]];
+  ruleConservation = p1 -> Total[Join[(-1) * Rest[pIn], pOut]];
 
-  psAll = ps~Join~Map[First, pRules];
-  
-  eqs = With[
-    {
-      lhs = Flatten[Outer[sp, psAll, psAll]]
-    },
-    Thread@Equal[
-      (
-        (* do not use conservation law *)
-        lhs // ReplaceAll[#, ruleMasses]& // ReplaceAll[#, spDefinitions]&
-      ),
-      (
-        (* use conservation law & pRules*)
-        lhs // ReplaceAll[#, pRules]& // modify[_sp, ReplaceAll[#, ruleConservation]&] //
-	  modify[_sp, Distribute] // ReplaceAll[#, ruleMasses]& // ReplaceAll[#, spDefinitions]&
-      )
-    ] // Union// DeleteCases[True] (* drop m^2 == m^2 *)
-  ]; 
+  eqs = Thread@Equal[
+    (
+      (* do not use any rules *)
+      spAll 
+    ),
+    (
+      (* use spRules and pRules *)
+      spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& 
+    )
+  ] // ReplaceRepeated[#, pRules]& // ReplaceAll[#, ruleConservation]& //
+        modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
+        DeleteCases[True] // Expand;
 
-  spVars = Union@Cases[eqs, _sp, Infinity] //
-    DeleteCases[#, Alternatives@@spFixed]&;
-  Assert[Length[spVars] == Length[eqs]];
+  vars = Union@Cases[eqs, _sp, Infinity];
+  solution  =  With[
+    {ca = CoefficientArrays[eqs, vars]},
+    With[
+      {
+        m = ca[[-1]]
+        , b = ca[[1]]
+      },
+      Thread@Rule[vars, LinearSolve[m, -b]]
+    ]
+  ];
 
-  spSolutions = Solve[eqs, spVars] // Flatten;
-  Assert[Length[spSolutions] == Length[spVars]];
+  result = Thread@Rule[
+    spAll,
+    spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
+      ReplaceRepeated[#, pRules]& // ReplaceAll[#, ruleConservation]& //
+      modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
+      ReplaceAll[#, solution]& // Expand
+  ];
 
-  result = Sort[Join[spSolutions, ruleMasses, spDefinitions] // Expand];
   Return[result];
 ];
 
