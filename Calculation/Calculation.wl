@@ -200,7 +200,8 @@ rewriteIt[funcL_, funcR_] := Function[
   Switch[expr,
     _Equal, funcL[First[expr]] == funcR[Last[expr]],
     _Rule, funcL[First[expr]] -> funcR[Last[expr]],
-    _, funcL[expr] == funcR[expr]
+    _List, Map[rewriteIt[funcL, funcR], expr],
+		_, funcL[expr] == funcR[expr]
   ]
 ];
 rewriteIt[func_] := rewriteIt[Identity, func];
