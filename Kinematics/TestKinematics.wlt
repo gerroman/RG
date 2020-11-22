@@ -198,35 +198,33 @@ test[17] := VerificationTest[(* #17 *)
 ]
 
 
-Block[
-  {p1, p2, p3, p4, s, \[Theta]},
-  p1 /: mass[p1] = 0;
-  p2 /: mass[p2] = 0;
-  p3 /: mass[p3] = 0;
-  p4 /: mass[p4] = 0;
-
-test[18] :=   VerificationTest[(* #18 *)
-    Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
-    ,
-    {
-      abs[momentum[p1]] -> pcms,
-      abs[momentum[p2]] -> pcms,
-      abs[momentum[p3]] -> prime`pcms,
-      abs[momentum[p4]] -> prime`pcms,
-      energy[p1] -> Sqrt[pcms^2],
-      energy[p2] -> Sqrt[pcms^2],
-      energy[p3] -> Sqrt[prime`pcms^2],
-      energy[p4] -> Sqrt[prime`pcms^2],
-      theta[momentum[p1], momentum[p2]] -> Pi,
-      theta[momentum[p1], momentum[p3]] -> θ,
-      theta[momentum[p1], momentum[p4]] -> Pi - θ,
-      theta[momentum[p2], momentum[p3]] -> Pi - θ,
-      theta[momentum[p2], momentum[p4]] -> θ,
-      theta[momentum[p3], momentum[p4]] -> Pi,
-      pcms^2 -> s/4,
-      prime`pcms^2 -> s/4
-    }
-  ]
+test[18] :=  VerificationTest[(* #18 *)
+	Block[{p1, p2, p3, p4, s, \[Theta]},
+		p1 /: mass[p1] = 0;
+		p2 /: mass[p2] = 0;
+		p3 /: mass[p3] = 0;
+		p4 /: mass[p4] = 0;
+		Normal[getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}]]
+	]
+	,
+	{
+		abs[momentum[p1]] -> pcms,
+		abs[momentum[p2]] -> pcms,
+		abs[momentum[p3]] -> prime`pcms,
+		abs[momentum[p4]] -> prime`pcms,
+		energy[p1] -> Sqrt[pcms^2],
+		energy[p2] -> Sqrt[pcms^2],
+		energy[p3] -> Sqrt[prime`pcms^2],
+		energy[p4] -> Sqrt[prime`pcms^2],
+		theta[momentum[p1], momentum[p2]] -> Pi,
+		theta[momentum[p1], momentum[p3]] -> θ,
+		theta[momentum[p1], momentum[p4]] -> Pi - θ,
+		theta[momentum[p2], momentum[p3]] -> Pi - θ,
+		theta[momentum[p2], momentum[p4]] -> θ,
+		theta[momentum[p3], momentum[p4]] -> Pi,
+		pcms^2 -> s/4,
+		prime`pcms^2 -> s/4
+	}
 ]
 
 
@@ -236,18 +234,24 @@ test[19] := VerificationTest[(* #19 *)
       l1, p1,l2, p2, rules, q, r, m, M, s, t, u
     },
     With[{momenta = {{l1, p1}, {l2, p2}}},
-    l1 /: mass[l1] = m;
-    l2 /: mass[l2] = m;
-    p1 /: mass[p1] = M;
-    p2 /: mass[p2] = M;
-    rules = setInvariants[
-      momenta,
-      mass /@ Join@@momenta,
-      {r -> l1 + p1, q -> l1 - l2},
-      {sp[r] -> s, sp[q] -> t}
-    ];
-    getMandelstam[momenta, {s, t, u}] //
-      {Identity, modify[_sp, Distribute] /* ReplaceAll[rules] /* Expand} // Through
+			l1 /: mass[l1] = m;
+			l2 /: mass[l2] = m;
+			p1 /: mass[p1] = M;
+			p2 /: mass[p2] = M;
+			rules = setInvariants[
+				momenta,
+				Map[mass, momenta, {2}],
+				{r -> l1 + p1, q -> l1 - l2},
+				{sp[r] -> s, sp[q] -> t}
+			];
+			Through[
+			  {
+				  Identity
+					, modify[_sp, Distribute] /* ReplaceAll[rules] /* Expand
+			  }[
+				  getMandelstam[momenta, {s, t, u}]
+				]
+			]
     ]
   ]
   ,
@@ -265,7 +269,7 @@ test[19] := VerificationTest[(* #19 *)
       u == 2m^2 + 2M^2 - s - t
     }
   }
-]
+];
 
 
 test[20] := VerificationTest[(* #20 *)
@@ -331,54 +335,88 @@ test[21] := VerificationTest[(* #21 *)
     sp[p, p1] -> -t/2 + mass[p]^2/2 + mass[p1]^2/2,
     sp[p1, p1] -> mass[p1]^2
   }
-]
+];
 
 
-Block[{p1, p2, p3, p4, k, \[Kappa], \[CapitalDelta], rules, \[Nu], m, M, \[Lambda]},
 test[22] := VerificationTest[(* #22 *)
-  (
-    rules = setInvariants[
-      {{p1, p2}, {p3, p4, k}},
-      {{m, M}, {m, M, \[Lambda]}},
-      {},
-      {
-        sp[p1, p2] -> \[Nu],
-        sp[k, p2] -> \[Kappa][2] + \[Lambda]^2 / 2,
-        sp[k, p4] -> \[Kappa][4] - \[Lambda]^2 / 2,
-        sp[p1, p3] -> (\[CapitalDelta][1]^2 + 2 m^2) / 2,
-        sp[k, p1] -> \[Kappa] - (\[Kappa][2] + \[Lambda]^2 / 2) + \[Lambda]^2 /2
-      }
-    ];
-    {
-      sp[p1 + p2],
-      sp[p1 + p2 - k],
-      sp[p2 - k],
-      sp[p1 - p3],
-      sp[p4 + k]
-    } // modify[_sp, Distribute] // ReplaceAll[rules] // Expand
-  )
-  ,
-  {
-    2 \[Nu] + m^2 + M^2,
-    2 \[Nu]  + m^2 + M^2 - 2 \[Kappa],
-    M^2 - 2 \[Kappa][2],
-    - \[CapitalDelta][1]^2,
-    2 \[Kappa][4] + M^2
-  }
-  ]
-]
+	Block[
+		{
+		  p1, p2, p3, p4, k, \[Kappa], \[CapitalDelta], rules, \[Nu], m, M, \[Lambda]
+		},
+		rules = setInvariants[{{p1, p2}, {p3, p4, k}}, {{m, M}, {m, M, \[Lambda]}},	{},
+		  {
+				sp[p1, p2] -> \[Nu],
+				sp[k, p2] -> \[Kappa][2] + \[Lambda]^2 / 2,
+				sp[k, p4] -> \[Kappa][4] - \[Lambda]^2 / 2,
+				sp[p1, p3] -> (\[CapitalDelta][1]^2 + 2 m^2) / 2,
+				sp[k, p1] -> \[Kappa] - (\[Kappa][2] + \[Lambda]^2 / 2) + \[Lambda]^2 /2
+			}
+		];
+		{
+			sp[p1 + p2],
+			sp[p1 + p2 - k],
+			sp[p2 - k],
+			sp[p1 - p3],
+			sp[p4 + k]
+		} // modify[_sp, Distribute] // ReplaceAll[rules] // Expand
+	]
+	,
+	{
+		2 \[Nu] + m^2 + M^2,
+		2 \[Nu]  + m^2 + M^2 - 2 \[Kappa],
+		M^2 - 2 \[Kappa][2],
+		- \[CapitalDelta][1]^2,
+		2 \[Kappa][4] + M^2
+	}
+];
+
 
 
 test[23] := VerificationTest[(* #23 *)
   setInvariants[
     {{p1, p2}, {p3, p4, k}}
-    , {m, M, m, M, \[Lambda]}
+    , {{m, M}, {m, M, \[Lambda]}}
     , {qe -> p1 - p3, qp -> p2 - p4}
-    , {sp[qe], sp[qp], sp[p1, p2], sp[p2, k] -> \[Kappa][2], sp[p4, k] -> \[Kappa][4]}
+    , {
+		  sp[qe] -> t1,
+			sp[p1, k] -> \[Kappa][1],
+			sp[p1, p2] -> s,
+			sp[p2, k] -> \[Kappa][2],
+			sp[p4, k] -> \[Kappa][4]
+	  }
   ]
   ,
-  {}
-]
+  {
+	  sp[k, k] -> λ^2,
+		sp[k, p1] -> κ[1],
+		sp[k, p2] -> κ[2],
+		sp[k, p3] -> -λ^2 + κ[1] + κ[2] - κ[4],
+		sp[k, p4] -> κ[4],
+		sp[k, qe] -> λ^2 - κ[2] + κ[4],
+		sp[k, qp] -> κ[2] - κ[4],
+		sp[p1, p1] -> m^2,
+		sp[p1, p2] -> s,
+		sp[p1, p3] -> m^2 - t1/2,
+		sp[p1, p4] -> s + t1/2 - κ[1],
+		sp[p1, qe] -> t1/2,
+		sp[p1, qp] -> -t1/2 + κ[1],
+		sp[p2, p2] -> M^2,
+		sp[p2, p3] -> s + t1/2 - λ^2/2 - κ[4],
+		sp[p2, p4] -> M^2 - t1/2 + λ^2/2 - κ[2] + κ[4],
+		sp[p2, qe] -> -t1/2 + λ^2/2 + κ[4],
+		sp[p2, qp] -> t1/2 - λ^2/2 + κ[2] - κ[4],
+		sp[p3, p3] -> m^2,
+		sp[p3, p4] -> s + λ^2/2 - κ[1] - κ[2],
+		sp[p3, qe] -> -t1/2,
+		sp[p3, qp] -> t1/2 - λ^2 + κ[1] + κ[2] - κ[4],
+		sp[p4, p4] -> M^2,
+		sp[p4, qe] -> t1/2 - λ^2/2 + κ[2],
+		sp[p4, qp] -> -t1/2 + λ^2/2 - κ[2] + κ[4],
+		sp[qe, qe] -> t1,
+		sp[qe, qp] -> -t1 + λ^2 - κ[2] + κ[4],
+		sp[qp, qp] -> t1 - λ^2 + 2*κ[2] - 2*κ[4]
+	}
+];
 
 
 test[24] := VerificationTest[(* #24 *)

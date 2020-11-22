@@ -138,9 +138,9 @@ setInvariants[
       (* use spRules and pRules *)
       spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& 
     )
-  ] // ReplaceRepeated[#, pRules]& // ReplaceAll[#, ruleConservation]& //
-        modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
-        DeleteCases[True] // Expand;
+  ] // modify[_sp, (ReplaceRepeated[#, pRules]&) /* (ReplaceAll[#, ruleConservation]&)] //
+    modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
+    DeleteCases[True] // Expand;
 
   vars = Union@Cases[eqs, _sp, Infinity];
   solution  =  With[
@@ -157,7 +157,7 @@ setInvariants[
   result = Thread@Rule[
     spAll,
     spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
-      ReplaceRepeated[#, pRules]& // ReplaceAll[#, ruleConservation]& //
+      modify[_sp, (ReplaceRepeated[#, pRules]&) /* (ReplaceAll[#, ruleConservation]&)] //
       modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
       ReplaceAll[#, solution]& // Expand
   ];
