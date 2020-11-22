@@ -1,4 +1,4 @@
 all:
-	../run_test_by_number.wl ./TestTraces.wlt
+	../run_test.wl ./TestTraces.wlt
 
 .PHONY: all

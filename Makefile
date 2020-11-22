@@ -1,6 +1,4 @@
-SUBDIRS = BaseUtils Presentation Calculation Notation Kinematics Traces
-all: $(SUBDIRS)
-$(SUBDIRS):
-	$(MAKE) -C $@
+all:
+	find . -name *.wlt -print0 | xargs -0L1 ./run_test.wl
 
-.PHONY: all $(SUBDIRS)
+.PHONY: all

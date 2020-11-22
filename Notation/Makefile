@@ -1,4 +1,4 @@
 all:
-	../run_test_by_number.wl ./TestNotation.wlt
+	../run_test.wl ./TestNotation.wlt
 
 .PHONY: all

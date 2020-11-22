@@ -1,4 +1,4 @@
 all:
-	../run_test_by_number.wl ./TestCalculation.wlt
+	../run_test.wl ./TestCalculation.wlt
 
 .PHONY: all

@@ -1,4 +1,4 @@
 all:
-	../run_test_by_number.wl ./TestBaseUtils.wlt
+	../run_test.wl ./TestBaseUtils.wlt
 
 .PHONY: all

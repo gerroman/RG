@@ -1,4 +1,4 @@
 all:
-	../run_test_by_number.wl ./TestKinematics.wlt
+	../run_test.wl ./TestKinematics.wlt
 
 .PHONY: all

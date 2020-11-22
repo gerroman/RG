@@ -1,37 +1,66 @@
 #!/usr/bin/env -S WolframScript -script
 
 (* run all test from base directory  *)
-(* find . -name *.wlt | xargs ./run_test.wl *)
+(* does not break on error *)
+(* find . -name *.wlt -exec run_test_by_number.wl {} \; *)
+(* break on error *)
+(* find . -name *.wlt -print0 | xargs -0L1 ./run_test_by_number.wl *)
 
-run[fname_] := (
-  Print["[Running] tests from ", fname];
-  report = TestReport[fname];
-  succeed = report["TestsSucceededCount"];
-  failed = report["TestsFailedCount"];
-  If[report["AllTestsSucceeded"],
-    Print[ToString@StringForm["[Success] `` tests for ``", succeed, report["TimeElapsed"]]],
-    (
-      Print[ToString@StringForm["[Failed] for `` tests of ``", failed, failed + succeed]];
-     Throw[{fname, report["TestsFailedWrongResults"] // First}];
-    )
+
+run[fname_, n_:Null] := Block[
+  {
+    result = Null
+    , i
+    , imax
+  },
+
+  Clear[test];
+  Get[fname, Path -> {$InitialDirectory}];
+  imax = Length[DownValues[test]];
+
+  If[(n =!= Null),
+    If[1 <= (i = ToExpression[n]) <= imax,
+      (
+        Print[ToString@StringForm["[Running]: test #`2` from `1`", fname, i]];
+        Return[test[i]];
+      )
+      ,
+      (
+        Print[ToString@StringForm["[ Error ]: bad test number #`1` of `2` for `3`", n, imax, fname]];
+        Return[Null];
+      )
+    ];
   ];
-);
+
+  result = Null;
+  For[i = 1, i <= imax, i++, (
+    Print[ToString@StringForm["[Running]: test #`2` of `3` from `1`", fname, i, imax]];
+    result = test[i];
+    If[result["Outcome"] =!= "Success", Return[result]];
+  )];
+
+  Return[result];
+];
 
 
-Print["[Info]: ", DateString[]];
-result = Catch[Scan[run, Rest[$ScriptCommandLine]]];
+Print["[ Start ]: ", DateString[]];
+result = run @@ Rest[$ScriptCommandLine];
+
 If[result === Null,
+  Quit[255];
+];
+
+If[result["Outcome"] ===  "Success",
   (
-    Print["[Success]: all tests passed"];
-    Quit[0]
-  ),
+    Print["[Success]"];
+    Quit[0];
+  )
+  ,
   (
-    Print["[Failed]: first failed test in the file ", result[[1]]];
-    Print["\n[Test]: #", result[[2]]["TestIndex"]];
+    Print["[ Error ]\n"];
+    Print["Actual output  :\n", ToString@InputForm[result["ActualOutput"]]];
     Print[];
-    Print["Actual output  :\n", ToString@InputForm[result[[2]]["ActualOutput"]]];
-    Print[];
-    Print["Expected output:\n", ToString@InputForm[result[[2]]["ExpectedOutput"]]];
-    Quit[255]
+    Print["Expected output:\n", ToString@InputForm[result["ExpectedOutput"]]];
+    Quit[255];
   )
 ];
