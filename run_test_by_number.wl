@@ -36,7 +36,7 @@ run[fname_, n_:Null] := Block[
 ];
 
 
-Print["[ Info  ]: ", DateString[]];
+Print["[ Start ]: ", DateString[]];
 result = run @@ Rest[$ScriptCommandLine];
 
 If[result === Null,
