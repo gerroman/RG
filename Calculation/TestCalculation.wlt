@@ -73,13 +73,13 @@ test[12] := VerificationTest[(* #12 *)
 ]
 
 test[13] := VerificationTest[(* #13 *)
-  1 + a x + 5 x + x^2 // pullIt[x]
+  1 + a x + 5 x + x^2 // FixedPoint[pullIt[x], #]&
   ,
   x^2 (a/x + 5/x + 1/x^2 + 1)
 ]
 
 test[14] := VerificationTest[(* #14 *)
-  1 + a x + 5 x + x^2 // pullIt[x, Plus, 1]
+  1 + a x + 5 x + x^2 // pullIt[x, Plus]
   ,
   x (a + 5 + 1/x + x)
 ]
@@ -90,13 +90,13 @@ test[15] := VerificationTest[(* #15 *)
 ]
 
 test[16] := VerificationTest[(* #16 *)
-  1 + a x + 5 x + x^2 // pullIt[{x}]
+  1 + a x + 5 x + x^2 // FixedPoint[pullIt[{x}], #]&
   ,
   x^2 (a/x + 5/x + 1/x^2 + 1)
 ]
 
 test[17] := VerificationTest[(* #17 *)
-  1 + a x + 5 x + x^2 // pullIt[{x}, Plus, 1]
+  1 + a x + 5 x + x^2 // pullIt[{x}, Plus]
   ,
   x (a + 5 + 1/x + x)
 ]
@@ -217,7 +217,7 @@ test[34] := VerificationTest[(* #34 *)
 ]
 
 test[35] := VerificationTest[(* #35 *)
-  1 + a x + b x^2 + c x // pullIt[_Symbol]
+  1 + a x + b x^2 + c x // FixedPoint[pullIt[_Symbol], #]&
   ,
   a*b*c*(
     1/(a*c)

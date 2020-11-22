@@ -156,18 +156,20 @@ factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := 
 ];
 
 
-pullIt[xs_List, func_:Plus, maxIter_:$IterationLimit] := With[
+pullIt[xs_List, func_:Plus] := With[
   {
-    rules = (x \[Function] (func[x * b_., a_] :> x Map[(# / x) &, func[x b, a]])) /@ xs
+    rules = (x \[Function] With[{p = x},
+				(func[p * b_., a_] :> p Map[(# / p) &, func[p b, a]])
+			]) /@ xs
   },
-  FixedPoint[ReplaceAll[rules], #, maxIter] &
-]
+  ReplaceAll[#, rules]&
+];
 
-pullIt[pattern_, func_:Plus, maxIter_:$IterationLimit][expr_] := With[
+pullIt[pattern_, func_:Plus][expr_] := With[
   {
     xs = Union@Cases[{expr}, pattern, Infinity]
   },
-  pullIt[xs, func, maxIter][expr]
+  pullIt[xs, func][expr]
 ];
 
 
