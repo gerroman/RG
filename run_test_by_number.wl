@@ -29,7 +29,7 @@ run[fname_, n_:Null] := Block[
   For[i = 1, i <= imax, i++, (
     Print[ToString@StringForm["[Running]: test #`2` of `3` from `1`", fname, i, imax]];
     result = test[i];
-    If[result["Outcome"] == "Failed", Return[result]];
+    If[result["Outcome"] =!= "Success", Return[result]];
   )];
 
   Return[result];
@@ -43,7 +43,7 @@ If[result === Null,
   Quit[255];
 ];
 
-If[result["Outcome"] == "Success",
+If[result["Outcome"] ===  "Success",
   (
     Print["[Success]"];
     Quit[0];
