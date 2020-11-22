@@ -1,2 +1,2 @@
 all:
-	../run_test.wl ./TestKinematics.wlt
+	../run_test_by_number.wl ./TestKinematics.wlt
