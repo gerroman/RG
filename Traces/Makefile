@@ -1,2 +1,2 @@
 all:
-	../run_test.wl ./TestTraces.wlt
+	../run_test_by_number.wl ./TestTraces.wlt
