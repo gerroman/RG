@@ -1,2 +1,6 @@
-test:
-	find . -name *.wlt | xargs ./run_test.wl
+SUBDIRS := $(wildcard */.)
+all: $(SUBDIRS)
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+.PHONY: all $(SUBDIRS)
