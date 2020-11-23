@@ -35,8 +35,12 @@ release::usage = "
 
 
 factorIt::usage = "
-  factorIt[pattern, modifier] factor out factors matches pattern apply modifier to the rest
-  factorIt[{x1, ...}, modifier] factor out concrete xs
+  factorIt[pattern, func] factor out factors matches pattern from func
+  factorIt[{x1, ...}, func] factor out concrete xs
+";
+
+factorItFast::usage = "
+  factorItFast[x, func] faster version of factorIt
 ";
 
 
@@ -165,6 +169,36 @@ factorIt[pattern_, func_:Plus] := Function[expr,
 		},
   	factorIt[xs, func][expr]
 	]
+];
+
+
+factorize[expr_, x_] := Module[
+  {
+	  split = List @@ expr //
+	    (SortBy[#, MatchQ[x * _.]]&) //
+   		(SplitBy[#, MatchQ[x * _.]]&)
+		, func = Head[expr]
+	},
+	If[
+	  (
+		  (Length[split] == 2) &&
+	    (Length[Last[split]] > 1)
+		),
+	  func[
+  	  func @@ (First[split])
+			, x * (func @@ (Last[split] / x))
+		]
+		,
+		expr
+	]
+];
+
+factorItFast[x_, levelspec_:Infinity, func_:Plus] := With[
+  {
+	  rule = (expr_func) :> factorize[expr, x]
+	}
+	,
+  Replace[#, rule, levelspec]&
 ];
 
 
