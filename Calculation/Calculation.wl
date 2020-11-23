@@ -134,25 +134,37 @@ groupIt[xs_List, func_:Expand] := With[
 groupIt[x_] := groupIt[{x}];
 
 
-factorIt[xs_List, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    rules = Map[
-      {
-        func[# * a_., # * b_.] :> # modifier[func[a, b]],
-        func[# * a_., (-1) * # * b_.] :> # modifier[func[a, -b]]
-      }&,
-      xs
-    ] // Flatten
+(* NOTE: strightforward matching can be long *)
+factorIt[xs_List, func_:Plus] := With[{
+    rules = Flatten[
+			Map[
+			  x \[Function] With[
+				  {
+					  p = x,
+						pn = -x
+				  }
+					,
+					{
+						func[p*(a_.), p*(b_.)] :> p * func[a, b]
+						, func[p*(a_.), pn*(b_.)] :> p * func[a, -b]
+						, func[pn*(a_.), pn*(b_.)] :> pn * func[a, b]
+					}
+				]
+				,
+				xs
+			]
+		]
   },
-  With[{replacer=ReplaceAll[#, rules] &},
-    FixedPoint[replacer, #, maxIter] &
-  ]
+  ReplaceRepeated[#, rules]&
 ];
-factorIt[pattern_, modifier_:Identity, func_:Plus, maxIter_:$IterationLimit] := With[{
-    rules = {
-        func[(x:pattern) * a_., x_ * b_.] :> x modifier[func[a, b]]
-      }
-  },
-  FixedPoint[ReplaceAll[rules], #, maxIter] &
+
+factorIt[pattern_, func_:Plus] := Function[expr,
+  With[
+	  {
+		  xs = Union@Cases[{expr}, pattern, Infinity]
+		},
+  	factorIt[xs, func][expr]
+	]
 ];
 
 

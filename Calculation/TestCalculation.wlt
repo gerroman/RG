@@ -67,7 +67,7 @@ test[11] := VerificationTest[(* #11 *)
 ]
 
 test[12] := VerificationTest[(* #12 *)
-  1 + a x + 5 x + b x+ x^2 // factorIt[x]
+  1 + a x + 5 x + b x + x^2 // factorIt[{x}]
   ,
   1 + x (a + 5 + b) + x^2
 ]

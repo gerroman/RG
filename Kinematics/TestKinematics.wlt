@@ -290,7 +290,7 @@ test[20] := VerificationTest[(* #20 *)
         {
 	  Identity,
 	  modify[_sp, Distribute] /* expandScalarProduct /*
-	  ReplaceAll[rules] /* Expand /* powerExpand /* factorIt[{(-2)*pcms}]
+	  ReplaceAll[rules] /* Expand /* powerExpand /* (FixedPoint[factorIt[{pcms, -2}], #]&)
 	} // Through
     ]
   ]
