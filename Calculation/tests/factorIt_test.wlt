@@ -32,9 +32,9 @@ VerificationTest[(* #4 *)
 
 test[5] :=
 VerificationTest[(* #5 *)
-  f[(1 + c x + d x)]/(1 + a x + b x) // factorItFast[x]
+  f[(1 + c x + d x + x^2)]/(1 + a x + b x) // factorItFast[x, Infinity]
   ,
-  f[(1 + x (c + d))]/(1 + x (a+b))
+  f[(1 + x^2 + x (c + d))]/(1 + x (a+b))
 ]
 
 

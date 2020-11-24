@@ -193,7 +193,7 @@ factorize[expr_, x_] := Module[
 	]
 ];
 
-factorItFast[x_, levelspec_:Infinity, func_:Plus] := With[
+factorItFast[x_, levelspec_:{0}, func_:Plus] := With[
   {
 	  rule = (expr_func) :> factorize[expr, x]
 	}
