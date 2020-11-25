@@ -172,27 +172,28 @@ factorIt[pattern_, func_:Plus] := Function[expr,
 ];
 
 
-factorize[expr_, x_] := Module[
-  {
-	  split = List @@ expr //
-	    (SortBy[#, MatchQ[x * _.]]&) //
-   		(SplitBy[#, MatchQ[x * _.]]&)
-		, func = Head[expr]
-	},
-	If[
-	  (
-		  (Length[split] == 2) &&
-	    (Length[Last[split]] > 1)
-		),
-	  func[
-  	  func @@ (First[split])
-			, x * (func @@ (Last[split] / x))
-		]
-		,
-		expr
-	]
-];
 
+factorize[expr_, x_] := With[{xn = -x}, Module[
+  {
+	  split = List @@ expr // changeSign[xn] //
+	    (SortBy[#, MatchQ[(x * _.)|(xn * _.)]]&) //
+   		(SplitBy[#, MatchQ[(x * _.)|(xn * _.)]]&),
+    func = Head[expr]
+	},
+  Which[
+    (Length[split] == 2) && (Length[Last[split]] > 1), (
+      func[func @@ (First[split]), x * (func @@ (Last[split] / x))]
+    ),
+    (Length[split] == 1) && MatchQ[First[First[split]], x * _.], (
+      x * (func @@ (First[split] / x))
+    ),
+    True, (
+      expr
+    )
+	]
+]];
+factorItFast[l_List, levelspec_:{0}, func_:Plus] :=
+  RightComposition @@ Map[factorItFast[#, levelspec, func]&, l];
 factorItFast[x_, levelspec_:{0}, func_:Plus] := With[
   {
 	  rule = (expr_func) :> factorize[expr, x]

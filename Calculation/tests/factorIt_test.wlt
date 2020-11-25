@@ -38,4 +38,16 @@ VerificationTest[(* #5 *)
 ]
 
 
+test[6] :=
+VerificationTest[(* #6 *)
+  e^8 x + e^8 y // factorItFast[e^8]
+  ,
+  e^8 * (x + y)
+]
 
+test[7] :=
+VerificationTest[(* #7 *)
+  3 x - 3 y + 3 z// factorItFast[3, {0}]
+  ,
+  3(x - y + z)
+]
