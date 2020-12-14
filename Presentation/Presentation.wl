@@ -45,6 +45,11 @@ row::usage = "
 ";
 
 
+grid::usage = "
+  grid[list] decorate list as grid
+";
+
+
 Begin["`Private`"];
 
 
@@ -207,6 +212,29 @@ hold[xs__] := hold[{xs}];
 
 
 row = Row[#, ",\t"] &;
+
+
+ClearAll[grid];
+Options[grid] = {
+    Background -> {None, {{Lighter[Blend[{Black, White}], .98], Lighter[Blend[{Black, White}], .96]}}}
+   	, Dividers -> {{Darker[Gray, .6], {Lighter[Gray, .5]}, Darker[Gray, .6]}, {Darker[Gray, .6], Darker[Gray, .6], {False}, Darker[Gray, .6]}}
+   	, Alignment -> Right
+   	, Frame -> Darker[Gray, .6]
+   	, ItemStyle -> 14
+   	, Spacings -> {Automatic, .8}
+};
+
+grid[l_List] := grid[Map[List, l]];
+grid[l : {{___} ..}] := grid[l, ConstantArray["", Length[First[l]]]];
+grid[l : {{___} ..}, title : {___}, opts:OptionsPattern[]] := Grid[
+   	Prepend[l, title]
+    , Background -> OptionValue[grid, Background]
+    , Dividers -> OptionValue[grid, Dividers]
+    , Alignment -> OptionValue[grid, Alignment]
+    , Frame -> OptionValue[grid, Frame]
+    , ItemStyle -> OptionValue[grid, ItemStyle]
+    , Spacings -> OptionValue[grid, Spacings]
+   ];
 
 
 End[];
