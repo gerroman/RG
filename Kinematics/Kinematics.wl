@@ -44,23 +44,33 @@ getMandelstam::usage = "
   getMandelstam[{{li, pi}, {lf, pf}}] return equations for mandelstam variables
 ";
 
+
 Begin["`Private`"];
 
 
 sp[expr_] := sp[expr, expr];
 sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
+sp[p_List, q_List] := Which[
+  Length[p] == Length[q] == 4, With[{prod = p*q}, 2 prod[[1]] - Total[prod]],
+  Length[p] == Length[q] == 3, With[{prod = p*q}, Total[prod]],
+  True, Hold[sp][p, q]
+];
 
+mass[p_List] := Sqrt[sp[p]] /; Length[p] == 4;
 
 energy[expr_Plus] := energy /@ expr;
 energy[expr_ * factor_?NumberQ] := factor * energy[expr];
+energy[p_List] := First[p] /; Length[p] == 4;
 
 momentum[expr_Plus] := momentum /@ expr;
 momentum[expr_ * factor_?NumberQ] := factor * momentum[expr];
+momentum[p_List] := Rest[p] /; Length[p] == 4;
 
 
 abs /: Abs[abs[expr_]] := abs[expr];
 abs /: abs[numb_?NumberQ] := Abs[numb];
 abs /: abs[(factor_?NumberQ) * expr_] := Abs[factor] * abs[expr];
+abs[p_List] := Sqrt[sp[p]] /; Length[p] == 3;
 
 
 replaceEnergy[particle_] := ReplaceAll[#,
