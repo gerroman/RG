@@ -92,6 +92,11 @@ complexToAbs::usage = "
 ";
 
 
+solve::usage = "
+  solve[eqs_, vars_] solve equations eqs w.r.t. vars
+";
+
+
 Begin["`Private`"];
 
 
@@ -276,6 +281,21 @@ complexToAbs[pattern_] = ReplaceAll[#,
     product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
   }
 ]&;
+
+
+solve[eqs_, vars_] := Block[{var`solve},
+     With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
+        With[{rule = Thread[vars -> xs]},
+           
+     With[{sol = 
+        Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
+              Assert[Length[sol] == 1];
+              First[sol]
+            ]
+         ]
+      ]
+   ];
+solve[vars_] := solve[#, vars]&;
 
 
 End[];
