@@ -2,9 +2,9 @@
 
 (* run all test from base directory  *)
 (* does not break on error *)
-(* find . -name *.wlt -exec run_test_by_number.wl {} \; *)
+(* find . -name *.wlt -exec run_test.wl {} \; *)
 (* break on error *)
-(* find . -name *.wlt -print0 | xargs -0L1 ./run_test_by_number.wl *)
+(* find . -name *.wlt -print0 | xargs -0L1 ./run_test.wl *)
 
 
 run[fname_, n_:Null] := Block[
