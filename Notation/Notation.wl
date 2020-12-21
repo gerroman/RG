@@ -72,6 +72,9 @@ id::usage = "
   id represents identity matrix
 ";
 
+zero::usage = "
+  zero represent zero matrix
+";
 
 theta::usage = "
   theta \[LongDash] polar angle
@@ -125,10 +128,16 @@ pcms::usage = "
 prime`pcms::usage = "
   prime`pcms symbol for final particles momentum in the center of mass frame for the process 2->2
 ";
-\[ScriptP]::usage = "
-  \[ScriptP] represent symbol for momentum
-";
 
+\[ScriptP]::usage = "
+  \[ScriptP] -- symbol for momentum
+";
+\[ScriptCapitalE]::usage = "
+  \[ScriptCapitalE] -- symbol for energy
+";
+\[ScriptM]::usage = "
+  \[ScriptM] -- symbol for energy
+";
 
 electron::usage = "
   electron
@@ -164,6 +173,29 @@ Global`\[Mu]::usage = "
 bar`\[Mu]::usage = "
   bar`mu symbol for antimuon
 ";
+
+plus::usage = "
+  plus -- string for sign + 
+";
+minus::usage = "
+  minus -- string for sign -
+";
+plus\[LetterSpace]minus::usage = "
+  plus\[LetterSpace]minus -- list of strign for signs  {+, -}
+";
+
+\[Eta]::usage = "
+  \[Eta] -- symbol for fermion antiparticle spinor
+";
+
+\[Xi]::usage = "
+  \[Xi] -- symbol for fermion particle spinor 
+";
+
+\[GothicP]::usage = "
+  \[GothicP] -- symbol for 4-momentum
+";
+
 
 
 Begin["`Private`"]
@@ -244,9 +276,12 @@ Unprotect[Times];
   Format[a_ * id, TraditionalForm] := a;
 Protect[Times];
 
+zero /: Format[zero, TraditionalForm] := Style[0, Bold];
+
 Format[id, TraditionalForm] := Style[1, Bold];
 
 
+setIndexed[\[Theta], \[CurlyPhi]];
 Format[theta,  TraditionalForm] := \[Theta];
 Format[phi, TraditionalForm] := \[CurlyPhi];
 Format[omega, TraditionalForm] := \[CapitalOmega];
@@ -262,7 +297,7 @@ Format[crossSection, TraditionalForm] := \[Sigma];
 Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
 
 
-setIndexed[\[ScriptP]];
+setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
 prime`pcms /: Format[prime`pcms, TraditionalForm] := \[ScriptP]["cms", "\[Prime]"];
 
@@ -277,15 +312,33 @@ photon /: Format[photon, TraditionalForm] = \[Gamma];
 rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
 
 
+Format[u[a_, b_], TraditionalForm] := Subsuperscript[u, a, b];
+Format[v[a_, b_], TraditionalForm] := Subsuperscript[v, a, b];
+Format[bar`u[a_, b_], TraditionalForm] := Subsuperscript[bar`u, a, b];
+Format[bar`v[a_, b_], TraditionalForm] := Subsuperscript[bar`v, a, b];
+
+
+plus = "+";
+minus = "-";
+plus\[LetterSpace]minus = {plus, minus};
+
+
+setIndexed[\[Xi], \[Eta]];
+setIndexed[\[GothicP]];
+
+
 Protect[
   \[ScriptCapitalM], Global`m, Global`g, Global`e, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
-  Global`d, \[ScriptP], pcms, prime`pcms, Global`\[Mu], bar`e, bar`\[Mu],
+  \[Xi], \[Eta],
+  \[GothicP],
+  \[ScriptP], \[ScriptCapitalE], \[ScriptM],
+  Global`d, pcms, prime`pcms, Global`\[Mu], bar`e, bar`\[Mu],
   electron, positron, muon, antimuon,
   Global`\[Alpha]
 ];
 
 
-End[]
+End[];
 
 
-EndPackage[]
+EndPackage[];
