@@ -38,11 +38,23 @@ spinSum::usage = "
   spinSum[] perform sum over spin states for all found fermions
 ";
 
+
 Begin["`Private`"]
+
+(* TODO: performance ?*)
+zero /: Dot[a__, zero, b___] := zero;
+zero /: Dot[a___, zero, b__] := zero;
+zero /: Times[a_, zero] := zero;
+zero /: Plus[a_, zero] := a;
+zero /: Format[zero, TraditionalForm] := Style[0, Bold];
 
 
 id /: Dot[x___, id, y__] := Dot[x, y];
 id /: Dot[x__, id, y___] := Dot[x, y];
+
+
+\[Gamma][p_List /; Length[p] == 4] := sp[Array[\[Gamma], 4, 0], p];
+
 
 gamma = \[Gamma];
 tr[gamma[\[Mu]_Symbol]] = 0;
