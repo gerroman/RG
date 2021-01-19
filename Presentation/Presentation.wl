@@ -8,7 +8,10 @@ BeginPackage["RG`Presentation`", {"RG`BaseUtils`"}];
 tagged::usage = "
   tagged[eq`tag = ...] make definition for eq`tag and produce output cell with the tag \"eq`tag\"
   tagged[expr] evaluate expr and produce output cell with the tag \"expr\"
-"
+";
+untagged::usage = "
+  just present expression in traditional form
+";
 
 tagged`final = False;
 
@@ -86,6 +89,25 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   ];
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
+
+Options[untagged] = {
+  "form" -> TraditionalForm
+  , "colorize" -> True
+};
+untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
+untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
+  If[Not[$Notebooks]
+    , expr
+    , (
+      expr // func 
+      // If[OptionValue[untagged, "colorize"]
+          , colorize[_HoldForm]
+          , Identity
+      ] 
+      // OptionValue[untagged, "form"]
+    )
+  ]
+);
 
 
 colorize[xs_List] := With[{

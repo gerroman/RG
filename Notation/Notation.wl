@@ -145,11 +145,17 @@ electron::usage = "
 positron::usage = "
   positron
 ";
+proton::usage = "
+  proton
+";
 Global`e::usage = "
   e symbol for electron
 ";
 Global`\[Alpha]::usage = "
   \[Alpha] symbol for electromagnetic coupling constant
+";
+Global`p::usage = "
+ p symbol for proton
 ";
 rule`alpha::usage = "
   rule`alpha substitute powers of electron charge to electromagnetic coupling constant
@@ -199,7 +205,6 @@ plus\[LetterSpace]minus::usage = "
 
 
 Begin["`Private`"]
-
 
 SetAttributes[setIndexed, {HoldAll, Listable}];
 setIndexed[x_Symbol] := (
@@ -301,11 +306,12 @@ setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
 prime`pcms /: Format[prime`pcms, TraditionalForm] := \[ScriptP]["cms", "\[Prime]"];
 
-electron /: Format[electron, TraditionalForm] = Global`e;
-positron /: Format[positron, TraditionalForm] = OverBar[Global`e];
+electron /: Format[electron, TraditionalForm] = HoldForm[Global`e];
+positron /: Format[positron, TraditionalForm] = HoldForm[OverBar[Global`e]];
+proton /: Format[proton, TraditionalForm] = HoldForm[Global`p]
 
-muon /: Format[muon, TraditionalForm] = Global`\[Mu];
-antimuon /: Format[antimuon, TraditionalForm] = OverBar[Global`\[Mu]];
+muon /: Format[muon, TraditionalForm] = HoldForm[Global`\[Mu]];
+antimuon /: Format[antimuon, TraditionalForm] = HoldForm[OverBar[Global`\[Mu]]];
 photon /: Format[photon, TraditionalForm] = \[Gamma];
 
 
@@ -326,16 +332,8 @@ plus\[LetterSpace]minus = {plus, minus};
 setIndexed[\[Xi], \[Eta]];
 setIndexed[\[GothicP]];
 
-
-Protect[
-  \[ScriptCapitalM], Global`m, Global`g, Global`e, \[Theta], \[CurlyPhi], \[CapitalOmega], \[Sigma], u, v, bar`u, bar`v,
-  \[Xi], \[Eta],
-  \[GothicP],
-  \[ScriptP], \[ScriptCapitalE], \[ScriptM],
-  Global`d, pcms, prime`pcms, Global`\[Mu], bar`e, bar`\[Mu],
-  electron, positron, muon, antimuon,
-  Global`\[Alpha]
-];
+setIndexed[electron, positron, proton, muon, antimuon];
+setPrime[electron, positron, proton, muon, antimuon];
 
 
 End[];
