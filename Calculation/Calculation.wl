@@ -4,7 +4,7 @@
 (*Functions to perform routine transformations*)
 
 
-BeginPackage["RG`Calculation`"];
+BeginPackage["RG`Calculation`", {"RG`Notation`"}];
 
 
 modify::usage = "
@@ -94,6 +94,17 @@ complexToAbs::usage = "
 
 solve::usage = "
   solve[eqs_, vars_] solve equations eqs w.r.t. vars
+";
+
+
+changeIntegrateVars::usage = "
+  changeIntegrateVars[va -> f[vb], vb -> g[va]] change integration variable va->vb in the integral w.r.t. va
+";
+pullIntegrateFactors::usage = "
+  pullIntegrateFactors[va] pull out constant factor off the integrals w.r.t. va
+";
+groupIntegrals::usate = "
+  groupIntegrals[va] group sum of integrals w.r.t. variable va
 ";
 
 
@@ -296,6 +307,33 @@ solve[eqs_, vars_] := Block[{var`solve},
       ]
    ];
 solve[vars_] := solve[#, vars]&;
+
+
+changeIntegrateVars[rulea : (va_ -> fb_), ruleb : (vb_ -> fa_)] := ReplaceAll[
+  {
+    integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb]
+    , integrate[expr_, {va, vaMin_, vaMax_}] :> 
+        integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+  }
+];
+
+
+pullIntegrateFactors[va_] := ReplaceAll[
+  {
+     integrate[expr_. factor_, vs : {va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
+     , integrate[expr_. factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
+  }
+];
+
+
+groupIntegrals[va_] := ReplaceRepeated[
+  #,
+  {
+    a_. integrate[exprA_, vs:(va|{va, __})] 
+    + b_. integrate[exprB_, vs:(va|{va, __})]
+      :> integrate[a exprA + b exprB, vs]
+  }
+]&
 
 
 End[];
