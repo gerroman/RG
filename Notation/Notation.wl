@@ -120,6 +120,9 @@ crossSection::usage = "
 Global`d::usage = "
   d symbol to use as differential
 ";
+integrate::usage = "
+  integrate[expr, region] represent definite integrals
+";
 
 
 pcms::usage = "
@@ -210,7 +213,8 @@ SetAttributes[setIndexed, {HoldAll, Listable}];
 setIndexed[x_Symbol] := (
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
   x /: Format[x["", j_], TraditionalForm] := Superscript[x, j];
-  x /: Format[x[i_, j_], TraditionalForm] := Superscript[Subscript[x, i], j];
+  x /: Format[x[i_, j_], TraditionalForm] := Subsuperscript[x, i, j];
+  x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
 );
 setIndexed[x__] := setIndexed[{x}];
 
@@ -300,7 +304,7 @@ Format[crossSection, TraditionalForm] := \[Sigma];
 
 
 Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
-
+integrate/:Format[integrate[expr_, region__], TraditionalForm] := HoldForm[Integrate[expr, region]];
 
 setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
