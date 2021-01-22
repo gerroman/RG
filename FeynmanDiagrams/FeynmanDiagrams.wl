@@ -28,6 +28,11 @@ photonArc::usage = "
 "
 
 
+particleLine::usage = "
+  particleLine
+";
+
+
 Begin["`Private`"]
 
 
@@ -187,6 +192,27 @@ electronArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWid
 ];
 
 (*  *)
+
+
+particleLine[
+		points : {{_, _}, {_, _}}
+		, label_
+		, opts1_: {}
+        , opts2_: {}
+		, flip_: False
+		, arrowWidth_: Automatic
+		, shiftFactors_: 2
+	] :=
+	Module[{
+			el = First@electronLine[points, {label}, flip, arrowWidth, shiftFactors]
+		},
+		With[{
+				line = Flatten[{opts1}]~Join~el[[1]],
+				text = MapAt[Flatten[Style[#, opts2]] &, el[[2]], {1}]
+			},
+			{line, text}
+		]
+	];
 
 
 End[]

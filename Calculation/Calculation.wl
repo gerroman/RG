@@ -309,7 +309,7 @@ solve[eqs_, vars_] := Block[{var`solve},
 solve[vars_] := solve[#, vars]&;
 
 
-changeIntegrateVars[rulea : (va_ -> fb_), ruleb : (vb_ -> fa_)] := ReplaceAll[
+changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
     integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb]
     , integrate[expr_, {va, vaMin_, vaMax_}] :> 
@@ -320,8 +320,8 @@ changeIntegrateVars[rulea : (va_ -> fb_), ruleb : (vb_ -> fa_)] := ReplaceAll[
 
 pullIntegrateFactors[va_] := ReplaceAll[
   {
-     integrate[expr_. factor_, vs : {va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
-     , integrate[expr_. factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
+     integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
+     , integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
   }
 ];
 

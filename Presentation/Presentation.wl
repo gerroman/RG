@@ -52,6 +52,10 @@ grid::usage = "
   grid[list] decorate list as grid
 ";
 
+shorten::usage = "
+  shorten[expr] print shorten version of expr
+";
+
 
 Begin["`Private`"];
 
@@ -257,6 +261,18 @@ grid[l : {{___} ..}, title : {___}, opts:OptionsPattern[]] := Grid[
     , ItemStyle -> OptionValue[grid, ItemStyle]
     , Spacings -> OptionValue[grid, Spacings]
    ];
+
+
+Options[shorten] = {"n" -> 1, "HoldForm" -> False};
+shorten[x_String, opts : OptionsPattern[]] := x;
+shorten[empty:{}, opts : OptionsPattern[]] := empty;
+shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
+    str = ToString[StringForm["... [`` terms]", Length[{xs}]]],
+    func = If[OptionValue["HoldForm"], HoldForm, Identity],
+    xn = {xs}[[;; Min[OptionValue["n"], Length[{xs}]]]]
+  },
+  head @@ Append[func /@ xn, str]
+];
 
 
 End[];
