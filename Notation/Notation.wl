@@ -308,7 +308,8 @@ integrate/:Format[integrate[expr_, region__], TraditionalForm] := HoldForm[Integ
 
 setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
-prime`pcms /: Format[prime`pcms, TraditionalForm] := \[ScriptP]["cms", "\[Prime]"];
+prime`pcms /: Format[prime`pcms, TraditionalForm] :=
+  Superscript[Subscript[\[ScriptP], "cms"], "\[Prime]"];
 
 electron /: Format[electron, TraditionalForm] = HoldForm[Global`e];
 positron /: Format[positron, TraditionalForm] = HoldForm[OverBar[Global`e]];
