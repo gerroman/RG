@@ -100,10 +100,21 @@ solve::usage = "
 changeIntegrateVars::usage = "
   changeIntegrateVars[va -> f[vb], vb -> g[va]] change integration variable va->vb in the integral w.r.t. va
 ";
+changeSumVars::usage = "
+  changeSumVars[va -> f[vb], vb -> g[va]] change integration variable va->vb in the integral w.r.t. va
+";
+
 pullIntegrateFactors::usage = "
   pullIntegrateFactors[va] pull out constant factor off the integrals w.r.t. va
 ";
-groupIntegrals::usate = "
+pullSumFactors::usage = "
+  pullSumFactors[va] pull out constant factor off the integrals w.r.t. va
+";
+
+groupIntegrals::usage = "
+  groupIntegrals[va] group sum of integrals w.r.t. variable va
+";
+groupSums::usage = "
   groupIntegrals[va] group sum of integrals w.r.t. variable va
 ";
 
@@ -317,11 +328,26 @@ changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   }
 ];
 
+changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
+  {
+    sum[expr_, va] :> sum[(expr /. rulea), vb]
+    , sum[expr_, {va, vaMin_, vaMax_}] :> 
+        sum[(expr /. rulea), {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+  }
+];
+
 
 pullIntegrateFactors[va_] := ReplaceAll[
   {
      integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
      , integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
+  }
+];
+
+pullSumFactors[va_] := ReplaceAll[
+  {
+     sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va]
+     , sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
   }
 ];
 
@@ -332,6 +358,15 @@ groupIntegrals[va_] := ReplaceRepeated[
     a_. integrate[exprA_, vs:(va|{va, __})] 
     + b_. integrate[exprB_, vs:(va|{va, __})]
       :> integrate[a exprA + b exprB, vs]
+  }
+]&
+
+groupSums[va_] := ReplaceRepeated[
+  #,
+  {
+    a_. sum[exprA_, vs:(va|{va, __})] 
+    + b_. sum[exprB_, vs:(va|{va, __})]
+      :> sum[a exprA + b exprB, vs]
   }
 ]&
 
