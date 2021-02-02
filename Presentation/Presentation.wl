@@ -267,11 +267,11 @@ Options[shorten] = {"n" -> 1, "HoldForm" -> False};
 shorten[x_String, opts : OptionsPattern[]] := x;
 shorten[empty:{}, opts : OptionsPattern[]] := empty;
 shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
-    str = ToString[StringForm["... [`` terms]", Length[{xs}]]],
+    str = ToString[StringForm["[`` terms in total]", Length[{xs}]]],
     func = If[OptionValue["HoldForm"], HoldForm, Identity],
     xn = {xs}[[;; Min[OptionValue["n"], Length[{xs}]]]]
   },
-  head @@ Append[func /@ xn, str]
+  With[{args=func /@ xn // Append[str]}, head@@args]
 ];
 
 
