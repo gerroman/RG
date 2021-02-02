@@ -121,7 +121,10 @@ Global`d::usage = "
   d symbol to use as differential
 ";
 integrate::usage = "
-  integrate[expr, region] represent definite integrals
+  integrate[expr, region] represent integrals
+";
+sum::usage = "
+  sum[expr, region] represent sums
 ";
 
 
@@ -306,6 +309,8 @@ Format[crossSection, TraditionalForm] := \[Sigma];
 Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
 integrate/:Format[integrate[expr_, region__], TraditionalForm] := HoldForm[Integrate[expr, region]];
 integrate/:Format[integrate[expr_], TraditionalForm] := StringForm["\[Integral]``", expr];
+sum/:Format[sum[expr_, region__], TraditionalForm] := HoldForm[Sum[expr, region]];
+sum/:Format[sum[expr_], TraditionalForm] := StringForm["\[Sum]``", expr];
 
 
 setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
