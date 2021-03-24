@@ -137,7 +137,7 @@ colorize[pattern_] := Function[expr,
 colorize[xs__] := colorize[{xs}];
 
 getRunner[] := getRunner[EvaluationNotebook[]];
-getRunner[nb_NotebookObject] := CreateWindow[PaletteNotebook[
+getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
   Grid[{{
    Button["Evaluate Cells", (
      SetSelectedNotebook[nb];
@@ -210,7 +210,7 @@ getRunner[nb_NotebookObject] := CreateWindow[PaletteNotebook[
   ],
   WindowTitle -> "Run_" <> Last[FileNameSplit[NotebookFileName[nb]]],
   WindowFloating -> True
-];
+];);
 
 
 OverTilde := carryFirst;
