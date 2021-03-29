@@ -63,19 +63,19 @@ eq`gamma\[LetterSpace]standard = {
     }~Join~Array[\[Gamma][#] == ArrayFlatten@{
         {ConstantArray[0, {2, 2}], PauliMatrix[#]}
         , {-PauliMatrix[#], ConstantArray[0, {2, 2}]}
-        } &, 3];
+    } &, 3];
+
 
 eq`gamma\[LetterSpace]standard = AppendTo[
-   eq`gamma\[LetterSpace]standard,
-   eq`gamma\[LetterSpace]5 // 
-    ReplaceAll[eq`gamma\[LetterSpace]standard]
-   ];
+  eq`gamma\[LetterSpace]standard,
+  eq`gamma\[LetterSpace]5 // ReplaceAll[eq`gamma\[LetterSpace]standard]
+];
+
 
 eq`gamma\[LetterSpace]standard = Join[
    eq`gamma\[LetterSpace]standard
-   , (eq`omega\[LetterSpace]plus\[LetterSpace]minus // 
-     ReplaceAll[eq`gamma\[LetterSpace]standard])
-   ];
+   , (eq`omega\[LetterSpace]plus\[LetterSpace]minus // ReplaceAll[eq`gamma\[LetterSpace]standard])
+];
 
 
 sigma[p_List /; (Length[p] == 3)] := sp[Array[PauliMatrix, 3], p];
