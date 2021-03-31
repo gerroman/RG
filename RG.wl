@@ -3,6 +3,7 @@
 
 
 Unprotect[Replace, ReplaceAll, ReplaceRepeated];
+
 Replace[eq_Equal] := Replace[Rule @@ eq];
 Replace[eqs : {_Equal ..}] := Replace[Rule @@@ eqs];
 Replace[expr_, eq_Equal] := Replace[expr, Rule @@ eq];
@@ -15,6 +16,7 @@ ReplaceAll[expr_, eqs : {_Equal ..}] := ReplaceAll[expr, Rule @@@ eqs];
 
 ReplaceRepeated[expr_, eq_Equal] := ReplaceRepeated[expr, Rule @@ eq];
 ReplaceRepeated[expr_, eqs : {_Equal ..}] := ReplaceRepeated[expr, Rule @@@ eqs];
+
 Protect[Replace, ReplaceAll, ReplaceRepeated];
 
 
