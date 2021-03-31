@@ -1,4 +1,4 @@
-#!/usr/bin/env -S WolframScript -script
+#!/store14/gerasimov/local/bin/WolframScript -script
 
 (* run all test from base directory  *)
 (* does not break on error *)
