@@ -26,7 +26,9 @@ setBar::usage = "
 matrixElement::usage = "
   matrixElement[\"tag\"] or matrixElement[\"tag1\", \"tag2\"] represent matrix element
 ";
-\[ScriptCapitalM]::usage = "symbol for matrix element";
+\[ScriptCapitalM]::usage = "
+  \[ScriptCapitalM] \[LongDash] symbol for matrix element
+";
 
 
 energy::usage = "
@@ -53,7 +55,7 @@ sp::usage = "
 ";
 
 Global`g::usage = "
-  g is symbol for metric tensor
+  g \[LongDash] symbol for metric tensor
 "
 
 setLorentzIndex::usage = "
@@ -77,7 +79,7 @@ zero::usage = "
 ";
 
 theta::usage = "
-  theta \[LongDash] polar angle
+  theta[x, y] \[LongDash] polar angle between x and y 3D-vectors
 ";
 \[Theta]::usage = "
   \[Theta] \[LongDash] symbol for polar angle
@@ -94,7 +96,7 @@ omega::usage = "
   omega \[LongDash] body angle
 ";
 \[CapitalOmega]::usage = "
-  \[CapitalOmega] \[LongDash] symbol for spherical angle
+  \[CapitalOmega] \[LongDash] symbol for solid angle
 ";
 
 
@@ -136,13 +138,13 @@ prime`pcms::usage = "
 ";
 
 \[ScriptP]::usage = "
-  \[ScriptP] -- symbol for momentum
+  \[ScriptP] \[LongDash] symbol for momentum
 ";
 \[ScriptCapitalE]::usage = "
-  \[ScriptCapitalE] -- symbol for energy
+  \[ScriptCapitalE] \[LongDash] symbol for energy
 ";
 \[ScriptM]::usage = "
-  \[ScriptM] -- symbol for energy
+  \[ScriptM] \[LongDash] symbol for mass
 ";
 
 electron::usage = "
@@ -187,25 +189,25 @@ bar`\[Mu]::usage = "
 ";
 
 plus::usage = "
-  plus -- string for sign + 
+  plus \[LongDash] string for sign + 
 ";
 minus::usage = "
-  minus -- string for sign -
+  minus \[LongDash] string for sign -
 ";
 plus\[LetterSpace]minus::usage = "
-  plus\[LetterSpace]minus -- list of strign for signs  {+, -}
+  plus\[LetterSpace]minus \[LongDash] list of strign for signs  {+, -}
 ";
 
 \[Eta]::usage = "
-  \[Eta] -- symbol for fermion antiparticle spinor
+  \[Eta] \[LongDash] symbol for fermion antiparticle spinor
 ";
 
 \[Xi]::usage = "
-  \[Xi] -- symbol for fermion particle spinor 
+  \[Xi] \[LongDash] symbol for fermion particle spinor 
 ";
 
 \[GothicP]::usage = "
-  \[GothicP] -- symbol for 4-momentum
+  \[GothicP] \[LongDash] symbol for 4-momentum
 ";
 
 
@@ -254,7 +256,10 @@ energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
 
 SetAttributes[sp, Orderless];
 sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-sp /: Format[sp[expr_Symbol, expr_], TraditionalForm] := Superscript[expr, 2];
+sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
+
+sp /: Format[sp[expr_], TraditionalForm] := HoldForm[expr]^2;
+sp /: Format[sp[expr_, expr_], TraditionalForm] := HoldForm[expr]^2;
 sp /: Format[sp, TraditionalForm] := "";
 
 abs /: Format[abs[expr_], TraditionalForm] := BracketingBar[expr];

@@ -9,6 +9,7 @@ tagged::usage = "
   tagged[eq`tag = ...] make definition for eq`tag and produce output cell with the tag \"eq`tag\"
   tagged[expr] evaluate expr and produce output cell with the tag \"expr\"
 ";
+
 untagged::usage = "
   just present expression in traditional form
 ";
@@ -28,7 +29,9 @@ getRunner::usage = "
 
 
 OverTilde::usage = "
-  OverTilde[func][args][expr] works as func[expr, args] i.e. it creates operator OverTilde[func][args] for the first argument of func
+  OverTilde[func][args][expr] works as func[expr, args] i.e. it
+  creates operator OverTilde[func][args] for the first argument of
+  func
 ";
 
 
@@ -60,10 +63,8 @@ shorten::usage = "
 Begin["`Private`"];
 
 
-
 SetAttributes[tagged, HoldAll];
-
-tagged::shdw = "Warning: `` appeares more than once so can shadow previous result";
+tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
 
 Options[tagged] = {"form" -> TraditionalForm};
 tagged[expr:Set[lhs_, _], args___] := (
@@ -103,12 +104,9 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks]
     , expr
     , (
-      expr // func 
-      // If[OptionValue[untagged, "colorize"]
-          , colorize[_HoldForm]
-          , Identity
-      ] 
-      // OptionValue[untagged, "form"]
+      expr // func  //
+			  If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
+				OptionValue[untagged, "form"]
     )
   ]
 );
@@ -135,6 +133,7 @@ colorize[pattern_] := Function[expr,
   ]
 ];
 colorize[xs__] := colorize[{xs}];
+
 
 getRunner[] := getRunner[EvaluationNotebook[]];
 getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
@@ -242,7 +241,7 @@ row = Row[#, ",\t"] &;
 
 ClearAll[grid];
 Options[grid] = {
-    Background -> {None, {{Lighter[Blend[{Black, White}], .98], Lighter[Blend[{Black, White}], .96]}}}
+    Background -> {None, {{Lighter[Blend[{Black, White}], .95], Lighter[Blend[{Black, White}], .75]}}}
    	, Dividers -> {{Darker[Gray, .6], {Lighter[Gray, .5]}, Darker[Gray, .6]}, {Darker[Gray, .6], Darker[Gray, .6], {False}, Darker[Gray, .6]}}
    	, Alignment -> Right
    	, Frame -> Darker[Gray, .6]
@@ -250,17 +249,21 @@ Options[grid] = {
    	, Spacings -> {Automatic, .8}
 };
 
-grid[l_List] := grid[Map[List, l]];
-grid[l : {{___} ..}] := grid[l, ConstantArray["", Length[First[l]]]];
-grid[l : {{___} ..}, title : {___}, opts:OptionsPattern[]] := Grid[
-   	Prepend[l, title]
+grid[l_List, title_List:{}, opts___] := grid[Map[List, l], title, opts];
+grid[l:{{___} ..}, title_List:{}, OptionsPattern[]] := With[
+  {
+	  fulltable = Prepend[l, If[title=!={}, title, ConstantArray["", Length[First[l]]]]]
+  },
+	Grid[
+	  fulltable
     , Background -> OptionValue[grid, Background]
     , Dividers -> OptionValue[grid, Dividers]
     , Alignment -> OptionValue[grid, Alignment]
     , Frame -> OptionValue[grid, Frame]
     , ItemStyle -> OptionValue[grid, ItemStyle]
     , Spacings -> OptionValue[grid, Spacings]
-   ];
+   ]
+];
 
 
 Options[shorten] = {"n" -> 1, "HoldForm" -> False};

@@ -13,35 +13,53 @@ BeginPackage["RG`HelicityStates`", {
 
 
 eq`gamma\[LetterSpace]5::usage = "
-  eq`gamma\[LetterSpace]5 --  definition of gamma[5]
+  eq`gamma\[LetterSpace]5 \[LongDash]  definition of gamma[5]
 ";
 
 \[Omega]::usage = "
-  \[Omega][plus|minus]  -- projector to right(left) bispinors
+  \[Omega][plus|minus]  \[LongDash] projector to right(left) bispinors
 ";
 eq`omega\[LetterSpace]plus\[LetterSpace]minus::usage = "
-  eq`omega\[LetterSpace]plus\[LetterSpace]minus -- definition of projectors to right(left) bispinors 
+  eq`omega\[LetterSpace]plus\[LetterSpace]minus \[LongDash] definition of projectors to right(left) bispinors 
 ";
 
 eq`gamma\[LetterSpace]standard::usage = "
-  eq`gamma\[LetterSpace]standard -- definiton of gamma matrix in spiral basis
+  eq`gamma\[LetterSpace]standard \[LongDash] definiton of gamma matrix in spiral basis
 ";
 
 rule`bispinor\[LetterSpace]explicit::usage = "
-  rule\[LetterSpace]bispinor\[LetterSpace]explicit -- rule get explicit bispinor in spiral basis of gamma matrix
+  rule\[LetterSpace]bispinor\[LetterSpace]explicit \[LongDash] rule get explicit bispinor in spiral basis of gamma matrix
 ";
 
 eq`z\[LetterSpace]kinematic::usage = "
-  eq`z\[LetterSpace]kinematic -- definition of 4-momentum and bispinors in spiral basis
+  eq`z\[LetterSpace]kinematic \[LongDash] definition of 4-momentum and bispinors in spiral basis
 ";
 
 eq`theta\[LetterSpace]phi\[LetterSpace]kinematic::usage = "
-  eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] -- definition of 4-momentum and bispinors in spiral basis
+  eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] \[LongDash] definition of 4-momentum and bispinors in spiral basis
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[id] use id as particle identificator
 ";
 
+eq`z\[LetterSpace]kinematic\[LetterSpace]massless::usage = "
+  eq`z\[LetterSpace]kinematic\[LetterSpace]massless \[LongDash] definition of 4-momentum and bispinors in spiral basis
+";
+
+eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless::usage = "
+  eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless[] \[LongDash] definition of 4-momentum and bispinors in spiral basis
+  eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless[id] use id as particle identificator
+";
+
 outer\[LetterSpace]dot::usage = "
-  outer\[LetterSpace]dot[kinematic] -- evaluates products  u.bar`u and v.bar`v assuming specific kinematic
+  outer\[LetterSpace]dot[kinematic] \[LongDash] evaluates products  u.bar`u and v.bar`v assuming specific kinematic
+";
+
+
+SProduct::usage = "
+  SProduct[\[GothicP][i_], \[GothicP][j_]] \[LongDash] base product for expressions with massless bispinor 
+";
+
+rule`SProduct::usage "
+  rule`SProduct \[LongDash] rule base product explicit representation
 ";
 
 
@@ -114,19 +132,19 @@ Block[{$Assumptions = \[ScriptCapitalE][\[ScriptP]] >= 0 && \[ScriptM] >= 0 && \
 
   eq`z\[LetterSpace]kinematic = eq`z\[LetterSpace]kinematic~Join~(
    {
-      \[Xi]["z", "+"] == {1, 0},
-      \[Xi]["z", "-"] == {0, 1},
-      \[Eta]["z", "+"] == {0, 1},
-      \[Eta]["z", "-"] == {-1, 0}
+      \[Xi]["z", plus] == {1, 0},
+      \[Xi]["z", minus] == {0, 1},
+      \[Eta]["z", plus] == {0, 1},
+      \[Eta]["z", minus] == {-1, 0}
     }
   );
 
   eq`z\[LetterSpace]kinematic = eq`z\[LetterSpace]kinematic~Join~(
 	  {
-      u["z", "+"] == u[\[GothicP]["z"], \[Xi]["z", "+"]]
-      , u["z", "-"] == u[\[GothicP]["z"], \[Xi]["z", "-"]]
-      , v["z", "+"] == v[\[GothicP]["z"], \[Eta]["z", "+"]]
-      , v["z", "-"] == v[\[GothicP]["z"], \[Eta]["z", "-"]]
+      u["z", plus] == u[\[GothicP]["z"], \[Xi]["z", plus]]
+      , u["z", minus] == u[\[GothicP]["z"], \[Xi]["z", minus]]
+      , v["z", plus] == v[\[GothicP]["z"], \[Eta]["z", plus]]
+      , v["z", minus] == v[\[GothicP]["z"], \[Eta]["z", minus]]
     } // rewriteIt[
 	    ReplaceAll[eq`z\[LetterSpace]kinematic // toRules] /* Replace[rule`bispinor\[LetterSpace]explicit]
     ]
@@ -134,10 +152,10 @@ Block[{$Assumptions = \[ScriptCapitalE][\[ScriptP]] >= 0 && \[ScriptM] >= 0 && \
 
   eq`z\[LetterSpace]kinematic = eq`z\[LetterSpace]kinematic~Join~(
     {
-      bar`u["z", "+"] == bar`u[\[GothicP]["z"], \[Xi]["z", "+"]]
-      , bar`u["z", "-"] == bar`u[\[GothicP]["z"], \[Xi]["z", "-"]]
-      , bar`v["z", "+"] == bar`v[\[GothicP]["z"], \[Eta]["z", "+"]]
-      , bar`v["z", "-"] == bar`v[\[GothicP]["z"], \[Eta]["z", "-"]]
+      bar`u["z", plus] == bar`u[\[GothicP]["z"], \[Xi]["z", plus]]
+      , bar`u["z", minus] == bar`u[\[GothicP]["z"], \[Xi]["z", minus]]
+      , bar`v["z", plus] == bar`v[\[GothicP]["z"], \[Eta]["z", plus]]
+      , bar`v["z", minus] == bar`v[\[GothicP]["z"], \[Eta]["z", minus]]
     } // rewriteIt[
       ReplaceAll[eq`z\[LetterSpace]kinematic // toRules] /* Replace[rule`bispinor\[LetterSpace]explicit] /* Simplify
     ]
@@ -146,12 +164,12 @@ Block[{$Assumptions = \[ScriptCapitalE][\[ScriptP]] >= 0 && \[ScriptM] >= 0 && \
   eq`z\[LetterSpace]kinematic = eq`z\[LetterSpace]kinematic // Reverse;
 ];
 
-
-Block[{$Assumptions = (
+thetaPhiAssumtions = (
     (0 <= \[Theta] <= \[Pi]) && (-\[Pi] < \[CurlyPhi] <= \[Pi]) &&
     (\[ScriptCapitalE][\[ScriptP]] >= 0) && (\[ScriptM] >= 0) && (\[ScriptP] >= 0) &&
     (\[ScriptCapitalE][\[ScriptP]] >= \[ScriptP]) && (\[ScriptCapitalE][\[ScriptP]] >= \[ScriptM])
-  )},
+  );
+Block[{$Assumptions = thetaPhiAssumtions},
 
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] = {
       \[ScriptCapitalE][\[ScriptP]] == Sqrt[\[ScriptP]^2 + \[ScriptM]^2],
@@ -160,15 +178,15 @@ Block[{$Assumptions = (
 
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] = eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[]~Join~(
      {
-        \[Xi][{\[Theta], \[CurlyPhi]}, "+"] == {Cos[\[Theta]/2], 
+        \[Xi][{\[Theta], \[CurlyPhi]}, plus] == {Cos[\[Theta]/2], 
         Exp[I \[CurlyPhi]] Sin[\[Theta]/2]},
         \[Xi][{\[Theta], \[CurlyPhi]}, 
-        "-"] == {-Exp[-I \[CurlyPhi]] Sin[\[Theta]/2], Cos[\[Theta]/2]}
+        minus] == {-Exp[-I \[CurlyPhi]] Sin[\[Theta]/2], Cos[\[Theta]/2]}
       });
 
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] = eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[]~Join~({
-    \[Eta][{\[Theta], \[CurlyPhi]}, "+"] == -I PauliMatrix[2].Conjugate[\[Xi][{\[Theta], \[CurlyPhi]}, "+"]],
-    \[Eta][{\[Theta], \[CurlyPhi]}, "-"] == -I PauliMatrix[2].Conjugate[\[Xi][{\[Theta], \[CurlyPhi]}, "-"]]
+    \[Eta][{\[Theta], \[CurlyPhi]}, plus] == -I PauliMatrix[2].Conjugate[\[Xi][{\[Theta], \[CurlyPhi]}, plus]],
+    \[Eta][{\[Theta], \[CurlyPhi]}, minus] == -I PauliMatrix[2].Conjugate[\[Xi][{\[Theta], \[CurlyPhi]}, minus]]
   } // rewriteIt[
     ReplaceAll[eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] // toRules] /* 
     ComplexExpand /* ExpToTrig /* Factor /* 
@@ -176,19 +194,19 @@ Block[{$Assumptions = (
   ]);
 
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] = eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[]~Join~({
-    u[{\[Theta], \[CurlyPhi]}, "+"] == u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, "+"]], 
-    u[{\[Theta], \[CurlyPhi]}, "-"] == u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, "-"]], 
-    v[{\[Theta], \[CurlyPhi]}, "+"] == v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, "+"]], 
-    v[{\[Theta], \[CurlyPhi]}, "-"] == v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, "-"]]
+    u[{\[Theta], \[CurlyPhi]}, plus] == u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, plus]], 
+    u[{\[Theta], \[CurlyPhi]}, minus] == u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, minus]], 
+    v[{\[Theta], \[CurlyPhi]}, plus] == v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, plus]], 
+    v[{\[Theta], \[CurlyPhi]}, minus] == v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, minus]]
   } // rewriteIt[
     ReplaceAll[eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] // toRules] /* Replace[rule`bispinor\[LetterSpace]explicit] /* Simplify
   ]);
 
   eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] = eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[]~Join~({
-    bar`u[{\[Theta], \[CurlyPhi]}, "+"] == bar`u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, "+"]]
-    , bar`u[{\[Theta], \[CurlyPhi]}, "-"] == bar`u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, "-"]]
-    , bar`v[{\[Theta], \[CurlyPhi]}, "+"] == bar`v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, "+"]]
-    , bar`v[{\[Theta], \[CurlyPhi]}, "-"] == bar`v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, "-"]]
+    bar`u[{\[Theta], \[CurlyPhi]}, plus] == bar`u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, plus]]
+    , bar`u[{\[Theta], \[CurlyPhi]}, minus] == bar`u[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Xi][{\[Theta], \[CurlyPhi]}, minus]]
+    , bar`v[{\[Theta], \[CurlyPhi]}, plus] == bar`v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, plus]]
+    , bar`v[{\[Theta], \[CurlyPhi]}, minus] == bar`v[\[GothicP][{\[Theta], \[CurlyPhi]}], \[Eta][{\[Theta], \[CurlyPhi]}, minus]]
   } // rewriteIt[
     ReplaceAll[eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] // toRules] /* Replace[rule`bispinor\[LetterSpace]explicit] /* Simplify
   ]);
@@ -197,11 +215,11 @@ Block[{$Assumptions = (
 ];
 
 eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[id_] := eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] // ReplaceAll[{
-  {\[Theta], \[CurlyPhi]} -> id
-  , \[Theta] -> \[Theta][id]
-  , \[CurlyPhi] -> \[CurlyPhi][id]
-  , \[ScriptP] -> \[ScriptP][id]
-  , \[ScriptM] -> \[ScriptM][id]
+  {\[Theta], \[CurlyPhi]} -> id,
+	\[Theta] -> \[Theta][id],
+	\[CurlyPhi] -> \[CurlyPhi][id],
+	\[ScriptP] -> \[ScriptP][id],
+	\[ScriptM] -> \[ScriptM][id]
 }];
 
 
@@ -212,6 +230,29 @@ outer\[LetterSpace]dot[kinematic_][expr_] := (expr // ReplaceAll[
 		b // ReplaceAll[kinematic // toRules]
   ]
 ]);
+
+
+eq`z\[LetterSpace]kinematic\[LetterSpace]massless = eq`z\[LetterSpace]kinematic // ReplaceRepeated[#, {\[ScriptCapitalE][\[ScriptP]] -> \[ScriptP], \[ScriptM] -> 0, Sqrt[\[ScriptP]^2] -> \[ScriptP]}]& // Cases[_Equal];
+eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless[] = eq`theta\[LetterSpace]phi\[LetterSpace]kinematic[] // ReplaceRepeated[#, {\[ScriptCapitalE][\[ScriptP]] -> \[ScriptP], \[ScriptM] -> 0, Sqrt[\[ScriptP]^2] -> \[ScriptP]}]& // Cases[_Equal];
+eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless[id_] := eq`theta\[LetterSpace]phi\[LetterSpace]kinematic\[LetterSpace]massless[] // ReplaceAll[{
+  {\[Theta], \[CurlyPhi]} -> id,
+	\[Theta] -> \[Theta][id],
+	\[CurlyPhi] -> \[CurlyPhi][id],
+	\[ScriptP] -> \[ScriptP][id]
+}];
+
+
+SProduct /: Format[SProduct[a_, b_], TraditionalForm] := HoldForm[Global`S][a, b];
+rule`SProduct = {
+  SProduct[\[GothicP][i_], \[GothicP][j_]] :> 2 * Sqrt[\[ScriptP][i]] * Sqrt[\[ScriptP][j]] * (
+	  Exp[-I * \[CurlyPhi][i]] * Sin[\[Theta][i]/2] * Cos[\[Theta][j]/2]
+		- Exp[-I * \[CurlyPhi][j]] * Cos[\[Theta][i]/2] * Sin[\[Theta][j]/2] 
+  ),
+	Conjugate[SProduct[\[GothicP][i_], \[GothicP][j_]]] :> 2 * Sqrt[\[ScriptP][i]] * Sqrt[\[ScriptP][j]] * (
+	  Exp[I * \[CurlyPhi][i]] * Sin[\[Theta][i]/2] * Cos[\[Theta][j]/2]
+		- Exp[I * \[CurlyPhi][j]] * Cos[\[Theta][i]/2] * Sin[\[Theta][j]/2] 
+  )
+} // Reverse;
 
 
 End[];
