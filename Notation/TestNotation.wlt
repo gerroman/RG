@@ -180,3 +180,25 @@ test[29] := VerificationTest[(* #29 *)
   ,
   "\\[\\left\\{e,\\bar{e},\\mu ,\\bar{\\mu },\\gamma \\right\\}\\]\n\n"
 ]
+
+
+test[30] :=
+VerificationTest[(* #30 *)
+  Block[{i, x},
+    setSuperscript[x];
+    ExportString[TraditionalForm[x[i]], "TeXFragment"]
+  ]
+  ,
+  "\\[x^i\\]\n\n"
+]
+
+
+test[31] :=
+VerificationTest[(* #31 *)
+  Block[{x},
+	  setTilde[x];
+		ExportString[TraditionalForm[tilde`x], "TeXFragment"]
+	]
+  ,
+  "\\[\\tilde{x}\\]\n\n"
+]
