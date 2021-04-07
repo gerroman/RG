@@ -9,18 +9,29 @@ BeginPackage["RG`Notation`"]
 
 setIndexed::usage = "
   setIndexed[x] set symbol x as indexed variable, \
-i.e. x[i], x[i, j] will have sub- and superscripts in Traditional form
+i.e. x[i], x[i, j] will have sub- and superscripts in the TraditionalForm
 ";
 
 
 setPrime::usage = "
-  setPrime[x] set symbol prime`x in traditional form to have prime (') as superscript
+  setPrime[x] set symbol prime`x in TraditionalForm to have prime (') as superscript
 ";
 
 
 setBar::usage = "
-  setBar[x] set symbol bar`x in traditional form to have overbar
+  setBar[x] set symbol bar`x in the TraditionalForm to have overbar
 ";
+
+
+setTilde::usage = "
+  setTilde[x] set symbol tilde`x in the TraditionalForm to have overtilde
+";
+
+
+setSuperscript::usage = "
+  setSuperscript[x] set symbol x as superscripted variable, \
+i.e. x[i] will have superscripts in the TraditionalForm
+"
 
 
 matrixElement::usage = "
@@ -214,6 +225,7 @@ plus\[LetterSpace]minus::usage = "
 
 Begin["`Private`"]
 
+
 SetAttributes[setIndexed, {HoldAll, Listable}];
 setIndexed[x_Symbol] := (
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
@@ -222,6 +234,23 @@ setIndexed[x_Symbol] := (
   x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
 );
 setIndexed[x__] := setIndexed[{x}];
+
+
+SetAttributes[setSuperscript, {HoldAll, Listable}];
+setSuperscript[x_Symbol] := (
+  x /: Format[x[i_], TraditionalForm] := Superscript[x, i];
+);
+setSuperscript[x__] := setSuperscript[{x}];
+
+
+SetAttributes[setTilde, {HoldAll, Listable}];
+setTilde[x_Symbol] := With[{
+    symbol = ToExpression["tilde`" <> ToString[x]]
+  },
+  symbol /: Format[symbol, TraditionalForm] := HoldForm[OverTilde[x]];
+  symbol
+];
+setTilde[x__] := setTilde[{x}];
 
 
 SetAttributes[setPrime, {HoldAll, Listable}];
