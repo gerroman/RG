@@ -33,6 +33,11 @@ anti::usage = "
 "
 
 
+symbolizeParticles::usage = "
+  symbolizeParticles[expr] \[LongDash] replace Entity[\"Particle\", p] to ParticleData[p, Symbol]
+"
+
+
 Begin["`Private`"]
 
 
@@ -69,6 +74,9 @@ properties["Names"] = {
 
 
 anti[particle_] := ParticleData[particle, "Antiparticle"];
+
+
+symbolizeParticles[expr_] := ReplaceAll[expr, Entity["Particle", p_] :> ParticleData[p, "Symbol"]];
 
 
 End[]
