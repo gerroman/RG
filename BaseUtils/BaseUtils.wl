@@ -17,8 +17,16 @@ reload::usage = "
 carryFirst::usage = "
   carryFirst[func][args] return function f[##, args] &
 ";
+
+
 carryLast::usage = "
   carryLast[func][args] return function f[args, ##] &
+";
+
+
+load::usage = "
+  load[file, symbol, definitions] load from file (if it exists) or
+  execute symbol's definitions and save it to file
 ";
 
 
@@ -56,6 +64,34 @@ reload[context_String, opts:OptionsPattern[]] := With[{
 
 carryFirst[func_Symbol] := Function[expr, func[expr, ##]] &;
 carryLast[func_Symbol] := Function[expr, func[##, expr]] &;
+
+
+temporary\[LetterSpace]directory = FileNameJoin[{$TemporaryDirectory, "RG"}];
+If[
+  (! FileExistsQ[temporary\[LetterSpace]directory]),
+  CreateDirectory[temporary\[LetterSpace]directory]
+];
+
+
+SetAttributes[load, HoldAll];
+load::get = "Getting `1` ...";
+load::save = "Saving `1` ...";
+load::failed = "Error: failed to load file `1`";
+load[fname_, symbol_, definition_] := With[
+  {path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]},
+  If[FileExistsQ[path],
+    (PrintTemporary@StringForm[load::get, path]; Get[path]),
+    (definition; PrintTemporary@StringForm[load::save, path]; DumpSave[path, symbol];)
+  ]
+];
+
+load[fname_] := With[
+  {path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]},
+  If[FileExistsQ[path],
+    (PrintTemporary@StringForm[load::get, path]; Get[path]),
+    PrintTemporary@StringForm[load::failed, path]
+  ]
+]
 
 
 End[];

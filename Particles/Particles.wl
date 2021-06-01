@@ -4,7 +4,7 @@
 (*Helpers for for ParticleData*)
 
 
-BeginPackage["RG`Particles`"]
+BeginPackage["RG`Particles`", {"RG`BaseUtils`"}]
 
 
 classes::usage = "
@@ -37,46 +37,59 @@ symbolizeParticles::usage = "
   symbolizeParticles[expr] \[LongDash] replace Entity[\"Particle\", p] to ParticleData[p, Symbol]
 "
 
-
 Begin["`Private`"]
 
 
-classes = ParticleData["Classes"];
+Off[General::stop];
 
 
-particles = ParticleData[] // SortBy[ParticleData[#, "Mass"] &];
+load["classes.mx", classes, 
+  classes = ParticleData["Classes"]
+]
 
 
-properties = <||>;
-properties["All"] = ParticleData["Properties"];
-properties["Basic"] = {
-   "Symbol", "Charge", "Mass", "Width", "Lifetime", "HalfLife", 
-   "QuarkContent", "Memberships"
-};
-properties["QuantumNumbers"] = {
-   "BaryonNumber", "Bottomness", "Charm", "CParity", "GParity", 
-   "Hypercharge", "Isospin", "IsospinProjection", "LeptonNumber", 
-   "Parity", "Spin", "Strangeness", "Topness"
-};
-properties["LongLived"] = {
-   "GFactor", "MeanSquareChargeRadius"
-};
-properties["Related"] = {
-   "Antiparticle", "ChargeStates", "Excitations", "IsospinMultiplet"
-};
-properties["Decay"] = {
-   "DecayModes", "DecayType", "FullDecayModes", "UnobservedDecayModes"
-};
-properties["Names"] = {
-   "FullSymbol", "GenericFullSymbol", "GenericSymbol", "PDGNumber", 
-   "StandardName"
-};
+load["particles.mx", particles, 
+  particles = ParticleData[] // SortBy[ParticleData[#, "Mass"] &]
+]
+
+
+load["properties.mx", properties, (
+  properties = <||>;
+
+  properties["All"] = ParticleData["Properties"];
+  
+  properties["Basic"] = {
+     "Symbol", "Charge", "Mass", "Width", "Lifetime", "HalfLife", 
+     "QuarkContent", "Memberships"
+  };
+  properties["QuantumNumbers"] = {
+     "BaryonNumber", "Bottomness", "Charm", "CParity", "GParity", 
+     "Hypercharge", "Isospin", "IsospinProjection", "LeptonNumber", 
+     "Parity", "Spin", "Strangeness", "Topness"
+  };
+  properties["LongLived"] = {
+     "GFactor", "MeanSquareChargeRadius"
+  };
+  properties["Related"] = {
+     "Antiparticle", "ChargeStates", "Excitations", "IsospinMultiplet"
+  };
+  properties["Decay"] = {
+     "DecayModes", "DecayType", "FullDecayModes", "UnobservedDecayModes"
+  };
+  properties["Names"] = {
+     "FullSymbol", "GenericFullSymbol", "GenericSymbol", "PDGNumber", 
+     "StandardName"
+  };
+)]
 
 
 anti[particle_] := ParticleData[particle, "Antiparticle"];
 
 
 symbolizeParticles[expr_] := ReplaceAll[expr, Entity["Particle", p_] :> ParticleData[p, "Symbol"]];
+
+
+On[General::stop];
 
 
 End[]
