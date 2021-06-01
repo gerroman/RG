@@ -281,7 +281,11 @@ matrixElement /: Format[matrixElement, TraditionalForm] = (
 setIndexed[mass];
 mass /: Format[mass, TraditionalForm] = Global`m;
 
-energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0];
+2021-06-01
+(* [NOTE: 2021-06-01] Try to use another notation for energy *)
+(* energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0]; *)
+energy /: Format[energy[expr_], TraditionalForm] := Subscript["E", expr];
+
 
 SetAttributes[sp, Orderless];
 sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];

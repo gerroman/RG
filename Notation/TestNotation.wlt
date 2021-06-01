@@ -36,7 +36,7 @@ test[5] := VerificationTest[(* #5 *)
 test[6] := VerificationTest[(* #6 *)
   ExportString[TraditionalForm[energy[p]], "TeXFragment"]
   ,
-  "\\[p^0\\]\n\n"	
+  "\\[\\text{E}_p\\]\n\n"	
 ]
 
 test[7] := VerificationTest[(* #7 *)
