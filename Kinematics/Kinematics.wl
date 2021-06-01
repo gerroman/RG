@@ -250,6 +250,9 @@ fillKinematicsCMS[{p1_, p2_}, {s_, {theta_, phi_}}] := With[
 ];
 
 
+fillKinematicsCMS[initial_ -> (final : {_, _}), angles_: {0, 0}] := fillKinematicsCMS[final, {mass[initial]^2, angles}]
+
+
 End[];
 
 
