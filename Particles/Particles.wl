@@ -87,6 +87,10 @@ anti[particle_] := ParticleData[particle, "Antiparticle"];
 
 
 symbolizeParticles[expr_] := ReplaceAll[expr, Entity["Particle", p_] :> ParticleData[p, "Symbol"]];
+symbolizeParticles[expr_, All] := ReplaceAll[expr, {
+  Entity["Particle", p_] :> ParticleData[p, "Symbol"]
+  , p_String :> ParticleData[p, "Symbol"]
+}];
 
 
 On[General::stop];
