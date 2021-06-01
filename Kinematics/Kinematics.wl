@@ -242,12 +242,10 @@ getLambda[x2_, y2_, z2_] := (x2 - y2 - z2)^2 - 4 * y2 * z2;
 
 
 fillKinematicsCMS[{p1_, p2_}, {s_, {theta_, phi_}}] := With[
-  {
-    pcms  = Sqrt[getLambda[s, mass[p1]^2, mass[p2]^2] / (4 * s)]
-  },
+  {pcms  = Sqrt[getLambda[s, mass[p1]^2, mass[p2]^2] / (4 * s)]},
   {
     {Sqrt[pcms^2 + mass[p1]^2], pcms * Sin[theta] * Sin[phi], pcms * Sin[theta] * Cos[phi], pcms * Cos[theta]},
-    {Sqrt[pcms^2 + mass[p2]^2], pcms * Sin[theta] * Sin[phi], pcms * Sin[theta] * Cos[phi], pcms * Cos[theta]}
+    {Sqrt[pcms^2 + mass[p2]^2], -pcms * Sin[theta] * Sin[phi], -pcms * Sin[theta] * Cos[phi], -pcms * Cos[theta]}
   }
 ];
 
