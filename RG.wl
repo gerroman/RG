@@ -28,5 +28,6 @@ Needs /@ {
   , "RG`Kinematics`"
   , "RG`Traces`"
   , "RG`FeynmanDiagrams`"
-  (* , "RG`HelicityStates`", "RG`Particles`"*)
+  , "RG`Particles`"
+  (* , "RG`HelicityStates`"*)
 };

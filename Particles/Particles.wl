@@ -35,6 +35,7 @@ anti::usage = "
 
 symbolizeParticles::usage = "
   symbolizeParticles[expr] \[LongDash] replace Entity[\"Particle\", p] to ParticleData[p, Symbol]
+  symbolizeParticles[expr, All] \[LongDash] also replace all strings
 "
 
 
@@ -114,8 +115,12 @@ symbolizeParticles[expr_, All] := ReplaceAll[expr, {
 }];
 
 
-getProperty[property_][expr_] := 
-  ReplaceAll[expr, Entity["Particle", x_] :> ParticleData[x, property]];
+
+SetAttributes[getProperty, Listable];
+getProperty[property_][Entity["Particle", x_]] := ParticleData[x, property];
+getProperty[property_][name_String] := ParticleData[name, property];
+
+
 
 Options[describeProcess] = {ShowMissing -> True};
 With[{props = {
