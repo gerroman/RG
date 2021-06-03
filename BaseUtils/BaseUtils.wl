@@ -9,11 +9,6 @@ assert::usage = "
 ";
 
 
-reload::usage = "
-  reload[context] remove definitions context`* and reload it
-";
-
-
 carryFirst::usage = "
   carryFirst[func][args] return function f[##, args] &
 ";
@@ -27,6 +22,11 @@ carryLast::usage = "
 load::usage = "
   load[file, symbol, definitions] load from file (if it exists) or
   execute symbol's definitions and save it to file
+";
+
+
+reload::usage = "
+  reload[context] remove definitions context`* and reload it
 ";
 
 
