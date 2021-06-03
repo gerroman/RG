@@ -16,7 +16,7 @@ electronLine::usage = "
 "
 
 photonLine::usage = "
-  photonLine[{p1, p2}, label, nWiggles, flip, arrowWidth] draw photon line
+  photonLine[{p1, p2}, label, nWiggles, flip, arrowWidth, drawArrow] draw photon line
 "
 
 electronArc::usage = "
@@ -29,7 +29,7 @@ photonArc::usage = "
 
 
 particleLine::usage = "
-  particleLine
+  particleLine[{{x, y}, ...}, label, {lineOpts}, {labelOpts}, flip, arrowWidth, shiftFactors]
 ";
 
 
@@ -80,7 +80,7 @@ electronLine[points:{{_,_}...}, labels_List, flip_:False, arrowWidth_:Automatic,
 (*Photon line*)
 
 
-photonLine[points:{p1:{_,_}, p2:{_,_}}, label_, nWiggles_:4, flip_:False, arrowWidth_:Automatic, shiftFactor_:2] := Module[{
+photonLine[points:{p1:{_,_}, p2:{_,_}}, label_, nWiggles_:4, flip_:False, arrowWidth_:Automatic, shiftFactor_:2, drawArrow_:True] := Module[{
     direction = N@(p2 - p1) // Normalize
     , segmentLength = getLength[N@points] / nWiggles
     , crossDirection = getCrossDirection[N@points] * getFlipFactor[flip]
@@ -94,13 +94,14 @@ photonLine[points:{p1:{_,_}, p2:{_,_}}, label_, nWiggles_:4, flip_:False, arrowW
   Graphics[{
     BezierCurve[bezierPoints],
     With[{pos=getMiddlePosition[N@points]}, {
+    If[drawArrow,
       {
         Arrowheads[arrowWidth],
         Arrow[{
 	      pos - direction * segmentLength / 2 - crossDirection * segmentLength / 2,
 	      pos + direction * segmentLength / 2 - crossDirection * segmentLength / 2
         }]
-      },
+      }, Nothing],
       Text[label, pos - crossDirection * segmentLength / 2, shiftFactor*crossDirection]
     }]
   }]
@@ -207,7 +208,7 @@ particleLine[
 			el = First@electronLine[points, {label}, flip, arrowWidth, shiftFactors]
 		},
 		With[{
-				line = Flatten[{opts1}]~Join~el[[1]],
+				line = Flatten[{opts1}]~Join~Rest[First[el]],
 				text = MapAt[Flatten[Style[#, opts2]] &, el[[2]], {1}]
 			},
 			{line, text}
