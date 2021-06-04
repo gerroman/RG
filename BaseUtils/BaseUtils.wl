@@ -79,9 +79,14 @@ load::save = "Saving `1` ...";
 load::failed = "Error: failed to load file `1`";
 load[fname_, symbol_, definition_] := With[
   {path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]},
-  If[FileExistsQ[path],
-    (PrintTemporary@StringForm[load::get, path]; Get[path]),
-    (definition; PrintTemporary@StringForm[load::save, path]; DumpSave[path, symbol];)
+  If[FileExistsQ[path], (
+      PrintTemporary[ToString[StringForm[load::get, path]]];
+      Get[path]
+    ),(
+      definition;
+      PrintTemporary[ToString[StringForm[load::save, path]]];
+      DumpSave[path, symbol];
+    )
   ]
 ];
 
