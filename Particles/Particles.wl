@@ -119,6 +119,8 @@ symbolizeParticles[expr_, All] := ReplaceAll[expr, {
 SetAttributes[getProperty, Listable];
 getProperty[property_][Entity["Particle", x_]] := ParticleData[x, property];
 getProperty[property_][name_String] := ParticleData[name, property];
+getProperty[property_][l_List] := Map[getProperty[property], l];
+getProperty[property_][r_Rule] := Map[getProperty[property], r];
 
 
 

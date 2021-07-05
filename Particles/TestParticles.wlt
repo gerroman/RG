@@ -32,8 +32,8 @@ VerificationTest[(* #3 *)
 
 test[4] :=
 VerificationTest[(* #4 *)
-{particles[[21]]["Mass"], particles[[21]]["Symbol"]}
-,
-{Quantity[139.57061`8., "Megaelectronvolts"/"SpeedOfLight"^2], Superscript["π", "+"]}
+  {particles[[21]]["Mass"], particles[[21]]["Symbol"]}
+  ,
+  {Quantity[139.57061`8., "Megaelectronvolts"/"SpeedOfLight"^2], Superscript["π", "+"]}
 ]
 
