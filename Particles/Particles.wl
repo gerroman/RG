@@ -55,9 +55,28 @@ getDecaysTable::usage = "
 describeProcess::usage = "
   describeProcess[process] \[LongDash] describe process as transition of  particle properties 
 "
+
 ShowMissing::usage = "
   ShowMissing \[LongDash] True/False value option for describeProcess
 "
+
+describeParticle::usage = "
+  describeParticle[particle] - list particle properties 
+"
+
+getJPC::usage = "
+  getJPC[particle] - get list {J, P, C} of particle's Spin, Parity and C-Parity
+"
+formatJPC::usage = "
+  formatJPC[particle] - format  particle's Spin, Parity and C-Parity as J^{PC}
+"
+getIG::usage = "
+  getIG[particle] - get list {I, G} of particle's Isospin, G-Parity
+"
+formatIG::usage = "
+  formatIG[particle] - format particle's Isospin, G-Parity as I^{G}
+"
+
 
 Begin["`Private`"]
 
@@ -103,6 +122,9 @@ load["properties.mx", properties, (
      "StandardName"
   };
 )]
+
+
+On[General::stop];
 
 
 anti[particle_] := ParticleData[particle, "Antiparticle"];
@@ -173,7 +195,29 @@ getDecaysTable[particle_, nMax_: 5] := With[{
 ];
 
 
-On[General::stop];
+describeParticle[particle_] := {#, getProperty[#][particle]}& /@ {
+  "Memberships", "Mass", "Width", "Charge",
+  "Spin", "Parity", "CParity", "GParity",
+  "Isospin", "IsospinProjection", 
+  "Charm", "Strangeness", "Bottomness", "Topness",
+  "DecayType", "Lifetime", "QuarkContent"
+} // grid[#, {"property", "values"}, Alignment -> Left] &;
+
+
+getJPC[particle_] := Through@Thread[getProperty[{"Spin", "Parity", "CParity"}]][particle];
+formatJPC[particle_] := Module[{j, p, c}, 
+  {j, p, c} = getJPC[particle];
+  p = plus\[LetterSpace]minus[[(3 - p) / 2]];
+  c = plus\[LetterSpace]minus[[(3 - c) / 2]];
+  Superscript[j, Row[{p, c}, ""]]
+];
+
+getIG[particle_] := Through@Thread[getProperty[{"Isospin", "GParity"}]][particle];
+formatIG[particle_] := Module[{i, g}, 
+  {i, g} = getIG[particle];
+  g = plus\[LetterSpace]minus[[(3 - g) / 2]];
+  Superscript[i, g]
+];
 
 
 End[]
