@@ -4,7 +4,10 @@
 (*Helpers for for ParticleData*)
 
 
-BeginPackage["RG`Particles`", {"RG`BaseUtils`", "RG`Notation`", "RG`Presentation`"}]
+BeginPackage["RG`Particles`", {"RG`BaseUtils`",
+							  "RG`CommonNotation`", 
+							  "RG`Notation`",
+							  "RG`Presentation`"}]
 
 
 classes::usage = "

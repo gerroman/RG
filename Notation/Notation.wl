@@ -4,34 +4,7 @@
 (*Custom notation and functions to define it*)
 
 
-BeginPackage["RG`Notation`"]
-
-
-setIndexed::usage = "
-  setIndexed[x] set symbol x as indexed variable, \
-i.e. x[i], x[i, j] will have sub- and superscripts in the TraditionalForm
-";
-
-
-setPrime::usage = "
-  setPrime[x] set symbol prime`x in TraditionalForm to have prime (') as superscript
-";
-
-
-setBar::usage = "
-  setBar[x] set symbol bar`x in the TraditionalForm to have overbar
-";
-
-
-setTilde::usage = "
-  setTilde[x] set symbol tilde`x in the TraditionalForm to have overtilde
-";
-
-
-setSuperscript::usage = "
-  setSuperscript[x] set symbol x as superscripted variable, \
-i.e. x[i] will have superscripts in the TraditionalForm
-"
+BeginPackage["RG`Notation`", {"RG`CommonNotation`"}]
 
 
 matrixElement::usage = "
@@ -133,13 +106,6 @@ crossSection::usage = "
 Global`d::usage = "
   d symbol to use as differential
 ";
-integrate::usage = "
-  integrate[expr, region] represent integrals
-";
-sum::usage = "
-  sum[expr, region] represent sums
-";
-
 
 pcms::usage = "
   pcms symbol for intitial particles momentum in the center of mass frame for the process 2->2
@@ -226,62 +192,16 @@ plus\[LetterSpace]minus::usage = "
 Begin["`Private`"]
 
 
-SetAttributes[setIndexed, {HoldAll, Listable}];
-setIndexed[x_Symbol] := (
-  x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
-  x /: Format[x["", j_], TraditionalForm] := Superscript[x, j];
-  x /: Format[x[i_, j_], TraditionalForm] := Subsuperscript[x, i, j];
-  x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
-);
-setIndexed[x__] := setIndexed[{x}];
-
-
-SetAttributes[setSuperscript, {HoldAll, Listable}];
-setSuperscript[x_Symbol] := (
-  x /: Format[x[i_], TraditionalForm] := Superscript[x, i];
-);
-setSuperscript[x__] := setSuperscript[{x}];
-
-
-SetAttributes[setTilde, {HoldAll, Listable}];
-setTilde[x_Symbol] := With[{
-    symbol = ToExpression["tilde`" <> ToString[x]]
-  },
-  symbol /: Format[symbol, TraditionalForm] := HoldForm[OverTilde[x]];
-  symbol
-];
-setTilde[x__] := setTilde[{x}];
-
-
-SetAttributes[setPrime, {HoldAll, Listable}];
-setPrime[x_Symbol] := With[{
-    symbol = ToExpression["prime`" <> ToString[x]]
-  },
-  symbol /: Format[symbol, TraditionalForm] := Superscript[x, Global`\[Prime]];
-  symbol
-];
-setPrime[x__] := setPrime[{x}];
-
-
-SetAttributes[setBar, {HoldAll, Listable}];
-setBar[x_Symbol] := With[{
-    symbol = ToExpression["bar`" <> ToString[x]]
-  },
-  symbol /: Format[symbol, TraditionalForm] := OverBar[x];
-  symbol
-];
-setBar[x__] := setBar[{x}];
 
 setIndexed[matrixElement];
 matrixElement /: Format[matrixElement, TraditionalForm] = (
   \[ScriptCapitalM]
 );
 
-
 setIndexed[mass];
 mass /: Format[mass, TraditionalForm] = Global`m;
 
-2021-06-01
+
 (* [NOTE: 2021-06-01] Try to use another notation for energy *)
 (* energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0]; *)
 energy /: Format[energy[expr_], TraditionalForm] := Subscript["E", expr];
@@ -345,10 +265,6 @@ Format[crossSection, TraditionalForm] := \[Sigma];
 
 
 Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
-integrate/:Format[integrate[expr_, region__], TraditionalForm] := HoldForm[Integrate[expr, region]];
-integrate/:Format[integrate[expr_], TraditionalForm] := StringForm["\[Integral]``", expr];
-sum/:Format[sum[expr_, region__], TraditionalForm] := HoldForm[Sum[expr, region]];
-sum/:Format[sum[expr_], TraditionalForm] := StringForm["\[Sum]``", expr];
 
 
 setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
