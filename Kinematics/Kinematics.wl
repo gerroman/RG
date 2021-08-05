@@ -5,8 +5,9 @@
 
 
 BeginPackage["RG`Kinematics`", {
-  "RG`Calculation`", (* modify *)
-  "RG`Notation`" (* energy, mass, momentum, sp, ...*)
+  "RG`CommonNotation`",
+  "RG`Notation`",
+  "RG`Calculation`"
 }];
 
 
@@ -62,24 +63,27 @@ sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
 sp[p_List, q_List] := Which[
   Length[p] == Length[q] == 4, With[{prod = p*q}, 2 prod[[1]] - Total[prod]],
   Length[p] == Length[q] == 3, With[{prod = p*q}, Total[prod]],
-  True, Hold[sp][p, q]
+  True, Hold[sp][p, q] (* Raise error ? *)
 ];
+
 
 mass[p_List] := Sqrt[sp[p]] /; Length[p] == 4;
 
+
 energy[expr_Plus] := energy /@ expr;
 energy[expr_ * factor_?NumberQ] := factor * energy[expr];
-energy[p_List] := First[p] /; Length[p] == 4;
+energy[p_List /; Length[p] == 4] := First[p] ;
+
 
 momentum[expr_Plus] := momentum /@ expr;
 momentum[expr_ * factor_?NumberQ] := factor * momentum[expr];
-momentum[p_List] := Rest[p] /; Length[p] == 4;
+momentum[p_List /; Length[p] == 4] := Rest[p] ;
 
 
 abs /: Abs[abs[expr_]] := abs[expr];
 abs /: abs[numb_?NumberQ] := Abs[numb];
 abs /: abs[(factor_?NumberQ) * expr_] := Abs[factor] * abs[expr];
-abs[p_List] := Sqrt[sp[p]] /; Length[p] == 3;
+abs[p_List /; Length[p] == 3] := Sqrt[sp[p]];
 
 
 replaceEnergy[particle_] := ReplaceAll[#,
@@ -184,8 +188,10 @@ setInvariants[
   Return[result];
 ];
 
+
 SetAttributes[theta, Orderless];
 theta[x_, x_] = 0;
+
 
 expandScalarProduct := ReplaceAll[{
   sp[a_, b_] :> (
@@ -193,6 +199,7 @@ expandScalarProduct := ReplaceAll[{
     - abs[momentum[a]] * abs[momentum[b]] * Cos[theta[momentum[a], momentum[b]]]
   )
 }];
+
 
 getKinematicsCMS[{{p1_, p2_}, {p3_, p4_}}, {s_, \[Theta]_}] := Module[
   {rule, var},
@@ -250,10 +257,10 @@ fillKinematicsCMS[{p1_, p2_}, {s_, {theta_, phi_}}] := With[
 ];
 
 
-fillKinematicsCMS[initial_ -> (final : {_, _}), angles_: {0, 0}] := fillKinematicsCMS[final, {mass[initial]^2, angles}]
+fillKinematicsCMS[initial_ -> (final : {_, _}), angles_: {0, 0}] := fillKinematicsCMS[final, {mass[initial]^2, angles}];
 
 
-End[];
+End[]
 
 
-EndPackage[];
+EndPackage[]

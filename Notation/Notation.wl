@@ -145,7 +145,6 @@ Global`p::usage = "
 rule`alpha::usage = "
   rule`alpha substitute powers of electron charge to electromagnetic coupling constant
 ";
-
 bar`e::usage = "
   bar`e symbol for positron
 ";
@@ -203,19 +202,19 @@ mass /: Format[mass, TraditionalForm] = Global`m;
 
 
 (* [NOTE: 2021-06-01] Try to use another notation for energy *)
-(* energy /: Format[energy[expr_], TraditionalForm] := Superscript[expr, 0]; *)
-energy /: Format[energy[expr_], TraditionalForm] := Subscript["E", expr];
+setIndexed[energy];
+energy /: Format[energy, TraditionalForm] = \[ScriptCapitalE];
 
 
 SetAttributes[sp, Orderless];
 sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
 sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
-
 sp /: Format[sp[expr_], TraditionalForm] := HoldForm[expr]^2;
 sp /: Format[sp[expr_, expr_], TraditionalForm] := HoldForm[expr]^2;
 sp /: Format[sp, TraditionalForm] := "";
 
-abs /: Format[abs[expr_], TraditionalForm] := BracketingBar[expr];
+
+abs /: Format[abs[expr_], TraditionalForm] := HoldForm[BracketingBar[expr]];
 
 
 momentum /: Format[momentum[expr_], TraditionalForm] := Style[expr, Bold, Italic];
@@ -233,73 +232,64 @@ setLorentzIndex[mu_Symbol] := (
     Format[sp[mu, mu], TraditionalForm] := Superscript[Global`g, ToString@Row[{mu, mu}]];
     AppendTo[lorentzIndexes, mu];
   )];
-  If[Context[mu] == "Global`", (
+  If[Context[mu] =!= "prime`", (
     With[{primeMu = setPrime[mu]}, setLorentzIndex[primeMu]]
   )];
   lorentzIndexes
 );
 setLorentzIndex[mu__] := setLorentzIndex[{mu}];
 
-Format[\[Gamma][mu_], TraditionalForm] := Superscript[\[Gamma], mu];
+
+setSuperScript[\[Gamma]];
+
 
 Unprotect[Times];
   Format[a_ * id, TraditionalForm] := a;
 Protect[Times];
 
-zero /: Format[zero, TraditionalForm] := Style[0, Bold];
 
-Format[id, TraditionalForm] := Style[1, Bold];
+zero /: Format[zero, TraditionalForm] = Style[0, Bold];
+id /: Format[id, TraditionalForm] = Style[1, Bold];
 
 
-setIndexed[\[Theta], \[CurlyPhi]];
 Format[theta,  TraditionalForm] := \[Theta];
 Format[phi, TraditionalForm] := \[CurlyPhi];
 Format[omega, TraditionalForm] := \[CapitalOmega];
-
-
-setBar[u, v];
 
 
 setIndexed[crossSection];
 Format[crossSection, TraditionalForm] := \[Sigma];
 
 
-Global`d/:Format[Global`d[expr_], TraditionalForm]:=HoldForm[Dt[expr]];
+Global`d/:Format[Global`d[expr_], TraditionalForm] := HoldForm[Dt[expr]];
 
 
-setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM]];
+setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM], \[GothicP]];
 pcms /: Format[pcms, TraditionalForm] := \[ScriptP]["cms"];
-prime`pcms /: Format[prime`pcms, TraditionalForm] :=
-  Superscript[Subscript[\[ScriptP], "cms"], "\[Prime]"];
+prime`pcms /: Format[prime`pcms, TraditionalForm] := Superscript[Subscript[\[ScriptP], "cms"], "\[Prime]"];
 
 electron /: Format[electron, TraditionalForm] = HoldForm[Global`e];
 positron /: Format[positron, TraditionalForm] = HoldForm[OverBar[Global`e]];
 proton /: Format[proton, TraditionalForm] = HoldForm[Global`p]
-
 muon /: Format[muon, TraditionalForm] = HoldForm[Global`\[Mu]];
 antimuon /: Format[antimuon, TraditionalForm] = HoldForm[OverBar[Global`\[Mu]]];
-photon /: Format[photon, TraditionalForm] = \[Gamma];
+photon /: Format[photon, TraditionalForm] = HoldForm[\[Gamma]];
+
+
+setIndexed[electron, positron, proton, muon, antimuon];
 
 
 rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
 
-
-Format[u[a_, b_], TraditionalForm] := Subsuperscript[u, a, b];
-Format[v[a_, b_], TraditionalForm] := Subsuperscript[v, a, b];
-Format[bar`u[a_, b_], TraditionalForm] := Subsuperscript[bar`u, a, b];
-Format[bar`v[a_, b_], TraditionalForm] := Subsuperscript[bar`v, a, b];
+setBar[u, v];
+setIndexed[u, v, bar`u, bar`v];
 
 
 plus = "+";
 minus = "-";
 plus\[LetterSpace]minus = {plus, minus};
 
-
 setIndexed[\[Xi], \[Eta]];
-setIndexed[\[GothicP]];
-
-setIndexed[electron, positron, proton, muon, antimuon];
-setPrime[electron, positron, proton, muon, antimuon];
 
 
 End[];

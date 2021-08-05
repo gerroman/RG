@@ -9,6 +9,8 @@ tagged::usage = "
   tagged[eq`tag = ...] make definition for eq`tag and produce output cell with the tag \"eq`tag\"
   tagged[expr] evaluate expr and produce output cell with the tag \"expr\"
 ";
+tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
+
 
 untagged::usage = "
   just present expression in traditional form
@@ -25,13 +27,6 @@ colorize::usage = "
 
 getRunner::usage = "
   getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
-";
-
-
-OverTilde::usage = "
-  OverTilde[func][args][expr] works as func[expr, args] i.e. it
-  creates operator OverTilde[func][args] for the first argument of
-  func
 ";
 
 
@@ -55,35 +50,32 @@ grid::usage = "
   grid[list] decorate list as grid
 ";
 
+
 shorten::usage = "
   shorten[expr] print shorten version of expr
 ";
+
 
 
 Begin["`Private`"];
 
 
 SetAttributes[tagged, HoldAll];
-tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
-
-Options[tagged] = {"form" -> TraditionalForm};
+Options[tagged] = {"form" -> TraditionalForm, "colorize" -> True};
 tagged[expr:Set[lhs_, _], args___] := (
-  expr; tagged[lhs, args];
+  expr; 
+	tagged[lhs, args];
 );
-
+tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
-  If[Not[$Notebooks],
-    Return[expr]
-  ];
-  With[
-    {
-      tag = ToString[HoldForm[expr]],
-      form = OptionValue[tagged, "form"]
-    },
-    CellPrint[
-      ExpressionCell[expr // func // colorize[_HoldForm] // form,
-      "Output", CellTags -> tag, ShowCellTags -> True, opts]
-    ];
+  If[Not[$Notebooks], Return[expr]];
+  With[{tag = ToString[HoldForm[expr]]},
+    CellPrint[ExpressionCell[
+      expr // func // 
+        If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] // 
+        OptionValue[untagged, "form"],
+      "Output", CellTags -> tag, ShowCellTags -> True, opts
+    ]];
     NotebookLocate[tag];
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
@@ -93,12 +85,9 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     ];
   ];
 );
-tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 
-Options[untagged] = {
-  "form" -> TraditionalForm
-  , "colorize" -> True
-};
+
+Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True};
 untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
 untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks]
@@ -112,23 +101,18 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
 );
 
 
-colorize[xs_List] := With[{
-    n = Length[xs]
-  },
-  With[{
-      styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]
-    },
-    With[{
-        rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]
-      },
-      ReplaceAll[rules]
+colorize[xs_List] := (
+  With[{n = Length[xs]},
+    With[{styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]},
+      With[{rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]},
+        ReplaceAll[rules]
+      ]
     ]
   ]
-];
+);
+
 colorize[pattern_] := Function[expr,
-  With[{
-      xs = Union@Cases[{expr}, pattern, Infinity]
-    },
+  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
     colorize[xs][expr]
   ]
 ];
@@ -212,24 +196,15 @@ getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
 ];);
 
 
-OverTilde := carryFirst;
-
-
 UnderBar = HoldForm;
 
 
 setAttributes[hold, HoldAll];
-hold[xs_List] := With[
-  {
-    rules = Thread[Rule[xs, Thread[HoldForm[xs]]]]
-  },
+hold[xs_List] := With[{rules = Thread[xs -> Thread[HoldForm[xs]]]},
   ReplaceAll[rules]
 ];
 hold[pattern_] := Function[expr,
-  With[
-    {
-      xs = Union@Cases[{expr}, pattern, Infinity]
-    },
+  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
     hold[xs][expr]
   ]
 ];
@@ -239,7 +214,6 @@ hold[xs__] := hold[{xs}];
 row = Row[#, ",\t"] &;
 
 
-ClearAll[grid];
 Options[grid] = {
     Background -> {None, {{Lighter[Blend[{Black, White}], .95], Lighter[Blend[{Black, White}], .75]}}}
    	, Dividers -> {{Darker[Gray, .6], {Lighter[Gray, .5]}, Darker[Gray, .6]}, {Darker[Gray, .6], Darker[Gray, .6], {False}, Darker[Gray, .6]}}
@@ -248,7 +222,6 @@ Options[grid] = {
    	, ItemStyle -> 14
    	, Spacings -> {Automatic, .8}
 };
-
 grid[l_List, title_List:{}, opts___] := grid[Map[List, l], title, opts];
 grid[l:{{___} ..}, title_List:{}, OptionsPattern[]] := With[
   {

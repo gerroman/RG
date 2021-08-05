@@ -4,7 +4,7 @@
 (*Functions to perform routine transformations*)
 
 
-BeginPackage["RG`Calculation`", {"RG`Notation`"}];
+BeginPackage["RG`Calculation`", {"RG`CommonNotation`"}];
 
 
 modify::usage = "
@@ -219,8 +219,10 @@ factorize[expr_, x_] := With[{xn = -x}, Module[
     )
 	]
 ]];
+
 factorItFast[l_List, levelspec_:{0}, func_:Plus] :=
   RightComposition @@ Map[factorItFast[#, levelspec, func]&, l];
+
 factorItFast[x_, levelspec_:{0}, func_:Plus] := With[
   {
 	  rule = (expr_func) :> factorize[expr, x]
