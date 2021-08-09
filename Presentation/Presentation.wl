@@ -16,7 +16,8 @@ untagged::usage = "
   just present expression in traditional form
 ";
 
-tagged`final = False;
+
+tag`final = False;
 
 
 colorize::usage = "
@@ -79,7 +80,7 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     NotebookLocate[tag];
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
-      If[tagged`final,
+      If[tag`final,
         FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
       ]
     ];
