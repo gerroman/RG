@@ -207,18 +207,20 @@ describeParticle[particle_] := {#, getProperty[#][particle]}& /@ {
 } // grid[#, {"property", "values"}, Alignment -> Left] &;
 
 
+getPM[p_] := If[Head[p] === Missing, "\[EmptySquare]", plus\[LetterSpace]minus[[(3 - p) / 2]]];
+
 getJPC[particle_] := Through@Thread[getProperty[{"Spin", "Parity", "CParity"}]][particle];
 formatJPC[particle_] := Module[{j, p, c}, 
   {j, p, c} = getJPC[particle];
-  p = plus\[LetterSpace]minus[[(3 - p) / 2]];
-  c = plus\[LetterSpace]minus[[(3 - c) / 2]];
+  p = getPM[p];
+  c = getPM[c];
   Superscript[j, Row[{p, c}, ""]]
 ];
 
 getIG[particle_] := Through@Thread[getProperty[{"Isospin", "GParity"}]][particle];
 formatIG[particle_] := Module[{i, g}, 
   {i, g} = getIG[particle];
-  g = plus\[LetterSpace]minus[[(3 - g) / 2]];
+  g = getPM[g];
   Superscript[i, g]
 ];
 
