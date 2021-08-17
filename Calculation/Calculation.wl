@@ -118,6 +118,13 @@ groupSums::usage = "
   groupIntegrals[va] group sum of integrals w.r.t. variable va
 ";
 
+processList::usage = "
+  processList[fs][expr] apply list of functions to expression return results of all steps
+";
+process::usage = "
+  process[fs][expr] apply list of functions returns a list {expr, result}
+";
+
 
 Begin["`Private`"];
 
@@ -371,6 +378,12 @@ groupSums[va_] := ReplaceRepeated[
       :> sum[a exprA + b exprB, vs]
   }
 ]&
+
+
+processList[fs_List][expr_] := FoldList[#2[#1]&, expr, fs];
+processList[fs__][expr_] := processList[{fs}][expr];
+
+process[fs__][expr_] := processList[expr, fs][[{1, -1}]];
 
 
 End[];
