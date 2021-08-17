@@ -383,7 +383,7 @@ groupSums[va_] := ReplaceRepeated[
 processList[fs_List][expr_] := FoldList[#2[#1]&, expr, fs];
 processList[fs__][expr_] := processList[{fs}][expr];
 
-process[fs__][expr_] := processList[expr, fs][[{1, -1}]];
+process[fs__][expr_] := processList[fs][expr][[{1, -1}]];
 
 
 End[];
