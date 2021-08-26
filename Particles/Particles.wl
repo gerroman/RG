@@ -55,6 +55,10 @@ getDecaysTable::usage = "
   getDecaysTable[particle, nMax] \[LongDash] format particle first nMax decays as grid 
 "
 
+getFrequentDecays::usage = "
+  getFrequentDecays[particle, branching] return list of frequent decays to long-lived particles
+"
+
 describeProcess::usage = "
   describeProcess[process] \[LongDash] describe process as transition of  particle properties 
 "
@@ -223,6 +227,18 @@ formatIG[particle_] := Module[{i, g},
   g = getPM[g];
   Superscript[i, g]
 ];
+
+
+getFrequentDecays[part_, branching_:1.*^-8] := (
+  getDecays[part] //
+  Select[And@@(Or[
+    MemberQ[ParticleData["LongLived"], ParticleData[#]],
+    MemberQ[ParticleData["Neutrino"], ParticleData[#]]
+  ]& /@ Last@First[#]) &] // 
+  Select[Last[#] > branching&] //
+  MapAt[List, #, {{All, 1, 1}}]& //
+  MapAt[ParticleData, #, {{All, 1, All, All}}]&
+);
 
 
 End[]
