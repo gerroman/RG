@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`BaseUtils`"];
 
 
@@ -27,6 +26,11 @@ load::usage = "
 
 reload::usage = "
   reload[context] remove definitions context`* and reload it
+";
+
+
+temporary\[LetterSpace]directory::usage = "
+  temporary\[LetterSpace]directory return location to save auxiliary files
 ";
 
 
