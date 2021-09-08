@@ -34,6 +34,11 @@ temporary\[LetterSpace]directory::usage = "
 ";
 
 
+verbose::usage = "
+  verbose -> True option to make function more verbose
+"
+
+
 Begin["`Private`"];
 
 
@@ -101,6 +106,9 @@ load[fname_] := With[
     PrintTemporary@StringForm[load::failed, path]
   ]
 ]
+
+
+Protect[verbose]
 
 
 End[];

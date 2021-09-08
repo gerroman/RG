@@ -4,7 +4,7 @@
 (*Functions to perform routine transformations*)
 
 
-BeginPackage["RG`Calculation`", {"RG`CommonNotation`"}];
+BeginPackage["RG`Calculation`", {"RG`BaseUtils`", "RG`CommonNotation`"}];
 
 
 modify::usage = "
@@ -123,6 +123,11 @@ processList::usage = "
 ";
 process::usage = "
   process[fs][expr] apply list of functions returns a list {expr, result}
+";
+
+ffirst::usage = "
+  ffirst[list] return first element of flattened list
+  ffirst[list, verbose -> False] suppress warnings
 ";
 
 
@@ -386,7 +391,24 @@ processList[fs__][expr_] := processList[{fs}][expr];
 process[fs__][expr_] := processList[fs][expr][[{1, -1}]];
 
 
+Options[ffirst] = {verbose -> True};
+ffirst::warning = "List `1` contains contains more than one element";
+ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
+  If[OptionValue[verbose] && Length[flat] > 1, Message[ffirst::warning, flat]];
+  First[flat]
+];
+  
+
 End[];
 
 
 EndPackage[];
+
+
+
+
+
+
+
+
+
