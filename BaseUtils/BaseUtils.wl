@@ -36,38 +36,43 @@ temporary\[LetterSpace]directory::usage = "
 
 verbose::usage = "
   verbose -> True option to make function more verbose
-"
+";
 
 
 Begin["`Private`"];
 
 
+Protect[verbose];
+
+
 SetAttributes[assert, HoldAll];
-assert[expr__] := (
+assert::msg = "``";
+Options[assert] = {verbose -> False};
+assert[expr__, OptionsPattern[]] := (
   On[Assert];
+  If[OptionValue[verbose], Message[assert::msg, HoldForm[expr]]];
   Assert[expr];
   Off[Assert];
 );
 
 
-Options[reload] = {"verbose" -> False};
+Options[reload] = {verbose -> False};
 
-reloadingMsg = "context: ";
-removingMsg = "list of symbols to remove: ";
-loadedMsg = "list of loaded symbols: ";
+reload::reloadingMsg = "context: ";
+reload::removingMsg = "list of symbols to remove: ";
+reload::loadedMsg = "list of loaded symbols: ";
 
 reload[context_String, opts:OptionsPattern[]] := With[{
-    form = StringJoin[{context, "*"}],
-    verbose = OptionValue[reload, "verbose"]
+    form = StringJoin[{context, "*"}]
   },
-  If[verbose, Print[reloadingMsg, context]];
+  If[OptionValue[verbose], Message[reload::reloadingMsg, context]];
   If[NameQ[form],
-    If[verbose,  Print[removingMsg, Names[form]]];
+    If[OptionValue[verbose],  Message[reload::removingMsg, Names[form]]];
     Unprotect[form];
     Remove[form];
   ];
   Get[context];
-  If[verbose, Print[loadedMsg, Names[form]]];
+  If[OptionValue[verbose], Message[reload::loadedMsg, Names[form]]];
 ];
 
 
@@ -106,9 +111,6 @@ load[fname_] := With[
     PrintTemporary@StringForm[load::failed, path]
   ]
 ]
-
-
-Protect[verbose]
 
 
 End[];
