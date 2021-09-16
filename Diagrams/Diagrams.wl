@@ -49,6 +49,8 @@ waveParams::usage = "
 
 
 drawFrame::usage = "
+  drawFrame[{p1x, p1y}, {p2x, p2y}] draw rectangular frame with p1, p2 as opposite corners
+  drawFrame[d:1] draw square frame with d as side length
 "
 
 
