@@ -65,6 +65,7 @@ setIndexed[x_Symbol] := (
   setSubscript[x];
   x /: Format[x[i_, j_], TraditionalForm] := Subsuperscript[x, i, j];
   x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
+  x /: Format[x[], TraditionalForm] := x;
   x
 );
 setIndexed[x__] := setIndexed[{x}];
