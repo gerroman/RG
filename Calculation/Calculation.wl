@@ -56,7 +56,7 @@ powersPattern::usage = "
 
 
 changeSign::usage = "
-  changeSign[x] change sign of x 
+  changeSign[x] change sign of x
 ";
 
 
@@ -135,31 +135,31 @@ Begin["`Private`"];
 
 
 modify[xs_List, func_] := With[{
-    rules = Thread[Rule[xs, Map[func, xs]]]
+	rules = Thread[Rule[xs, Map[func, xs]]]
   },
   ReplaceAll[rules]
 ];
 modify[pattern_, func_] := Function[expr,
   With[{
-      xs = Union@Cases[{expr}, pattern, Infinity]
-    },
-    modify[xs, func][expr]
+	  xs = Union@Cases[{expr}, pattern, Infinity]
+	},
+	modify[xs, func][expr]
   ]
 ];
 
 
 pullFactors[arg_, func_, maxIter_:$IterationLimit] := With[{
-    pattern = If[Head[arg] === List,
-      If[Length[arg] == 1, First@arg, Alternatives@@arg],
-      arg
-    ]
+	pattern = If[Head[arg] === List,
+	  If[Length[arg] == 1, First@arg, Alternatives@@arg],
+	  arg
+	]
   },
   Function[{expr},
-    FixedPoint[
-      ReplaceAll[func[a___, (x:pattern) * b_, c___] :> x func[a, b, c]],
-      expr,
-      maxIter
-    ]
+	FixedPoint[
+	  ReplaceAll[func[a___, (x:pattern) * b_, c___] :> x func[a, b, c]],
+	  expr,
+	  maxIter
+	]
   ]
 ];
 
@@ -179,7 +179,7 @@ groupIt[x_] := groupIt[{x}];
 
 (* NOTE: strightforward matching can be long *)
 factorIt[xs_List, func_:Plus] := With[{
-    rules = Flatten[
+	rules = Flatten[
 			Map[
 			  x \[Function] With[
 				  {
@@ -206,7 +206,7 @@ factorIt[pattern_, func_:Plus] := Function[expr,
 	  {
 		  xs = Union@Cases[{expr}, pattern, Infinity]
 		},
-  	factorIt[xs, func][expr]
+	factorIt[xs, func][expr]
 	]
 ];
 
@@ -215,20 +215,20 @@ factorIt[pattern_, func_:Plus] := Function[expr,
 factorize[expr_, x_] := With[{xn = -x}, Module[
   {
 	  split = List @@ expr // changeSign[xn] //
-	    (SortBy[#, MatchQ[(x * _.)|(xn * _.)]]&) //
-   		(SplitBy[#, MatchQ[(x * _.)|(xn * _.)]]&),
-    func = Head[expr]
+		(SortBy[#, MatchQ[(x * _.)|(xn * _.)]]&) //
+		(SplitBy[#, MatchQ[(x * _.)|(xn * _.)]]&),
+	func = Head[expr]
 	},
   Which[
-    (Length[split] == 2) && (Length[Last[split]] > 1), (
-      func[func @@ (First[split]), x * (func @@ (Last[split] / x))]
-    ),
-    (Length[split] == 1) && MatchQ[First[First[split]], x * _.], (
-      x * (func @@ (First[split] / x))
-    ),
-    True, (
-      expr
-    )
+	(Length[split] == 2) && (Length[Last[split]] > 1), (
+	  func[func @@ (First[split]), x * (func @@ (Last[split] / x))]
+	),
+	(Length[split] == 1) && MatchQ[First[First[split]], x * _.], (
+	  x * (func @@ (First[split] / x))
+	),
+	True, (
+	  expr
+	)
 	]
 ]];
 
@@ -246,7 +246,7 @@ factorItFast[x_, levelspec_:{0}, func_:Plus] := With[
 
 pullIt[xs_List, func_:Plus] := With[
   {
-    rules = (x \[Function] With[{p = x},
+	rules = (x \[Function] With[{p = x},
 				(func[p * b_., a_] :> p Map[(# / p) &, func[p b, a]])
 			]) /@ xs
   },
@@ -255,7 +255,7 @@ pullIt[xs_List, func_:Plus] := With[
 
 pullIt[pattern_, func_:Plus][expr_] := With[
   {
-    xs = Union@Cases[{expr}, pattern, Infinity]
+	xs = Union@Cases[{expr}, pattern, Infinity]
   },
   pullIt[xs, func][expr]
 ];
@@ -263,21 +263,21 @@ pullIt[pattern_, func_:Plus][expr_] := With[
 
 powersPattern[xs_List] := Subsets[xs] // Reverse //
   Map[#^_. &, #, {2}] & //
-  Apply[Times, #, {1}] & // 
+  Apply[Times, #, {1}] & //
   PowerExpand // ReplaceAll[x_ y_Optional :> y];
 
 rewriteIt[Equal[lhs_, rhs_], func_] := Equal[lhs, func[rhs]]
 
 
 changeSign[xs_List] := With[{
-    rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
+	rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
   },
   ReplaceAll[rules]
 ];
 changeSign[pattern_] := Function[{expr},
   With[
-    {xs = Union@Cases[{expr}, pattern, Infinity] // Flatten},
-    changeSign[xs][expr]
+	{xs = Union@Cases[{expr}, pattern, Infinity] // Flatten},
+	changeSign[xs][expr]
   ]
 ];
 changeSign[xs__] := changeSign[{xs}];
@@ -286,9 +286,9 @@ changeSign[xs__] := changeSign[{xs}];
 rewriteIt[funcL_, funcR_] := Function[
   {expr},
   Switch[expr,
-    _Equal, funcL[First[expr]] == funcR[Last[expr]],
-    _Rule, funcL[First[expr]] -> funcR[Last[expr]],
-    _List, Map[rewriteIt[funcL, funcR], expr],
+	_Equal, funcL[First[expr]] == funcR[Last[expr]],
+	_Rule, funcL[First[expr]] -> funcR[Last[expr]],
+	_List, Map[rewriteIt[funcL, funcR], expr],
 		_, funcL[expr] == funcR[expr]
   ]
 ];
@@ -302,10 +302,10 @@ toEquals = ReplaceAll[#, Rule -> Equal] &;
 powerExpand = modify[_Power, PowerExpand];
 collectLogs = With[
   {
-    rules = {
-      a_. Log[x_] + a_. Log[y_] :> a Log[x y]
-      , a_. Log[x_] + b_. Log[y_] :> a Log[x/y] /; a == (-b)
-    }
+	rules = {
+	  a_. Log[x_] + a_. Log[y_] :> a Log[x y]
+	  , a_. Log[x_] + b_. Log[y_] :> a Log[x/y] /; a == (-b)
+	}
   },
   ReplaceRepeated[#, rules] &
 ];
@@ -314,54 +314,54 @@ changeLogPower[power_] := ReplaceAll[#, Log[x_] :> (1/power) * Log[x^power]] &;
 
 complexToAbs[pattern_] = ReplaceAll[#,
   {
-    product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
+	product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
   }
 ]&;
 
 
 solve[eqs_, vars_] := Block[{var`solve},
-     With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
-        With[{rule = Thread[vars -> xs]},
-           
-     With[{sol = 
-        Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
-              Assert[Length[sol] == 1];
-              First[sol]
-            ]
-         ]
-      ]
+	 With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
+		With[{rule = Thread[vars -> xs]},
+
+	 With[{sol =
+		Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
+			  Assert[Length[sol] == 1];
+			  First[sol]
+			]
+		 ]
+	  ]
    ];
 solve[vars_] := solve[#, vars]&;
 
 
 changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
-    integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb]
-    , integrate[expr_, {va, vaMin_, vaMax_}] :> 
-        integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+	integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb]
+	, integrate[expr_, {va, vaMin_, vaMax_}] :>
+		integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
   }
 ];
 
 changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
-    sum[expr_, va] :> sum[(expr /. rulea), vb]
-    , sum[expr_, {va, vaMin_, vaMax_}] :> 
-        sum[(expr /. rulea), {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+	sum[expr_, va] :> sum[(expr /. rulea), vb]
+	, sum[expr_, {va, vaMin_, vaMax_}] :>
+		sum[(expr /. rulea), {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
   }
 ];
 
 
 pullIntegrateFactors[va_] := ReplaceAll[
   {
-     integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
-     , integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
+	 integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
+	 , integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
   }
 ];
 
 pullSumFactors[va_] := ReplaceAll[
   {
-     sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va]
-     , sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
+	 sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va]
+	 , sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
   }
 ];
 
@@ -369,18 +369,18 @@ pullSumFactors[va_] := ReplaceAll[
 groupIntegrals[va_] := ReplaceRepeated[
   #,
   {
-    a_. integrate[exprA_, vs:(va|{va, __})] 
-    + b_. integrate[exprB_, vs:(va|{va, __})]
-      :> integrate[a exprA + b exprB, vs]
+	a_. integrate[exprA_, vs:(va|{va, __})]
+	+ b_. integrate[exprB_, vs:(va|{va, __})]
+	  :> integrate[a exprA + b exprB, vs]
   }
 ]&
 
 groupSums[va_] := ReplaceRepeated[
   #,
   {
-    a_. sum[exprA_, vs:(va|{va, __})] 
-    + b_. sum[exprB_, vs:(va|{va, __})]
-      :> sum[a exprA + b exprB, vs]
+	a_. sum[exprA_, vs:(va|{va, __})]
+	+ b_. sum[exprB_, vs:(va|{va, __})]
+	  :> sum[a exprA + b exprB, vs]
   }
 ]&
 
@@ -397,18 +397,9 @@ ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
   If[OptionValue[verbose] && Length[flat] > 1, Message[ffirst::warning, flat]];
   First[flat]
 ];
-  
+
 
 End[];
 
 
 EndPackage[];
-
-
-
-
-
-
-
-
-

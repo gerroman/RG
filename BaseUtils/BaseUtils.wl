@@ -9,12 +9,12 @@ assert::usage = "
 
 
 carryFirst::usage = "
-  carryFirst[func][args] return function f[##, args] &
+  carryFirst[func][args] return function func[##, args] &
 ";
 
 
 carryLast::usage = "
-  carryLast[func][args] return function f[args, ##] &
+  carryLast[func][args] return function func[args, ##] &
 ";
 
 
@@ -117,4 +117,3 @@ End[];
 
 
 EndPackage[];
-
