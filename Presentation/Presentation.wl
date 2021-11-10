@@ -65,7 +65,7 @@ SetAttributes[tagged, HoldAll];
 Options[tagged] = {"form" -> TraditionalForm, "colorize" -> True};
 tagged[expr:Set[lhs_, _], args___] := (
   expr; 
-	tagged[lhs, args];
+  tagged[lhs, args];
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
@@ -73,8 +73,8 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   With[{tag = ToString[HoldForm[expr]]},
     CellPrint[ExpressionCell[
       expr // func // 
-        If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] // 
-        OptionValue[untagged, "form"],
+        If[OptionValue[tagged, "colorize"], colorize[_HoldForm], Identity] // 
+        OptionValue[tagged, "form"],
       "Output", CellTags -> tag, ShowCellTags -> True, opts
     ]];
     NotebookLocate[tag];
@@ -95,7 +95,7 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     , expr
     , (
       expr // func  //
-			  If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
+        If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
 				OptionValue[untagged, "form"]
     )
   ]
