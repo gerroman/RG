@@ -42,6 +42,19 @@ sum::usage = "
 ";
 
 
+minus::usage = "
+  minus for sign minus
+";
+
+plus::usage = "
+  plus for sign plus
+";
+
+plus\[LetterSpace]minus::usage = "
+  plus\[LetterSpace]minus for both signs
+";
+
+
 Begin["`Private`"]
 
 
@@ -115,6 +128,11 @@ sum /: Format[sum[expr_, region__], TraditionalForm] := (
 sum /: Format[sum[expr_], TraditionalForm] := (
   StringForm["\[Sum]``", expr] // ToString
 );
+
+
+minus /: Format[minus] = "-";
+plus /: Format[plus] = "+";
+plus\[LetterSpace]minus /: Format[plus\[LetterSpace]minus]= "\[PlusMinus]";
 
 
 End[]
