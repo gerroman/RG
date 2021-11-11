@@ -93,12 +93,21 @@ untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
 untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks]
     , expr
-    , (
+    , With[{tag = ToString[Unique["eq"]]}, CellPrint[ExpressionCell[
       expr // func  //
         If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
-				OptionValue[untagged, "form"]
-    )
-  ]
+				OptionValue[untagged, "form"],
+	"Output", CellTags->tag, ShowCellTags -> True
+    ]];
+    NotebookLocate[tag];
+    If[Length[SelectedCells[]] > 1,
+      Message[tagged::shdw, tag],
+      If[tag`final,
+        FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
+      ]
+    ];
+    ];
+  ];
 );
 
 
