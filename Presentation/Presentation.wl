@@ -210,7 +210,12 @@ UnderBar = HoldForm;
 
 
 setAttributes[hold, HoldAll];
-hold[xs_List] := With[{rules = Thread[xs -> Thread[HoldForm[xs]]]},
+hold[xs_List] := With[{
+    rules = Join[
+      Thread[-xs -> -Thread[HoldForm[xs]]],
+      Thread[xs -> Thread[HoldForm[xs]]]
+    ]
+  },
   ReplaceAll[rules]
 ];
 hold[pattern_] := Function[expr,
