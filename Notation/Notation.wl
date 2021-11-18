@@ -184,6 +184,11 @@ plus\[LetterSpace]minus::usage = "
 ";
 
 
+pion::usage = "
+  pion
+";
+
+
 Begin["`Private`"]
 
 
@@ -287,9 +292,9 @@ proton /: Format[proton, TraditionalForm] = HoldForm[Global`p]
 muon /: Format[muon, TraditionalForm] = HoldForm[Global`\[Mu]];
 antimuon /: Format[antimuon, TraditionalForm] = HoldForm[OverBar[Global`\[Mu]]];
 photon /: Format[photon, TraditionalForm] = HoldForm[\[Gamma]];
+pion /: Format[pion, TraditionalForm] = HoldForm[\[Pi]];
 
-
-setIndexed[electron, positron, proton, muon, antimuon];
+setIndexed[electron, positron, proton, muon, antimuon, pion];
 
 
 rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
