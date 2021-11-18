@@ -39,16 +39,21 @@ load["pdg.mx", pdg,
 ]
 
 
+SetAttributes[getpdg, Listable];
 getpdg[name_String] := With[
   {fname = FileNameJoin[{temporary\[LetterSpace]directory, name<>".pdf"}]},
   If[FileExistsQ[fname],
-    (Print["File "<>fname<>" does exists"]; fname),
-    With[{url="https://pdg.lbl.gov/2021/listings/rpp2021-list-"<>name<>".pdf"},
-      Print["Downloading ... ", url];
-      URLSave[url, fname]
+    (PrintTemporary["[Info]: File "<>fname<>" does exists"]; fname),
+    If[MemberQ[pdg, name],
+      With[{url="https://pdg.lbl.gov/2021/listings/rpp2021-list-"<>name<>".pdf"},
+        Print["Downloading ... ", url];
+        URLSave[url, fname]
+      ],
+      (Print["[Error]: unknown url for \""<>name<>"\""]; "Error")
     ]
   ]
-] 
+];
+getpdg[names__] := getpdg[{names}];
 
 
 End[]
