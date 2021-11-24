@@ -55,6 +55,14 @@ plus\[LetterSpace]minus::usage = "
 ";
 
 
+min::usage = "
+  min for minimum tag
+";
+max::usage = "
+  max for maximum tag
+";
+
+
 Begin["`Private`"]
 
 
@@ -133,6 +141,10 @@ sum /: Format[sum[expr_], TraditionalForm] := (
 minus /: Format[minus] = "-";
 plus /: Format[plus] = "+";
 plus\[LetterSpace]minus /: Format[plus\[LetterSpace]minus]= "\[PlusMinus]";
+
+
+min /: Format[min] = "min";
+max /: Format[max] = "max";
 
 
 End[]
