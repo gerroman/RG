@@ -130,6 +130,78 @@ colorize[xs__] := colorize[{xs}];
 
 
 getRunner[] := getRunner[EvaluationNotebook[]];
+
+getRunner[1] := CellPrint[ExpressionCell[Grid[{{
+   Button["Evaluate Cells", (
+     SetSelectedNotebook[EvaluationNotebook[]];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "ExpandSelection"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "SelectionOpenAllGroups"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "EvaluateCells"]
+     ];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     )],
+   Button["Hide Code", {
+     SetSelectedNotebook[EvaluationNotebook[]];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     NotebookFind[EvaluationNotebook[], "Output", All, CellStyle];
+     FrontEndExecute[
+      FrontEndToken[EvaluationNotebook[], "SelectionCloseUnselectedCells"]
+     ];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     }],
+   Button["Print to PDF", (
+     SetSelectedNotebook[EvaluationNotebook[]];
+     NotebookPrint[EvaluationNotebook[], Interactive->True]
+   )],
+   Button["Help",
+     FrontEndExecute[FrontEndTokenExecute[EvaluationNotebook[], "SelectionHelpDialog"]]
+   ]},
+   {
+   Button["Show Code", (
+     SetSelectedNotebook[EvaluationNotebook[]];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     NotebookFind[EvaluationNotebook[], "Input", All, CellStyle];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+   )],
+   Button["Clear All Outputs", (
+     SetSelectedNotebook[EvaluationNotebook[]];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "ExpandSelection"]
+     ];
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "SelectionOpenAllGroups"]
+     ]; 
+     FrontEndExecute[
+       FrontEndToken[EvaluationNotebook[], "DeleteGeneratedCells"]
+     ];
+     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
+   )],
+   Button["Get handouts", (
+      Module[
+        {
+          nb2 = CreateDocument[{TextCell["Handouts", "Title"]}], 
+          temp = CreateTemporary[]
+        },
+        temp = RenameFile[temp, temp <> ".nb"];
+        NotebookSave[nb2, temp]
+	SetSelectedNotebook[nb2];
+      ]
+    )],
+   Button["Quit", (
+       SetSelectedNotebook[EvaluationNotebook[]];
+       Quit[];
+     )]
+  }} // Transpose, Spacings -> {0, 0}],
+  "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
+]];
+
 getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
   Grid[{{
    Button["Evaluate Cells", (
@@ -203,7 +275,8 @@ getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
   ],
   WindowTitle -> "Run_" <> Last[FileNameSplit[NotebookFileName[nb]]],
   WindowFloating -> True
-];);
+];
+);
 
 
 UnderBar = HoldForm;
