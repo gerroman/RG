@@ -39,6 +39,11 @@ verbose::usage = "
 ";
 
 
+off::usage = "
+  off[message, expr] evaluate expression with the message temporally off 
+";
+
+
 Begin["`Private`"];
 
 
@@ -111,6 +116,15 @@ load[fname_] := With[
     PrintTemporary@StringForm[load::failed, path]
   ]
 ]
+
+
+SetAttributes[off, HoldAll];
+off[message_, expr_] := Module[{result},
+   Off[message];
+   result = expr;
+   On[message];
+   Return[result];
+];
 
 
 End[];
