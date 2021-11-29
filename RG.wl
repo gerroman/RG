@@ -1,6 +1,6 @@
 (* ::Text:: *)
 (*RG.wl: base file to load all subpackages and definitions *)
-Needs /@ {
+Needs /@ Echo /@ {
   "RG`BaseUtils`"
   , "RG`Presentation`"
   , "RG`CommonNotation`"
