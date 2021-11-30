@@ -60,6 +60,20 @@ sum::usage = "
 ";
 
 
+limit::usage = "
+  limit[expr, var] represent limits
+";
+
+
+d::usage = "
+  d[expr, var] represent differential
+";
+
+at::usage = "
+  at[expr, {x, x0}] or at[expr, {x, x1, x2}] for limits substitute
+";
+
+
 Begin["`Private`"]
 
 
@@ -143,6 +157,20 @@ sum /: Format[sum[expr_, region__], TraditionalForm] := (
 sum /: Format[sum[expr_], TraditionalForm] := (
   StringForm["\[Sum]``", expr] // ToString
 );
+
+
+limit /: Format[limit[expr_, args_], TraditionalForm] := HoldForm[Limit[expr, args]];
+
+
+SetAttributes[d, HoldFirst];
+d /: Format[d[expr_, args_], TraditionalForm] := HoldForm[D[expr, args]];
+d /: Format[d[expr_], TraditionalForm] := HoldForm[Dt[expr]];
+
+ClearAll[at, force];
+at /: Format[at[expr_, {x_, y_}], TraditionalForm] :=
+  HoldForm[Subscript[""[expr], x -> y]]
+at /: Format[at[expr_, {x_, y_, z_}], TraditionalForm] :=
+  HoldForm[Subsuperscript[""[expr], x -> y, x -> z]]
 
 
 End[]
