@@ -192,8 +192,8 @@ pion::usage = "
 Begin["`Private`"]
 
 
+Print["[Info]: Notation.wl allow to use Replace(|All|Repeated)[Equal[...]], "];
 Unprotect[Replace, ReplaceAll, ReplaceRepeated];
-
 Replace[eq_Equal] := Replace[Rule @@ eq];
 Replace[eqs : {_Equal ..}] := Replace[Rule @@@ eqs];
 Replace[expr_, eq_Equal] := Replace[expr, Rule @@ eq];
@@ -296,12 +296,10 @@ pion /: Format[pion, TraditionalForm] = HoldForm[\[Pi]];
 
 setIndexed[electron, positron, proton, muon, antimuon, pion];
 
-
 rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
 
 setBar[u, v];
 setIndexed[u, v, bar`u, bar`v];
-
 
 plus = "+";
 minus = "-";

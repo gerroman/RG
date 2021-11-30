@@ -195,6 +195,7 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
   }} // Transpose, Spacings -> {0, 0}]
 ];
 
+
 getRunner[] := CellPrint[ExpressionCell[ReleaseHold[buttons[EvaluationNotebook[]]],
   "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
 ]];

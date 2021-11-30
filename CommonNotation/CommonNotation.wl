@@ -16,14 +16,32 @@ setSubscript::usage = "
   setSubscript[x] set symbol x as subscripted variable, i.e. x[i] will have subscripts in the TraditionalForm
 "
 
-
 setPrime::usage = "
   setPrime[x] set symbol prime`x in TraditionalForm to have prime (') as superscript
 ";
 
-
 setBar::usage = "
   setBar[x] set symbol bar`x in the TraditionalForm to have overbar
+";
+
+minus::usage = "
+  minus for sign minus
+";
+
+plus::usage = "
+  plus for sign plus
+";
+
+plus\[LetterSpace]minus::usage = "
+  plus\[LetterSpace]minus for both signs
+";
+
+min::usage = "
+  min for minimum tag
+";
+
+max::usage = "
+  max for maximum tag
 ";
 
 
@@ -42,33 +60,13 @@ sum::usage = "
 ";
 
 
-minus::usage = "
-  minus for sign minus
-";
-
-plus::usage = "
-  plus for sign plus
-";
-
-plus\[LetterSpace]minus::usage = "
-  plus\[LetterSpace]minus for both signs
-";
-
-
-min::usage = "
-  min for minimum tag
-";
-max::usage = "
-  max for maximum tag
-";
-
-
 Begin["`Private`"]
 
 
 SetAttributes[setSubscript, {Listable}];
 setSubscript[x_Symbol] := (
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
+  x
 );
 setSubscript[x__] := setSubscript[{x}];
 
@@ -122,6 +120,15 @@ setBar[x_Symbol] := With[{
 setBar[x__] := setBar[{x}];
 
 
+minus /: Format[minus] = "-";
+plus /: Format[plus] = "+";
+plus\[LetterSpace]minus /: Format[plus\[LetterSpace]minus]= "\[PlusMinus]";
+
+
+min /: Format[min] = "min";
+max /: Format[max] = "max";
+
+
 integrate /: Format[integrate[expr_, region__], TraditionalForm] := (
   HoldForm[Integrate[expr, region]]
 );
@@ -136,15 +143,6 @@ sum /: Format[sum[expr_, region__], TraditionalForm] := (
 sum /: Format[sum[expr_], TraditionalForm] := (
   StringForm["\[Sum]``", expr] // ToString
 );
-
-
-minus /: Format[minus] = "-";
-plus /: Format[plus] = "+";
-plus\[LetterSpace]minus /: Format[plus\[LetterSpace]minus]= "\[PlusMinus]";
-
-
-min /: Format[min] = "min";
-max /: Format[max] = "max";
 
 
 End[]
