@@ -9,30 +9,19 @@ tagged::usage = "
   tagged[eq`tag = ...] make definition for eq`tag and produce output cell with the tag \"eq`tag\"
   tagged[expr] evaluate expr and produce output cell with the tag \"expr\"
 ";
-tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
-
-
 untagged::usage = "
   just present expression in traditional form
 ";
 
 
-tag`final = False;
+UnderBar::usage = "
+  UnderBar[expr] is equivalent for HoldForm[expr]
+";
 
 
 colorize::usage = "
   colorize[pattern] colorize matches for the pattern
   colorize[{x1, ...}] colorize specific expressions x1, ...
-";
-
-
-getRunner::usage = "
-  getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
-";
-
-
-UnderBar::usage = "
-  UnderBar[expr] is equivalent for HoldForm[expr]
 ";
 
 
@@ -57,12 +46,20 @@ shorten::usage = "
 ";
 
 
+getRunner::usage = "
+  getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
+";
+
 
 Begin["`Private`"];
 
 
-SetAttributes[tagged, HoldAll];
-Options[tagged] = {"form" -> TraditionalForm, "colorize" -> True};
+Options[tagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> False};
+Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> False};
+
+
+SetAttributes[tagged, HoldFirst];
+tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
 tagged[expr:Set[lhs_, _], args___] := (
   expr; 
   tagged[lhs, args];
@@ -80,7 +77,7 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     NotebookLocate[tag];
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
-      If[tag`final,
+      If[OptionValue[tagged, "final"],
         FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
       ]
     ];
@@ -88,7 +85,7 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
 );
 
 
-Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True};
+SetAttributes[untagged, HoldFirst]
 untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
 untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks]
@@ -102,7 +99,7 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     NotebookLocate[tag];
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
-      If[tag`final,
+      If[OptionValue[untagged, "final"],
         FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
       ]
     ];
@@ -111,16 +108,13 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
 );
 
 
-colorize[xs_List] := (
-  With[{n = Length[xs]},
-    With[{styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]},
-      With[{rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]},
-        ReplaceAll[rules]
-      ]
+colorize[xs_List] := With[{n = Length[xs]},
+  With[{styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]},
+    With[{rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]},
+      ReplaceAll[rules]
     ]
   ]
-);
-
+];
 colorize[pattern_] := Function[expr,
   With[{xs = Union@Cases[{expr}, pattern, Infinity]},
     colorize[xs][expr]
@@ -129,81 +123,7 @@ colorize[pattern_] := Function[expr,
 colorize[xs__] := colorize[{xs}];
 
 
-getRunner[] := getRunner[EvaluationNotebook[]];
-
-getRunner[1] := CellPrint[ExpressionCell[Grid[{{
-   Button["Evaluate Cells", (
-     SetSelectedNotebook[EvaluationNotebook[]];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "ExpandSelection"]
-     ];
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "SelectionOpenAllGroups"]
-     ];
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "EvaluateCells"]
-     ];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     )],
-   Button["Hide Code", {
-     SetSelectedNotebook[EvaluationNotebook[]];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     NotebookFind[EvaluationNotebook[], "Output", All, CellStyle];
-     FrontEndExecute[
-      FrontEndToken[EvaluationNotebook[], "SelectionCloseUnselectedCells"]
-     ];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     }],
-   Button["Print to PDF", (
-     SetSelectedNotebook[EvaluationNotebook[]];
-     NotebookPrint[EvaluationNotebook[], Interactive->True]
-   )],
-   Button["Help",
-     FrontEndExecute[FrontEndTokenExecute[EvaluationNotebook[], "SelectionHelpDialog"]]
-   ]},
-   {
-   Button["Show Code", (
-     SetSelectedNotebook[EvaluationNotebook[]];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     NotebookFind[EvaluationNotebook[], "Input", All, CellStyle];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-   )],
-   Button["Clear All Outputs", (
-     SetSelectedNotebook[EvaluationNotebook[]];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "ExpandSelection"]
-     ];
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "SelectionOpenAllGroups"]
-     ]; 
-     FrontEndExecute[
-       FrontEndToken[EvaluationNotebook[], "DeleteGeneratedCells"]
-     ];
-     NotebookFind[EvaluationNotebook[], "in", All, CellTags];
-   )],
-   Button["Get handouts", (
-      Module[
-        {
-          nb2 = CreateDocument[{TextCell["Handouts", "Title"]}], 
-          temp = CreateTemporary[]
-        },
-        temp = RenameFile[temp, temp <> ".nb"];
-        NotebookSave[nb2, temp]
-	SetSelectedNotebook[nb2];
-      ]
-    )],
-   Button["Quit", (
-       SetSelectedNotebook[EvaluationNotebook[]];
-       Quit[];
-     )]
-  }} // Transpose, Spacings -> {0, 0}],
-  "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
-]];
-
-getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
-  Grid[{{
+buttons[nb_] := Grid[{{
    Button["Evaluate Cells", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
@@ -271,12 +191,17 @@ getRunner[nb_NotebookObject] := (CreateWindow[PaletteNotebook[
        NotebookClose[ButtonNotebook[]];
        Quit[];
      )]
-  }} // Transpose, Spacings -> {0, 0}]
-  ],
+  }} // Transpose, Spacings -> {0, 0}];
+
+getRunner[] := CellPrint[ExpressionCell[buttons[EvaluationNotebook[]],
+  "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
+]];
+
+getRunner[nb_NotebookObject] := CreateWindow[
+  PaletteNotebook[buttons[nb]],
   WindowTitle -> "Run_" <> Last[FileNameSplit[NotebookFileName[nb]]],
   WindowFloating -> True
 ];
-);
 
 
 UnderBar = HoldForm;
