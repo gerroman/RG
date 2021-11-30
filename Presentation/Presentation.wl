@@ -123,7 +123,8 @@ colorize[pattern_] := Function[expr,
 colorize[xs__] := colorize[{xs}];
 
 
-buttons[nb_] := Grid[{{
+SetAttributes[buttons, HoldAll];
+buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
    Button["Evaluate Cells", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
@@ -191,14 +192,15 @@ buttons[nb_] := Grid[{{
        NotebookClose[ButtonNotebook[]];
        Quit[];
      )]
-  }} // Transpose, Spacings -> {0, 0}];
+  }} // Transpose, Spacings -> {0, 0}]
+];
 
-getRunner[] := CellPrint[ExpressionCell[buttons[EvaluationNotebook[]],
+getRunner[] := CellPrint[ExpressionCell[ReleaseHold[buttons[EvaluationNotebook[]]],
   "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
 ]];
 
 getRunner[nb_NotebookObject] := CreateWindow[
-  PaletteNotebook[buttons[nb]],
+  PaletteNotebook[ReleaseHold[buttons[nb]]],
   WindowTitle -> "Run_" <> Last[FileNameSplit[NotebookFileName[nb]]],
   WindowFloating -> True
 ];
