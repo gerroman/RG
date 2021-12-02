@@ -100,10 +100,6 @@ crossSection::usage = "
 ";
 \[Sigma]::usage = "symbol for cross sections";
 
-Global`d::usage = "
-  d symbol to use as differential
-";
-
 pcms::usage = "
   pcms symbol for intitial particles momentum in the center of mass frame for the process 2->2
 ";
@@ -277,9 +273,6 @@ Format[omega, TraditionalForm] := \[CapitalOmega];
 
 setIndexed[crossSection];
 Format[crossSection, TraditionalForm] := \[Sigma];
-
-
-Global`d/:Format[Global`d[expr_], TraditionalForm] := HoldForm[Dt[expr]];
 
 
 setIndexed[\[ScriptP], \[ScriptCapitalE], \[ScriptM], \[GothicP]];
