@@ -188,8 +188,10 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
       ]
     )],
    Button["Quit", (
-       SetSelectedNotebook[nb];
-       NotebookClose[ButtonNotebook[]];
+       If[nb =!= EvaluationNotebook[],
+          SetSelectedNotebook[nb];
+          NotebookClose[ButtonNotebook[]];
+       ];
        Quit[];
      )]
   }} // Transpose, Spacings -> {0, 0}]
