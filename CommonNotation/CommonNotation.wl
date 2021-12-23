@@ -175,5 +175,6 @@ at /: Format[at[expr_, {x_, y_, z_}], TraditionalForm] :=
 
 End[]
 
+Echo[$Context];
 
 EndPackage[]

@@ -157,4 +157,7 @@ spinSum[] = With[{
 End[]
 
 
+Echo[$Context];
+
+
 EndPackage[]
