@@ -25,12 +25,6 @@ colorize::usage = "
 ";
 
 
-hold::usage = "
-  hold[pattern] apply HoldForm to matches of pattern
-  hold[{x1,...}] apply HoldForm to specific xs
-";
-
-
 row::usage = "
   row is shortcut for Row[#, \",\t\"]&
 ";
@@ -210,23 +204,6 @@ getRunner[nb_NotebookObject] := CreateWindow[
 
 
 UnderBar = HoldForm;
-
-
-setAttributes[hold, HoldAll];
-hold[xs_List] := With[{
-    rules = Join[
-      Thread[-xs -> -Thread[HoldForm[xs]]],
-      Thread[xs -> Thread[HoldForm[xs]]]
-    ]
-  },
-  ReplaceAll[rules]
-];
-hold[pattern_] := Function[expr,
-  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-    hold[xs][expr]
-  ]
-];
-hold[xs__] := hold[{xs}];
 
 
 row = Row[#, ",\t"] &;

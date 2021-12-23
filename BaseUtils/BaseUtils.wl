@@ -1,5 +1,6 @@
 (* ::Package:: *)
 
+
 BeginPackage["RG`BaseUtils`"];
 
 
@@ -22,6 +23,13 @@ verbose::usage = "
 off::usage = "
   off[message, expr] evaluate expression with the message temporally off 
 ";
+
+
+hold::usage = "
+  hold[pattern] apply HoldForm to matches of pattern
+  hold[{x1,...}] apply HoldForm to specific xs
+";
+
 
 
 Begin["`Private`"];
@@ -70,7 +78,25 @@ off[message_, expr_] := Module[{result},
 ];
 
 
+SetAttributes[hold, HoldAll];
+hold[xs_List] := With[{
+    rules = Join[
+      Thread[-xs -> -Thread[HoldForm[xs]]],
+      Thread[xs -> Thread[HoldForm[xs]]]
+    ]
+  },
+  ReplaceAll[rules]
+];
+hold[pattern_] := Function[expr,
+  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
+    hold[xs][expr]
+  ]
+];
+hold[xs__] := hold[{xs}];
+
+
 End[];
 
+Echo[$Context];
 
 EndPackage[];
