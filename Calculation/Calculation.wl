@@ -179,7 +179,7 @@ groupIt[xs_List, func_:Expand] := With[
   {rules = Map[x \[Function] ((x // modify[{x}, func]) -> x), xs]},
   ReplaceRepeated[#, rules] &
 ];
-groupIt[x_] := groupIt[{x}];
+groupIt[x_, func_:Expand] := groupIt[{x}, func];
 
 
 (* NOTE: strightforward matching can be long *)
@@ -271,7 +271,6 @@ powersPattern[xs_List] := Subsets[xs] // Reverse //
   Apply[Times, #, {1}] & //
   PowerExpand // ReplaceAll[x_ y_Optional :> y];
 
-rewriteIt[Equal[lhs_, rhs_], func_] := Equal[lhs, func[rhs]]
 
 
 changeSign[xs_List] := With[{
@@ -287,17 +286,6 @@ changeSign[pattern_] := Function[{expr},
 ];
 changeSign[xs__] := changeSign[{xs}];
 
-
-rewriteIt[funcL_, funcR_] := Function[
-  {expr},
-  Switch[expr,
-	_Equal, funcL[First[expr]] == funcR[Last[expr]],
-	_Rule, funcL[First[expr]] -> funcR[Last[expr]],
-	_List, Map[rewriteIt[funcL, funcR], expr],
-		_, funcL[expr] == funcR[expr]
-  ]
-];
-rewriteIt[func_] := rewriteIt[Identity, func];
 
 
 toRules = ReplaceAll[#, Equal -> Rule] &;
@@ -371,29 +359,48 @@ pullSumFactors[va_] := ReplaceAll[
 ];
 
 
-groupIntegrals[va_] := ReplaceRepeated[
-  #,
+groupIntegrals[va_] := ReplaceRepeated[#,
   {
-	a_. integrate[exprA_, vs:(va|{va, __})]
-	+ b_. integrate[exprB_, vs:(va|{va, __})]
-	  :> integrate[a exprA + b exprB, vs]
+  	a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>
+		integrate[a exprA + b exprB, vs]
   }
-]&
+]&;
 
-groupSums[va_] := ReplaceRepeated[
-  #,
+groupSums[va_] := ReplaceRepeated[#,
   {
-	a_. sum[exprA_, vs:(va|{va, __})]
-	+ b_. sum[exprB_, vs:(va|{va, __})]
-	  :> sum[a exprA + b exprB, vs]
+	  a_. sum[exprA_, vs:(va|{va, __})]	+ b_. sum[exprB_, vs:(va|{va, __})] :>
+	  sum[a exprA + b exprB, vs]
   }
-]&
+]&;
 
 
-processList[fs_List][expr_] := FoldList[#2[#1]&, expr, fs];
+processList::duplicates = "processList contains unused functions";
+processList[fs_List][expr_] := With[
+  {result = FoldList[#2[#1]&, expr, fs]},
+  If[Not @ DuplicateFreeQ[result], Message[processList::duplicates]];
+	result
+];
 processList[fs__][expr_] := processList[{fs}][expr];
 
-process[fs__][expr_] := processList[fs][expr][[{1, -1}]];
+
+process[fs_List][expr_] := {expr, (RightComposition@@fs)[expr]};
+process[fs__][expr_] := process[{fs}][expr];
+
+
+rewriteIt[lfunc_List, rfunc_List][l_List] := rewriteIt[lfunc, rfunc] /@ l;
+rewriteIt[lfunc_List, rfunc_List][(h:(Equal|Rule))[lhs_, rhs_]] := With[{
+    x = (RightComposition @@ lfunc)[lhs],
+    y = (RightComposition @@ rfunc)[rhs]
+  },
+  h[x, y]
+];
+rewriteIt[lfunc_List, rfunc_List][expr_] := With[{
+    x = (RightComposition @@ lfunc)[expr],
+    y = (RightComposition @@ rfunc)[expr]
+  },
+  x == y
+];
+rewriteIt[fs__][expr_] := rewriteIt[{Identity}, {fs}][expr];
 
 
 Options[ffirst] = {verbose -> True};
@@ -418,6 +425,9 @@ force[integrate, N] = ReplaceAll[#, integrate -> NIntegrate] &;
 
 
 End[];
+
+
+Echo[$Context];
 
 
 EndPackage[];
