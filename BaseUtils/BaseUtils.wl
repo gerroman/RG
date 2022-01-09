@@ -8,7 +8,9 @@ load::usage = "
   load[file, symbol, definitions] load from file (if it exists) or
   execute symbol's definitions and save it to file
 ";
-
+update::usage = "
+  update -> True option to force call definitions and save to file in load[]
+";
 
 temporary\[LetterSpace]directory::usage = "
   temporary\[LetterSpace]directory return location to save auxiliary files
@@ -36,6 +38,7 @@ Begin["`Private`"];
 
 
 Protect[verbose];
+Protect[update];
 
 
 temporary\[LetterSpace]directory = FileNameJoin[{$TemporaryDirectory, "RG"}];
@@ -45,26 +48,36 @@ If[Not[FileExistsQ[temporary\[LetterSpace]directory]],
 
 
 SetAttributes[load, HoldAll];
-load::get = "Getting `1` ...";
-load::save = "Saving `1` ...";
-load::failed = "Error: failed to load file `1`";
-load[fname_, symbol_, definition_] := With[{path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]},
-  If[FileExistsQ[path], (
-      PrintTemporary[ToString[StringForm[load::get, path]]];
+Options[load] = {update -> False};
+load::get = "[Info] load `1` ...";
+load::save = "[Info] save `1` ...";
+load::failed = "[Error] failed to load file `1`";
+load[fname_String, symbol_Symbol, expr_, OptionsPattern[]] := With[{
+    path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]
+	},
+  If[FileExistsQ[path] && Not[OptionValue[update]], (
+      Echo[ToString[StringForm[load::get, path]]];
       Get[path]
-    ),(
-      definition;
-      PrintTemporary[ToString[StringForm[load::save, path]]];
+    ), (
+      expr;
+      Echo[ToString[StringForm[load::save, path]]];
       DumpSave[path, symbol];
     )
   ]
 ];
 
-load[fname_] := With[
-  {path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]},
+load[fname_String] := With[{
+    path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]
+	},
   If[FileExistsQ[path],
-    (PrintTemporary@StringForm[load::get, path]; Get[path]),
-    PrintTemporary@StringForm[load::failed, path]
+    (
+		  Echo[ToString[StringForm[load::get, path]]];
+			Get[path]
+		),
+    (
+		  Echo[ToString[StringForm[load::failed, path]]];
+			Null
+		)
   ]
 ]
 
@@ -80,12 +93,12 @@ off[message_, expr_] := Module[{result},
 
 SetAttributes[hold, HoldAll];
 hold[xs_List] := With[{
-    rules = Join[
+    rule = Join[
       Thread[-xs -> -Thread[HoldForm[xs]]],
       Thread[xs -> Thread[HoldForm[xs]]]
     ]
   },
-  ReplaceAll[rules]
+  ReplaceAll[rule]
 ];
 hold[pattern_] := Function[expr,
   With[{xs = Union@Cases[{expr}, pattern, Infinity]},
@@ -97,6 +110,8 @@ hold[xs__] := hold[{xs}];
 
 End[];
 
+
 Echo[$Context];
+
 
 EndPackage[];
