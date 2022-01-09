@@ -21,9 +21,7 @@ workingdirectory::usage = "
   workingdirectory \[LongDash] current working directory
 ";
 
-working\[LetterSpace]directory = With[{dir=NotebookDirectory[]},
-  If[dir =!= $Failed, dir, temporary\[LetterSpace]directory]
-];
+working\[LetterSpace]directory = If[$Notebooks, NotebookDirectory[], $InitialDirectory];
 
-Echo["[Info] Set working directory to " <> workingdirectory];
+Echo["[Info]: Set working directory to " <> workingdirectory];
 SetDirectory[workingdirectory];
