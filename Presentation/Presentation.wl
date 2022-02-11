@@ -29,6 +29,9 @@ row::usage = "
   row is shortcut for Row[#, \",\t\"]&
 ";
 
+column::usage = "
+  column is shortcut for Column[#, Spacings->1.5]&
+"
 
 grid::usage = "
   grid[list] decorate list as grid
@@ -55,7 +58,7 @@ Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> F
 SetAttributes[tagged, HoldFirst];
 tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
 tagged[expr:Set[lhs_, _], args___] := (
-  expr; 
+  expr;
   tagged[lhs, args];
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
@@ -63,8 +66,8 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
   If[Not[$Notebooks], Return[expr]];
   With[{tag = ToString[HoldForm[expr]]},
     CellPrint[ExpressionCell[
-      expr // func // 
-        If[OptionValue[tagged, "colorize"], colorize[_HoldForm], Identity] // 
+      expr // func //
+        If[OptionValue[tagged, "colorize"], colorize[_HoldForm], Identity] //
         OptionValue[tagged, "form"],
       "Output", CellTags -> tag, ShowCellTags -> True, opts
     ]];
@@ -164,7 +167,7 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
      ];
      FrontEndExecute[
        FrontEndToken[nb, "SelectionOpenAllGroups"]
-     ]; 
+     ];
      FrontEndExecute[
        FrontEndToken[nb, "DeleteGeneratedCells"]
      ];
@@ -173,7 +176,7 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
    Button["Get handouts", (
       Module[
         {
-          nb2 = CreateDocument[{TextCell["Handouts", "Title"]}], 
+          nb2 = CreateDocument[{TextCell["Handouts", "Title"]}],
           temp = CreateTemporary[]
         },
         temp = RenameFile[temp, temp <> ".nb"];
@@ -207,6 +210,7 @@ UnderBar = HoldForm;
 
 
 row = Row[#, ",\t"] &;
+column = Column[#, Spacings->1.5]&;
 
 
 Options[grid] = {
