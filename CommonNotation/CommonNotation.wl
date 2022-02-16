@@ -32,8 +32,8 @@ plus::usage = "
   plus for sign plus
 ";
 
-plus\[LetterSpace]minus::usage = "
-  plus\[LetterSpace]minus for both signs
+plusminus::usage = "
+  plusminus for both signs
 ";
 
 min::usage = "
@@ -136,7 +136,7 @@ setBar[x__] := setBar[{x}];
 
 minus /: Format[minus] = "-";
 plus /: Format[plus] = "+";
-plus\[LetterSpace]minus /: Format[plus\[LetterSpace]minus]= "\[PlusMinus]";
+plusminus /: Format[plusminus]= "\[PlusMinus]";
 
 
 min /: Format[min] = "min";
@@ -175,6 +175,8 @@ at /: Format[at[expr_, {x_, y_, z_}], TraditionalForm] :=
 
 End[]
 
+
 Echo[$Context];
+
 
 EndPackage[]

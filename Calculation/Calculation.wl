@@ -132,7 +132,7 @@ ffirst::usage = "
 
 
 force::usage = "
-  force[at | limit | sum | integrate | d] forces evaluation 
+  force[at | limit | sum | integrate | d] forces evaluation
 ";
 
 
@@ -412,12 +412,12 @@ ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
 
 
 force[at] = ReplaceAll[#, {
-  at[expr_, {x_, value_}] :> (expr /. x -> value), 
+  at[expr_, {x_, value_}] :> (expr /. x -> value),
   at[expr_, {x_, down_, up_}] :> (expr /. x -> up) - (expr /. x -> down)
 }] &;
 
 force[limit] = ReplaceAll[#, limit->Limit]
-     
+
 force[d] = ReplaceAll[#, d -> D] &;
 force[sum] = ReplaceAll[#, sum -> Sum] &;
 force[integrate] = ReplaceAll[#, integrate -> Integrate] &;

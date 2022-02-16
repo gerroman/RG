@@ -17,7 +17,7 @@ energy::usage = "
 ";
 
 momentum::usage = "
-  momentum[p] represent spatial part of 4-vector 
+  momentum[p] represent spatial part of 4-vector
 ";
 
 mass::usage = "
@@ -70,7 +70,7 @@ phi::usage = "
   phi \[LongDash] azimuthal angle
 ";
 \[CurlyPhi]::usage = "
-  \[CurlyPhi] \[LongDash] symbol for azimuthal angle 
+  \[CurlyPhi] \[LongDash] symbol for azimuthal angle
 ";
 
 omega::usage = "
@@ -158,13 +158,13 @@ bar`\[Mu]::usage = "
 ";
 
 plus::usage = "
-  plus \[LongDash] string for sign + 
+  plus \[LongDash] string for sign +
 ";
 minus::usage = "
   minus \[LongDash] string for sign -
 ";
-plus\[LetterSpace]minus::usage = "
-  plus\[LetterSpace]minus \[LongDash] list of strign for signs  {+, -}
+plusminus::usage = "
+  plusminus \[LongDash] list of strign for signs  {+, -}
 ";
 
 \[Eta]::usage = "
@@ -172,7 +172,7 @@ plus\[LetterSpace]minus::usage = "
 ";
 
 \[Xi]::usage = "
-  \[Xi] \[LongDash] symbol for fermion particle spinor 
+  \[Xi] \[LongDash] symbol for fermion particle spinor
 ";
 
 \[GothicP]::usage = "
@@ -240,7 +240,7 @@ lorentzIndexes = {};
 SetAttributes[setLorentzIndex, Listable];
 setLorentzIndex[mu_Symbol] := (
   If[FreeQ[lorentzIndexes, mu], (
-    Function[expr, 
+    Function[expr,
       Format[sp[expr, mu], TraditionalForm] := Superscript[Global`g, ToString@Row[{expr, mu}]]
     ] /@ lorentzIndexes;
     Format[sp[a_Symbol, mu], TraditionalForm] := Superscript[a, mu];
@@ -298,7 +298,7 @@ setIndexed[u, v, bar`u, bar`v];
 
 plus = "+";
 minus = "-";
-plus\[LetterSpace]minus = {plus, minus};
+plusminus = {plus, minus};
 
 setIndexed[\[Xi], \[Eta]];
 

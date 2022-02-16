@@ -38,7 +38,7 @@ expandScalarProduct::usage = "
 ";
 
 getKinematicsCMS::usage = "
-  getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}] return kinematics \ 
+  getKinematicsCMS[{{p1, p2}, {p3, p4}}, {s, \[Theta]}] return kinematics \
 rules for the center of mass frame
 ";
 getMandelstam::usage = "
@@ -155,11 +155,11 @@ setInvariants[
   eqs = Thread@Equal[
     (
       (* do not use any rules *)
-      spAll 
+      spAll
     ),
     (
       (* use spRules and pRules *)
-      spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& 
+      spAll // ReplaceAll[#, ruleMasses ~ Join ~ spRules]&
     )
   ] // modify[_sp, (ReplaceRepeated[#, pRules]&) /* (ReplaceAll[#, ruleConservation]&)] //
     modify[_sp, Distribute] // ReplaceAll[#, ruleMasses ~ Join ~ spRules]& //
@@ -232,7 +232,7 @@ getKinematicsCMS[{{p1_, p2_}, {p3_, p4_}}, {s_, \[Theta]_}] := Module[
   AppendTo[rule,
     prime`pcms^2 -> ((s - (mass[p3] - mass[p4])^2)*(s - (mass[p3] + mass[p4])^2))/(4*s)
   ];
-  
+
   Return[rule]
 ];
 
