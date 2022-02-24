@@ -12,8 +12,8 @@ update::usage = "
   update -> True option to force call definitions and save to file in load[]
 ";
 
-temporary\[LetterSpace]directory::usage = "
-  temporary\[LetterSpace]directory return location to save auxiliary files
+temporarydirectory::usage = "
+  temporarydirectory return location to save auxiliary files
 ";
 
 
@@ -23,7 +23,7 @@ verbose::usage = "
 
 
 off::usage = "
-  off[message, expr] evaluate expression with the message temporally off 
+  off[message, expr] evaluate expression with the message temporally off
 ";
 
 
@@ -41,9 +41,9 @@ Protect[verbose];
 Protect[update];
 
 
-temporary\[LetterSpace]directory = FileNameJoin[{$TemporaryDirectory, "RG"}];
-If[Not[FileExistsQ[temporary\[LetterSpace]directory]],
-  CreateDirectory[temporary\[LetterSpace]directory]
+temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
+If[Not[FileExistsQ[temporarydirectory]],
+  CreateDirectory[temporarydirectory]
 ];
 
 
@@ -53,7 +53,7 @@ load::get = "[Info] load `1` ...";
 load::save = "[Info] save `1` ...";
 load::failed = "[Error] failed to load file `1`";
 load[fname_String, symbol_Symbol, expr_, OptionsPattern[]] := With[{
-    path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]
+    path = FileNameJoin[{temporarydirectory, fname}]
 	},
   If[FileExistsQ[path] && Not[OptionValue[update]], (
       Echo[ToString[StringForm[load::get, path]]];
@@ -67,7 +67,7 @@ load[fname_String, symbol_Symbol, expr_, OptionsPattern[]] := With[{
 ];
 
 load[fname_String] := With[{
-    path = FileNameJoin[{temporary\[LetterSpace]directory, fname}]
+    path = FileNameJoin[{temporarydirectory, fname}]
 	},
   If[FileExistsQ[path],
     (

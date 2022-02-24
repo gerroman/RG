@@ -78,6 +78,7 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
         FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
       ]
     ];
+		SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
   ];
 );
 
@@ -100,6 +101,7 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
         FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
       ]
     ];
+		SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
     ];
   ];
 );
