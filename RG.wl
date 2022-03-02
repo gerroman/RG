@@ -1,7 +1,9 @@
 (* ::Text:: *)
 (*RG.wl: base file to load all subpackages and definitions *)
 
-(*[NOTE]: this is not a package since autocompletion does not work*)
+(*
+  [NOTE]: it is not a package, because in another case autocompletion does not work
+*)
 
 Needs /@ {
 	"RG`BaseUtils`"
