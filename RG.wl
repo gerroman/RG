@@ -21,7 +21,7 @@ workingdirectory::usage = "
   workingdirectory \[LongDash] current working directory
 ";
 
-working\[LetterSpace]directory = Check[NotebookDirectory[], $InitialDirectory];
+workingdirectory = Check[NotebookDirectory[], $InitialDirectory];
 
 Echo["[Info]: Set working directory to " <> workingdirectory];
 SetDirectory[workingdirectory];
