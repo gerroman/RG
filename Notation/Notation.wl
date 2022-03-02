@@ -256,7 +256,7 @@ setLorentzIndex[mu_Symbol] := (
 setLorentzIndex[mu__] := setLorentzIndex[{mu}];
 
 
-setSuperScript[\[Gamma]];
+setSuperscript[\[Gamma]];
 
 
 Unprotect[Times];
