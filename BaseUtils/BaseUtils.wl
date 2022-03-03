@@ -8,6 +8,9 @@ load::usage = "
   load[file, symbol, definitions] load from file (if it exists) or
   execute symbol's definitions and save it to file
 ";
+loadFigure::usage = "
+  loadFigure[file, symbol, definitions] load figure from file if it exists or execute definitions and save figure to the file
+";
 update::usage = "
   update -> True option to force call definitions and save to file in load[]
 ";
@@ -15,7 +18,9 @@ update::usage = "
 temporarydirectory::usage = "
   temporarydirectory return location to save auxiliary files
 ";
-
+figuredirectory::usage = "
+  figuredirectory return location to save figures
+";
 
 verbose::usage = "
   verbose -> True option to make function more verbose
@@ -80,6 +85,22 @@ load[fname_String] := With[{
 		)
   ]
 ]
+
+figuredirectory = Check[NotebookDirectory[], temporarydirectory];
+Echo["[Info]: Set figure directory to " <> figuredirectory];
+
+SetAttributes[loadFigure, HoldAll];
+Options[loadFigure] = {update -> False};
+loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
+    path = FileNameJoin[{figuredirectory, fname}]
+	},
+  If[Not@FileExistsQ[path] || OptionValue[update], (
+      Echo[ToString[StringForm[load::save, path]]];
+      Export[path, expr];
+	)];
+	Echo[ToString[StringForm[load::get, path]]];
+	Import[path]
+];
 
 
 SetAttributes[off, HoldAll];
