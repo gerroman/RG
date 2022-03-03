@@ -21,6 +21,9 @@ temporarydirectory::usage = "
 figuredirectory::usage = "
   figuredirectory return location to save figures
 ";
+workingdirectory::usage = "
+  workingdirectory \[LongDash] current working directory
+";
 
 verbose::usage = "
   verbose -> True option to make function more verbose
@@ -46,10 +49,20 @@ Protect[verbose];
 Protect[update];
 
 
+workingdirectory = Check[NotebookDirectory[], $InitialDirectory];
+Echo["[Info]: Set working directory to " <> workingdirectory];
+SetDirectory[workingdirectory];
+
 temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
 If[Not[FileExistsQ[temporarydirectory]],
   CreateDirectory[temporarydirectory]
 ];
+Echo["[Info]: Set temporary directory to " <> temporarydirectory];
+
+
+figuredirectory = workingdirectory;
+Echo["[Info]: Set figure directory to " <> figuredirectory];
+
 
 
 SetAttributes[load, HoldAll];
@@ -86,8 +99,6 @@ load[fname_String] := With[{
   ]
 ]
 
-figuredirectory = Check[NotebookDirectory[], temporarydirectory];
-Echo["[Info]: Set figure directory to " <> figuredirectory];
 
 SetAttributes[loadFigure, HoldAll];
 Options[loadFigure] = {update -> False};

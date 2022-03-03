@@ -19,11 +19,3 @@ Needs /@ {
 	(* , "RG`HelicityStates`" *)
 };
 
-workingdirectory::usage = "
-  workingdirectory \[LongDash] current working directory
-";
-
-workingdirectory = Check[NotebookDirectory[], $InitialDirectory];
-
-Echo["[Info]: Set working directory to " <> workingdirectory];
-SetDirectory[workingdirectory];
