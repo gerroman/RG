@@ -103,6 +103,10 @@ changeIntegrateVars::usage = "
 changeSumVars::usage = "
   changeSumVars[va -> f[vb], vb -> g[va]] change integration variable va->vb in the integral w.r.t. va
 ";
+setIntegrateLimits::usage = "
+  setIntegrateLimits[{x, xMin, xMax}] replace indefinite integral w.r.t. x to definite
+  setIntegrateLimits[{x, xMin, xMax}..] 
+";
 
 pullIntegrateFactors::usage = "
   pullIntegrateFactors[va] pull out constant factor off the integrals w.r.t. va
@@ -346,6 +350,11 @@ changeIntegrateVars[rulex_List, ruley_List] := With[{
 		  integrate[(expr /. rulex) * Det[Outer[D, fs, ys]], Sequence@@ys]
   ]
 ];
+
+setIntegrateLimits[vx:{x_, xMin_, xMax_}] := ReplaceAll[
+  integrate[expr_, y___, x, z___] :> integrate[expr, y, vx, z]
+];
+setIntegrateLimits[l:{_, _, _}..] := Composition @@ setIntegrateLimits /@ {l};
 
 
 changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
