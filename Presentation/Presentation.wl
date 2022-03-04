@@ -75,10 +75,10 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
       If[OptionValue[tagged, "final"],
-        FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
+        FrontEndExecute[FrontEndToken["OpenCloseGroup"]];
+				SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
       ]
     ];
-		SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
   ];
 );
 
@@ -98,10 +98,14 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
     If[Length[SelectedCells[]] > 1,
       Message[tagged::shdw, tag],
       If[OptionValue[untagged, "final"],
-        FrontEndExecute[FrontEndToken["OpenCloseGroup"]]
+			  (
+          FrontEndExecute[FrontEndToken["OpenCloseGroup"]];
+    		  SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
+				), (
+				  SelectionMove[EvaluationNotebook[], Previous, CellContents];
+				)
       ]
     ];
-		SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
     ];
   ];
 );
