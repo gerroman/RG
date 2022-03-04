@@ -335,6 +335,19 @@ changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   }
 ];
 
+
+changeIntegrateVars[rulex_List, ruley_List] := With[{
+    xs = First/@rulex,
+		ys = First/@ruley,
+		fs = Last/@rulex
+	},
+	ReplaceAll[
+	  integrate[expr_, Sequence@@xs] :>
+		  integrate[(expr /. rulex) * Det[Outer[D, fs, ys]], Sequence@@ys]
+  ]
+];
+
+
 changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
 	sum[expr_, va] :> sum[(expr /. rulea), vb]
