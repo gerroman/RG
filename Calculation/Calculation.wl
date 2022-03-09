@@ -105,7 +105,7 @@ changeSumVars::usage = "
 ";
 setIntegrateLimits::usage = "
   setIntegrateLimits[{x, xMin, xMax}] replace indefinite integral w.r.t. x to definite
-  setIntegrateLimits[{x, xMin, xMax}..] 
+  setIntegrateLimits[{x, xMin, xMax}..]
 ";
 
 pullIntegrateFactors::usage = "
