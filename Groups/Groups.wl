@@ -122,29 +122,39 @@ Protect[PermutationProduct, PermutationPower];
 group`reset[] := (
   Echo["[Info]: reset group definitions ..."];
   Clear[
-    group`nvertices,
 	  group`elems,
+    group`nvertices,
 	  group`permutationrule,
 		group`inversepermutationrule,
-	  group`charactertable,
-	  group`classes,
 		group`representrule,
-		group`inverserepresentrule
+		group`inverserepresentrule,
+	  group`charactertable,
+	  group`classes
   ];
   group`classes := group`classes = Union[group`class /@ group`elems] // group`sortsets;
+
   group`inversepermutationrule := group`inversepermutationrule = Reverse /@ (Rule @@@ (group`elems // Map[process[ReplaceRepeated[#, group`permutationrule]&]]));
+
+	group`permutation[] := group`permutation[] = group`elems // Map[process[group`permutation] /* Apply[Equal]];
+
   group`inverserepresentrule := group`inverserepresentrule = Reverse /@ (Rule @@@ (group`elems // Map[process[group`matrixevaluate, ReplaceRepeated[#, group`representrule]&]]));
+
   group`subgroups[] := group`subgroups[] = Flatten[group`subgroups /@ (Divisors[group`order[]][[2;;-2]]), 1];
+
   group`invariantsubgroups[] := group`invariantsubgroups[] = group`subgroups[] // Select[group`invariantGroupQ];
+
 	group`id := group`id = First[group`elems];
+
 	group`producttable[] := group`producttable[] = Outer[
     group`evaluate[PermutationProduct[#2, #1]]&,
  	  group`elems,
 	  group`elems
 	];
-	group`permutation[] := group`permutation[] = group`elems // Map[process[group`permutation] /* Apply[Equal]];
+
 	group`regularrepresentation[] := group`regularrepresentation[] = group`elems // Map[rewriteIt[group`regularrepresentation]];
+
   group`vertexrepresentation[] := group`vertexrepresentation[] = group`elems // Map[rewriteIt[group`vertexrepresentation]];
+
   group`irreducibledimensions := group`irreducibledimensions = Module[{dim, dims, i, n = group`order[], nc = group`nclasses, solution},
 	  dims = Array[dim, nc];
     solution = Solve[
@@ -159,6 +169,7 @@ group`reset[] := (
 	  If[Length[solution] != 1, Print["[Error] irreducible dimensions yields multiple solution"]];
 	  dims /. First[solution]
   ];
+
   group`classidx := With[
 	  {rule = (group`classes -> Range[Length[group`classes]] // Thread // Map[Thread] // Flatten // Sort // Reverse)},
     group`classidx = Function[{expr}, expr /. rule]
