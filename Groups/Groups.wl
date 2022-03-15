@@ -133,7 +133,9 @@ group`reset[] := (
   ];
   group`classes := group`classes = Union[group`class /@ group`elems] // group`sortsets;
 
-  group`inversepermutationrule := group`inversepermutationrule = Reverse /@ (Rule @@@ (group`elems // Map[process[ReplaceRepeated[#, group`permutationrule]&]]));
+  group`inversepermutationrule := group`inversepermutationrule = Reverse /@ (
+	  Rule @@@ (group`elems // Map[process[ReplaceRepeated[#, group`permutationrule]&]])
+	);
 
 	group`permutation[] := group`permutation[] = group`elems // Map[process[group`permutation] /* Apply[Equal]];
 
@@ -183,7 +185,8 @@ group`reset[];
 group`matrixevaluate = ReplaceRepeated[#, {
 	  PermutationPower -> MatrixPower,
 		PermutationProduct[a_, b__] :> Dot@@Reverse[{a, b}]
-	}]&
+	}
+]&
 
 
 group`evaluate[expr_] := Which[
@@ -236,23 +239,37 @@ group`order[] := Length[group`elems]
 group`inverse[expr_] := group`evaluate[PermutationPower[expr, -1]]
 
 
-group`sortfunction := FirstPosition[group`elems, #]&
-group`sort := SortBy[group`sortfunction]
-group`sortsets := Map[group`sort] /* SortBy[First /* group`sortfunction]
+group`sortfunction := FirstPosition[group`elems, #]&;
+group`sort := SortBy[group`sortfunction];
+group`sortsets := Map[group`sort] /* SortBy[First /* group`sortfunction];
 
 
-group`class[expr_] := Union[group`evaluate[PermutationProduct[#, expr, group`inverse[#]]]& /@ group`elems] // group`sort
-group`nclasses := Length[group`classes]
+group`class[expr_] := Union[group`evaluate[PermutationProduct[#, expr, group`inverse[#]]]& /@ group`elems] // group`sort;
+group`nclasses := Length[group`classes];
 
 
-group`groupQ[expr_List] := (
-  MemberQ[expr, group`id] &&
-	And @@ (MemberQ[expr, group`inverse[#]]& /@ expr) &&
-	With[{products = group`producttable[expr]},
-    Union@Flatten@products === Union[expr]
-	]
-)
-group`groupQ[] := group`groupQ[group`elems]
+group`groupQ[expr_List] := With[{elems = Union[group`evaluate[expr]]}, Which[
+  Not@MemberQ[expr, group`id], (
+	  (* Echo["[Error]: groupQ: there is no in identity element"];*)
+		False
+	),
+	Length[elems] != Length[expr], (
+	  (* Echo["[Error]: groupQ: there are duplicates"]; *)
+		False
+	),
+	elems != Union[group`inverse /@ expr], (
+	  (* Echo["[Error]: groupQ: inverse element does not exist"]; *)
+		False
+	),
+	With[{products = Union @ Flatten @ group`producttable[expr]},
+    products =!= elems
+	], (
+	  (* Echo["[Error]: groupQ: not all products does exist"]; *)
+		False
+	),
+	True, True
+]];
+group`groupQ[] := group`groupQ[group`elems];
 
 
 group`subgroups[n_Integer] := Subsets[group`elems, {n}] // Select[group`groupQ] // Map[group`sort]
