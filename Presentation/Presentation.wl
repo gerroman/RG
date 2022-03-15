@@ -215,8 +215,11 @@ getRunner[nb_NotebookObject] := CreateWindow[
 UnderBar = HoldForm;
 
 
-row = Row[#, ",\t"] &;
-column = Column[#, Spacings->1.5]&;
+row[l_List] := Row[l, ",\t"];
+row[expr_] := expr;
+
+column[l_List] = Column[l, Spacings->1.5];
+column[expr_] := expr;
 
 
 Options[grid] = {
