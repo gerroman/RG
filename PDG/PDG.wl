@@ -8,7 +8,7 @@ BeginPackage["RG`PDG`", {"RG`BaseUtils`"}]
 
 
 pdglinks::usage = "
-  pdglinks return a list of links to PDG pdfs   
+  pdglinks return a list of links to PDG pdfs
 "
 
 pdg::usage = "
@@ -16,7 +16,7 @@ pdg::usage = "
 "
 
 getpdg::usage = "
-  getpdg[pdgname] download pdf for pdgname 
+  getpdg[pdgname] download pdf for pdgname
 "
 
 
@@ -24,7 +24,7 @@ Begin["`Private`"]
 
 
 getURLs[responce_, ext_:""] := Select[
-  StringSplit[responce, {"\n","<",">"," ",","}], 
+  StringSplit[responce, {"\n","<",">"," ",","}],
   StringMatchQ[#, "href="~~__~~ext~~___]&
 ]
 
@@ -33,15 +33,15 @@ load["pdglinks.mx", pdglinks,
 ]
 
 load["pdg.mx", pdg,
-  pdg = Select[pdglinks, StringMatchQ[#, __~~"-list-"~~__]&] // 
-  StringReplace[#, __~~"-list-" -> ""]& // 
+  pdg = Select[pdglinks, StringMatchQ[#, __~~"-list-"~~__]&] //
+  StringReplace[#, __~~"-list-" -> ""]& //
   StringReplace[#, ".pdf"~~___->""]&
 ]
 
 
 SetAttributes[getpdg, Listable];
 getpdg[name_String] := With[
-  {fname = FileNameJoin[{temporary\[LetterSpace]directory, name<>".pdf"}]},
+  {fname = FileNameJoin[{temporarydirectory, name<>".pdf"}]},
   If[FileExistsQ[fname],
     (PrintTemporary["[Info]: File "<>fname<>" does exists"]; fname),
     If[MemberQ[pdg, name],

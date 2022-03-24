@@ -311,8 +311,8 @@ changeLogPower[power_] := ReplaceAll[#, Log[x_] :> (1/power) * Log[x^power]] &;
 
 complexToAbs[pattern_] = ReplaceAll[#,
   {
-	product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
-  }
+	  product:(expr_ * Conjugate[expr_]) :> Abs[expr]^2 /; MatchQ[expr, pattern]
+	}
 ]&;
 
 
@@ -333,9 +333,8 @@ solve[vars_] := solve[#, vars]&;
 
 changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
-	integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb]
-	, integrate[expr_, {va, vaMin_, vaMax_}] :>
-		integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+	integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb],
+	integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
   }
 ];
 
@@ -359,39 +358,36 @@ setIntegrateLimits[l:{_, _, _}..] := Composition @@ setIntegrateLimits /@ {l};
 
 changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
   {
-	sum[expr_, va] :> sum[(expr /. rulea), vb]
-	, sum[expr_, {va, vaMin_, vaMax_}] :>
-		sum[(expr /. rulea), {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
+	sum[expr_, va] :> sum[(expr /. rulea), vb],
+	sum[expr_, {va, vaMin_, vaMax_}] :>	sum[(expr /. rulea), {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
   }
 ];
 
 
 pullIntegrateFactors[va_] := ReplaceAll[
   {
-	 integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va]
-	 , integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
+	 integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va],
+	 integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
   }
 ];
 
 pullSumFactors[va_] := ReplaceAll[
   {
-	 sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va]
-	 , sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
+	 sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va],
+	 sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
   }
 ];
 
 
 groupIntegrals[va_] := ReplaceRepeated[#,
   {
-  	a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>
-		integrate[a exprA + b exprB, vs]
+  	a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>	integrate[a exprA + b exprB, vs]
   }
 ]&;
 
 groupSums[va_] := ReplaceRepeated[#,
   {
-	  a_. sum[exprA_, vs:(va|{va, __})]	+ b_. sum[exprB_, vs:(va|{va, __})] :>
-	  sum[a exprA + b exprB, vs]
+	  a_. sum[exprA_, vs:(va|{va, __})]	+ b_. sum[exprB_, vs:(va|{va, __})] :> sum[a exprA + b exprB, vs]
   }
 ]&;
 
@@ -438,8 +434,8 @@ force[at] = ReplaceAll[#, {
   at[expr_, {x_, down_, up_}] :> (expr /. x -> up) - (expr /. x -> down)
 }] &;
 
-force[limit] = ReplaceAll[#, limit->Limit]
 
+force[limit] = ReplaceAll[#, limit->Limit]
 force[d] = ReplaceAll[#, d -> D] &;
 force[sum] = ReplaceAll[#, sum -> Sum] &;
 force[integrate] = ReplaceAll[#, integrate -> Integrate] &;

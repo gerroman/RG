@@ -122,12 +122,12 @@ drawSpring[{p1 : {_, _}, p2 : {_, _}}, opts:OptionsPattern[]] := Module[{
   },
   {m, r, n} = OptionValue[waveParams];
   points = Map[
-    p1 + rot[#] &, 
+    p1 + rot[#] &,
     Table[
       With[{
           x = 2.0 * Pi * (r + 1 / 2) * (i / n)
-        }, 
-        {d, 0} * (i / n) 
+        },
+        {d, 0} * (i / n)
         + d * m * {1  - 2 * (i / n) - Cos[x], Sin[x]}
       ],
       {i, 0, n}
@@ -164,12 +164,12 @@ drawWave[{p1 : {_, _}, p2 : {_, _}}, opts:OptionsPattern[]] := Module[{
   },
   {m, r, n} = OptionValue[waveParams];
   points = Map[
-    p1 + rot[#] &, 
+    p1 + rot[#] &,
     Table[
       With[{
           x = 2.0 * Pi * (r + 1 / 2) * (i / n)
-        }, 
-        {d, 0} * (i / n) 
+        },
+        {d, 0} * (i / n)
         + d * m * {0, Sin[x]}
       ],
       {i, 0, n}
@@ -199,10 +199,10 @@ drawWave[ps:{{_,_}..}, labels_List, opts:OptionsPattern[]] := (
 
 
 drawFrame[p1 : {xmin_, ymin_}, p2 : {xmax_, ymax_}] := Graphics[
-  {Opacity[.0], Rectangle[p1, p2]}, 
-  Frame -> True, 
-  FrameTicks -> {Range[xmin, xmax], Range[ymin, ymax]}, 
-  GridLines -> {Range[xmin, xmax], Range[ymin, ymax]}, 
+  {Opacity[.0], Rectangle[p1, p2]},
+  Frame -> True,
+  FrameTicks -> {Range[xmin, xmax], Range[ymin, ymax]},
+  GridLines -> {Range[xmin, xmax], Range[ymin, ymax]},
   GridLinesStyle -> Directive[Opacity[.3], Dashed]
 ];
 

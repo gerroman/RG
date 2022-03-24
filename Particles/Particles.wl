@@ -5,7 +5,7 @@
 
 
 BeginPackage["RG`Particles`", {"RG`BaseUtils`",
-							  "RG`CommonNotation`", 
+							  "RG`CommonNotation`",
 							  "RG`Notation`",
 							  "RG`Presentation`"}]
 
@@ -52,7 +52,7 @@ getDecays::usage = "
 "
 
 getDecaysTable::usage = "
-  getDecaysTable[particle, nMax] \[LongDash] format particle first nMax decays as grid 
+  getDecaysTable[particle, nMax] \[LongDash] format particle first nMax decays as grid
 "
 
 getFrequentDecays::usage = "
@@ -60,7 +60,7 @@ getFrequentDecays::usage = "
 "
 
 describeProcess::usage = "
-  describeProcess[process] \[LongDash] describe process as transition of  particle properties 
+  describeProcess[process] \[LongDash] describe process as transition of  particle properties
 "
 
 ShowMissing::usage = "
@@ -68,7 +68,7 @@ ShowMissing::usage = "
 "
 
 describeParticle::usage = "
-  describeParticle[particle] - list particle properties 
+  describeParticle[particle] - list particle properties
 "
 
 getJPC::usage = "
@@ -91,12 +91,12 @@ Begin["`Private`"]
 Off[General::stop];
 
 
-load["classes.mx", classes, 
+load["classes.mx", classes,
   classes = ParticleData["Classes"]
 ]
 
 
-load["particles.mx", particles, 
+load["particles.mx", particles,
   particles = ParticleData[] // SortBy[ParticleData[#, "Mass"] &]
 ]
 
@@ -105,14 +105,14 @@ load["properties.mx", properties, (
   properties = <||>;
 
   properties["All"] = ParticleData["Properties"];
-  
+
   properties["Basic"] = {
-     "Symbol", "Charge", "Mass", "Width", "Lifetime", "HalfLife", 
+     "Symbol", "Charge", "Mass", "Width", "Lifetime", "HalfLife",
      "QuarkContent", "Memberships"
   };
   properties["QuantumNumbers"] = {
-     "BaryonNumber", "Bottomness", "Charm", "CParity", "GParity", 
-     "Hypercharge", "Isospin", "IsospinProjection", "LeptonNumber", 
+     "BaryonNumber", "Bottomness", "Charm", "CParity", "GParity",
+     "Hypercharge", "Isospin", "IsospinProjection", "LeptonNumber",
      "Parity", "Spin", "Strangeness", "Topness"
   };
   properties["LongLived"] = {
@@ -125,7 +125,7 @@ load["properties.mx", properties, (
      "DecayModes", "DecayType", "FullDecayModes", "UnobservedDecayModes"
   };
   properties["Names"] = {
-     "FullSymbol", "GenericFullSymbol", "GenericSymbol", "PDGNumber", 
+     "FullSymbol", "GenericFullSymbol", "GenericSymbol", "PDGNumber",
      "StandardName"
   };
 )]
@@ -166,9 +166,9 @@ With[{props = {
     }
   },
   describeProcess[process_, OptionsPattern[]] := (
-    {#, getProperty[#][process]}& /@ props 
+    {#, getProperty[#][process]}& /@ props
   ) // ReplaceAll[{
-      Missing["NotApplicable"] -> "?!", 
+      Missing["NotApplicable"] -> "?!",
       Missing["NotAvailable"] -> "?"
     }] // If[OptionValue[ShowMissing]
       , Identity
@@ -184,7 +184,7 @@ getDecays[particle_String] := With[{
   If[Head[decays] === List,
     (
        Thread[particle -> decays] //
-         ReplaceAll[(a_ -> {b_, c_}) :> {Rule[a, b], c}] // 
+         ReplaceAll[(a_ -> {b_, c_}) :> {Rule[a, b], c}] //
          SortBy[Last] // Reverse
     ),
     {particle -> None}
@@ -196,8 +196,8 @@ getDecays[p:Entity["Particle", _]] := getDecays[p // getProperty["StandardName"]
 getDecaysTable[particle_, nMax_: 5] := With[{
     decays = getDecays[particle]
   },
-  Take[decays, Min[nMax, Length[decays]]] // 
-    symbolizeParticles[#, All] & // 
+  Take[decays, Min[nMax, Length[decays]]] //
+    symbolizeParticles[#, All] & //
     grid[#, {"decay", "\[ScriptCapitalB]"}, Alignment -> Left] &
 ];
 
@@ -205,16 +205,16 @@ getDecaysTable[particle_, nMax_: 5] := With[{
 describeParticle[particle_] := {#, getProperty[#][particle]}& /@ {
   "Memberships", "Mass", "Width", "Charge",
   "Spin", "Parity", "CParity", "GParity",
-  "Isospin", "IsospinProjection", 
+  "Isospin", "IsospinProjection",
   "Charm", "Strangeness", "Bottomness", "Topness",
   "DecayType", "Lifetime", "QuarkContent"
 } // grid[#, {"property", "values"}, Alignment -> Left] &;
 
 
-getPM[p_] := If[Head[p] === Missing, "\[EmptySquare]", plus\[LetterSpace]minus[[(3 - p) / 2]]];
+getPM[p_] := If[Head[p] === Missing, "\[EmptySquare]", plusminus[[(3 - p) / 2]]];
 
 getJPC[particle_] := Through@Thread[getProperty[{"Spin", "Parity", "CParity"}]][particle];
-formatJPC[particle_] := Module[{j, p, c}, 
+formatJPC[particle_] := Module[{j, p, c},
   {j, p, c} = getJPC[particle];
   p = getPM[p];
   c = getPM[c];
@@ -222,7 +222,7 @@ formatJPC[particle_] := Module[{j, p, c},
 ];
 
 getIG[particle_] := Through@Thread[getProperty[{"Isospin", "GParity"}]][particle];
-formatIG[particle_] := Module[{i, g}, 
+formatIG[particle_] := Module[{i, g},
   {i, g} = getIG[particle];
   g = getPM[g];
   Superscript[i, g]
@@ -234,7 +234,7 @@ getFrequentDecays[part_, branching_:1.*^-8] := (
   Select[And@@(Or[
     MemberQ[ParticleData["LongLived"], ParticleData[#]],
     MemberQ[ParticleData["Neutrino"], ParticleData[#]]
-  ]& /@ Last@First[#]) &] // 
+  ]& /@ Last@First[#]) &] //
   Select[Last[#] > branching&] //
   MapAt[List, #, {{All, 1, 1}}]& //
   MapAt[ParticleData, #, {{All, 1, All, All}}]&

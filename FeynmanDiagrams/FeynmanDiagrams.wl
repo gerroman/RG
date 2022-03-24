@@ -134,12 +134,12 @@ arcHelper[points:{p1:{_,_},p2:{_,_}}, nWiggles_:4, arcAngle_:\[Pi], flip_:False]
 
 
 photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip_:False, arrowWidth_:Automatic, shiftFactor_:2] := Module[{
-     fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength, 
+     fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength,
      bezierPoints
   },
   {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength} = arcHelper[points, nWiggles, arcAngle, flip];
 
-  bezierPoints = With[{angle = i \[Function] initialAngle + (i - 1/2) * segmentAngle}, 
+  bezierPoints = With[{angle = i \[Function] initialAngle + (i - 1/2) * segmentAngle},
     Array[n \[Function] {
       centerPosition + (radius + segmentLength/2)*{Cos[angle[n]], Sin[angle[n]]},
       centerPosition + (radius - segmentLength/2)*{Cos[angle[n]], Sin[angle[n]]},
@@ -173,10 +173,10 @@ photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip
 
 
 electronArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWidth_:Automatic, shiftFactor_:2] := Module[{
-    fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, 
+    fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle,
     segmentAngle, segmentLength
   },
-  {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, 
+  {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle,
     segmentAngle, segmentLength} = arcHelper[points, 1, arcAngle, flip];
   Graphics[{
     Circle[centerPosition, radius, {initialAngle, initialAngle+segmentAngle}],

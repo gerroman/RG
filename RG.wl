@@ -2,7 +2,7 @@
 (*RG.wl: base file to load all subpackages and definitions *)
 
 (*
-  [NOTE]: it is not a package, because in another case autocompletion does not work
+  [NOTE]: [!] this is not a package, since in another case autocompletion does not work
 *)
 
 Needs /@ {
@@ -18,4 +18,3 @@ Needs /@ {
 	, "RG`Diagrams`"
 	(* , "RG`HelicityStates`" *)
 };
-
