@@ -9,11 +9,12 @@ load::usage = "
   execute symbol's definitions and save it to file
 ";
 loadFigure::usage = "
-  loadFigure[file, symbol, definitions] load figure from file if it exists or execute definitions and save figure to the file
+  loadFigure[fname, expr] load figure from file if it exists or execute expr and save figure to the file
 ";
 update::usage = "
   update -> True option to force call definitions and save to file in load[]
 ";
+
 
 temporarydirectory::usage = "
   temporarydirectory return location to save auxiliary files
@@ -26,10 +27,8 @@ workingdirectory::usage = "
 ";
 
 verbose::usage = "
-  verbose -> True option to make function more verbose
+  verbose -> True make function more verbose
 ";
-
-
 off::usage = "
   off[message, expr] evaluate expression with the message temporally off
 ";
@@ -41,7 +40,6 @@ hold::usage = "
 ";
 
 
-
 Begin["`Private`"];
 
 
@@ -49,24 +47,24 @@ Protect[verbose];
 Protect[update];
 
 
-workingdirectory = Check[NotebookDirectory[], $InitialDirectory];
-Echo["[Info]: Set working directory to " <> workingdirectory];
-SetDirectory[workingdirectory];
+
+
 
 temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
 If[Not[FileExistsQ[temporarydirectory]],
   CreateDirectory[temporarydirectory]
 ];
-Echo["[Info]: Set temporary directory to " <> temporarydirectory];
+Echo["[Info]: set temporary directory to " <> temporarydirectory];
 
+workingdirectory = Check[NotebookDirectory[], temporarydirectory];
+Echo["[Info]: set working directory to " <> workingdirectory];
+SetDirectory[workingdirectory];
 
 figuredirectory = workingdirectory;
-Echo["[Info]: Set figure directory to " <> figuredirectory];
-
-
+Echo["[Info]: set figure directory to " <> figuredirectory];
 
 SetAttributes[load, HoldAll];
-Options[load] = {update -> False};
+Options[load] = {update -> False, verbose -> False};
 load::get = "[Info] load `1` ...";
 load::save = "[Info] save `1` ...";
 load::failed = "[Error] failed to load file `1`";
@@ -74,11 +72,15 @@ load[fname_String, symbol_Symbol, expr_, OptionsPattern[]] := With[{
     path = FileNameJoin[{temporarydirectory, fname}]
 	},
   If[FileExistsQ[path] && Not[OptionValue[update]], (
-      Echo[ToString[StringForm[load::get, path]]];
+      If[OptionValue[verbose],
+			  Echo[ToString[StringForm[load::get, path]]]
+			];
       Get[path]
     ), (
       expr;
-      Echo[ToString[StringForm[load::save, path]]];
+			If[OptionValue[verbose],
+        Echo[ToString[StringForm[load::save, path]]]
+			];
       DumpSave[path, symbol];
     )
   ]
@@ -89,11 +91,13 @@ load[fname_String] := With[{
 	},
   If[FileExistsQ[path],
     (
-		  Echo[ToString[StringForm[load::get, path]]];
+		  If[OptionValue[verbose],
+			  Echo[ToString[StringForm[load::get, path]]]
+			];
 			Get[path]
 		),
     (
-		  Echo[ToString[StringForm[load::failed, path]]];
+			Message[load::failed, path];
 			Null
 		)
   ]
@@ -101,15 +105,19 @@ load[fname_String] := With[{
 
 
 SetAttributes[loadFigure, HoldAll];
-Options[loadFigure] = {update -> False};
+Options[loadFigure] = {update -> False, verbose -> False};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
     path = FileNameJoin[{figuredirectory, fname}]
 	},
   If[Not@FileExistsQ[path] || OptionValue[update], (
-      Echo[ToString[StringForm[load::save, path]]];
+      If[OptionValue[verbose],
+			  Echo[ToString[StringForm[load::save, path]]]
+			];
       Export[path, expr];
 	)];
-	Echo[ToString[StringForm[load::get, path]]];
+	If[OptionValue[verbose],
+	  Echo[ToString[StringForm[load::get, path]]]
+	];
 	Import[path]
 ];
 
