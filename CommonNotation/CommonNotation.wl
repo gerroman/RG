@@ -24,6 +24,10 @@ setBar::usage = "
   setBar[x] set symbol bar`x in the TraditionalForm to have overbar
 ";
 
+setHat::usage = "
+  setHat[x] set symbol hat`x in the TraditionalForm to have overhat
+";
+
 minus::usage = "
   minus for sign minus
 ";
@@ -132,6 +136,16 @@ setBar[x_Symbol] := With[{
   symbol
 ];
 setBar[x__] := setBar[{x}];
+
+
+SetAttributes[setHat, {Listable}];
+setHat[x_Symbol] := With[{
+    symbol = ToExpression["hat`" <> ToString[x]]
+  },
+  symbol /: Format[symbol, TraditionalForm] = HoldForm[OverHat[x]];
+  symbol
+];
+setHat[x__] := setHat[{x}];
 
 
 minus /: Format[minus] = "-";
