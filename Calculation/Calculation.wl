@@ -140,6 +140,16 @@ force::usage = "
 ";
 
 
+jacobian::usage = "
+  jacobian[xs, ys, rules] return jacobian matrix, J,in terms of new variables, ys, for variable transitions xs -> ys, with transitions rules of type x[i] -> f[i][ys],
+	J[[i, j]] = D[y[i], x[j]] in terms of ys
+";
+changeVars::usage = "
+  changeVars[xs, ys, rules][expr] changes variables in expr, including in differential operators
+";
+
+
+
 Begin["`Private`"];
 
 
@@ -440,6 +450,42 @@ force[d] = ReplaceAll[#, d -> D] &;
 force[sum] = ReplaceAll[#, sum -> Sum] &;
 force[integrate] = ReplaceAll[#, integrate -> Integrate] &;
 force[integrate, N] = ReplaceAll[#, integrate -> NIntegrate] &;
+
+
+jacobian[xs_List, ys_List, rules_List:{}] := Inverse[Outer[D, xs /. rules, ys]];
+
+
+changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
+    jacobian = jacobian[xs, ys, rules],
+    n = Length[xs]
+  },
+  expr //	ReplaceAll[{Derivative -> Hold[Derivative]}] //
+  ReplaceRepeated[#, {
+    	(head:Hold[Derivative][orders__ /; Total[{orders}] == 1])[f_][Sequence @@ xs] :> With[{
+          pos = FirstPosition[head, 1] // First
+    		},
+        Sum[(
+    		    Derivative[Sequence @@ SparseArray[{k -> 1}, {n}]][f][Sequence @@ ys] *
+    			  jacobian[[k, pos]]
+    			),
+    			{k, 1, n}
+    	  ]
+    	],
+      (head:Hold[Derivative][orders__ /; Total[{orders}] > 1])[f_][Sequence @@ xs] :> With[{
+    	    pos = FirstPosition[head, (x_ /; x >= 1)] // First
+    	  },
+    		With[{newhead = MapAt[(# - 1)&, head, {pos}]},
+          Sum[(
+					    Hold[D][newhead[f][Sequence @@ xs],	ys[[k]]] *
+							jacobian[[k, pos]]
+      			),
+      			{k, 1, n}
+    	  	]
+  		  ]
+  		]
+    }
+	] & // ReplaceAll[f_[Sequence @@ xs] -> f[Sequence @@ ys]] // ReplaceAll[rules] // release // Expand
+];
 
 
 End[];
