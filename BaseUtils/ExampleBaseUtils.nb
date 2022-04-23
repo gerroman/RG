@@ -1,106 +1,198 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.4' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      4987,        190]
+NotebookOptionsPosition[      3632,        141]
+NotebookOutlinePosition[      4228,        161]
+CellTagsIndexPosition[      4185,        158]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
 Notebook[{
 Cell[BoxData[
- RowBox[{"Needs", "[", "\"\<RG`BaseUtils`\>\"", "]"}]], "Input"],
+ RowBox[{"Get", "[", "\"\<RG`BaseUtils`\>\"", "]"}]], "Input"],
 
 Cell[BoxData[
  RowBox[{"?", "RG`BaseUtils`*"}]], "Input"],
 
 Cell[CellGroupData[{
 
-Cell["assert", "Section"],
+Cell["working_directory", "Section"],
 
-Cell[BoxData[
- RowBox[{"?", "assert"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"Assert", "[", 
-  RowBox[{"1", ">", "2"}], "]"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"assert", "[", 
-  RowBox[{"1", ">", "2"}], "]"}]], "Input"]
+Cell[BoxData["working\[LetterSpace]directory"], "Input"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["reload", "Section"],
+Cell["temporary_directory", "Section"],
 
-Cell[BoxData[
- RowBox[{"?", "reload"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"reload", "[", 
-  RowBox[{"\"\<RG`BaseUtils`\>\"", ",", 
-   RowBox[{"\"\<verbose\>\"", "\[Rule]", "True"}]}], "]"}]], "Input"]
+Cell[BoxData["temporary\[LetterSpace]directory"], "Input"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["carryFirst", "Section"],
+Cell["figure_directory", "Section"],
 
-Cell[BoxData[
- RowBox[{"?", "carryFirst"}]], "Input"],
+Cell[BoxData["figure\[LetterSpace]directory"], "Input"]
+}, Open  ]],
 
-Cell[BoxData[
- RowBox[{
-  RowBox[{
-   RowBox[{"carryFirst", "[", "f", "]"}], "[", 
-   RowBox[{"y1", ",", "y2"}], "]"}], "[", "x", "]"}]], "Input"],
+Cell[CellGroupData[{
+
+Cell["load", "Section"],
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{
-   RowBox[{"plotter", "=", 
-    RowBox[{
-     RowBox[{"carryFirst", "[", "Plot", "]"}], "[", 
-     RowBox[{
-      RowBox[{"{", 
-       RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
-      RowBox[{"GridLines", "\[Rule]", "All"}]}], "]"}]}], ";"}], 
-  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+  RowBox[{"Clear", "[", "f", "]"}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{
-   RowBox[{"{", 
+   RowBox[{"f", "[", "0", "]"}], "=", "1"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"f", "[", 
+    RowBox[{"n_Integer", "/;", 
+     RowBox[{"n", ">", "0"}]}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"f", "[", "n", "]"}], "=", 
+    RowBox[{
+     RowBox[{"f", "[", 
+      RowBox[{"n", "-", "1"}], "]"}], "n"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"load", "[", 
+   RowBox[{"\"\<f.mx\>\"", ",", "f", ",", 
+    RowBox[{"verbose", "\[Rule]", "True"}], ",", 
+    RowBox[{"update", "\[Rule]", "True"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"?", "f"}]}], "Input"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", "f", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"load", "[", 
+  RowBox[{"\"\<f.mx\>\"", ",", 
+   RowBox[{"verbose", "\[Rule]", "True"}]}], "]"}]}], "Input"],
+
+Cell[BoxData[
+ RowBox[{"?", "f"}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["loadFigure", "Section"],
+
+Cell[BoxData[
+ RowBox[{"loadFigure", "[", 
+  RowBox[{"\"\<sin.png\>\"", ",", 
+   RowBox[{"Plot", "[", 
     RowBox[{
      RowBox[{"Sin", "[", "x", "]"}], ",", 
-     RowBox[{"Cos", "[", "x", "]"}]}], "}"}], "//", 
-   RowBox[{"Map", "[", "plotter", "]"}]}], "//", "GraphicsRow"}]}], "Input"]
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "\[Pi]"}], "}"}], ",", 
+     RowBox[{"PlotTheme", "\[Rule]", "\"\<Detailed\>\""}]}], "]"}], ",", 
+   RowBox[{"update", "\[Rule]", "False"}], ",", 
+   RowBox[{"verbose", "\[Rule]", "True"}]}], "]"}]], "Input"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["carryLast", "Section"],
-
-Cell[BoxData[
- RowBox[{"?", "carryLast"}]], "Input"],
+Cell["hold", "Section"],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{
-   RowBox[{"carryLast", "[", "f", "]"}], "[", 
-   RowBox[{"y1", ",", "y2"}], "]"}], "[", "x", "]"}]], "Input"],
-
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"searcher", "=", 
+  RowBox[{"(", 
    RowBox[{
-    RowBox[{"carryLast", "[", "Cases", "]"}], "[", 
-    RowBox[{"{", 
-     RowBox[{
-     "1", ",", "2", ",", "3", ",", "a", ",", "b", ",", "4", ",", "5"}], "}"}],
-     "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{"searcher", "[", "_Integer", "]"}]}], "Input"],
+    RowBox[{"a", "-", "b", "+", "c"}], "//", 
+    RowBox[{"hold", "[", 
+     RowBox[{"{", 
+      RowBox[{"a", ",", "b"}], "}"}], "]"}]}], ")"}], "\[Equal]", 
+  RowBox[{
+   RowBox[{"HoldForm", "[", "a", "]"}], "-", 
+   RowBox[{"HoldForm", "[", "b", "]"}], "+", "c"}]}]], "Input"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["off", "Section"],
 
 Cell[BoxData[
- RowBox[{"searcher", "[", "_Symbol", "]"}]], "Input"],
-
-Cell[BoxData[
- RowBox[{"searcher", "[", "1", "]"}]], "Input"]
+ RowBox[{"off", "[", 
+  RowBox[{
+   RowBox[{"NIntegrate", "::", "slwcon"}], ",", 
+   RowBox[{"NIntegrate", "::", "eincr"}], ",", 
+   RowBox[{"NIntegrate", "[", 
+    RowBox[{
+     RowBox[{"Sin", "[", 
+      RowBox[{"Sin", "[", "x", "]"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"WorkingPrecision", "->", "30"}], ",", 
+     RowBox[{"PrecisionGoal", "->", "50"}], ",", " ", 
+     RowBox[{"MaxRecursion", "\[Rule]", "20"}]}], "]"}]}], 
+  "\[IndentingNewLine]", "]"}]], "Input"]
 }, Open  ]]
 },
 WindowSize->{820, 800},
-WindowMargins->{{Automatic, -10}, {Automatic, -8}},
+WindowMargins->{{Automatic, -10}, {Automatic, 27}},
 FrontEndVersion->"10.4 for Linux x86 (64-bit) (April 11, 2016)",
-StyleDefinitions->"Default.nb"
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[StyleDefinitions -> "Default.nb"]]}, 
+  WindowMargins -> {{546, Automatic}, {45, Automatic}}, Visible -> False, 
+  FrontEndVersion -> "10.4 for Linux x86 (64-bit) (April 11, 2016)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"]
 ]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 76, 1, 32, "Input"],
+Cell[637, 23, 57, 1, 32, "Input"],
+Cell[CellGroupData[{
+Cell[719, 28, 36, 0, 66, "Section"],
+Cell[758, 30, 56, 0, 32, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[851, 35, 38, 0, 66, "Section"],
+Cell[892, 37, 58, 0, 32, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[987, 42, 35, 0, 66, "Section"],
+Cell[1025, 44, 55, 0, 32, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1117, 49, 23, 0, 66, "Section"],
+Cell[1143, 51, 723, 22, 121, "Input"],
+Cell[1869, 75, 209, 5, 55, "Input"],
+Cell[2081, 82, 44, 1, 32, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2162, 88, 29, 0, 66, "Section"],
+Cell[2194, 90, 420, 10, 55, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2651, 105, 23, 0, 66, "Section"],
+Cell[2677, 107, 330, 10, 32, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3044, 122, 22, 0, 66, "Section"],
+Cell[3069, 124, 547, 14, 99, "Input"]
+}, Open  ]]
+}
+]
+*)
 
