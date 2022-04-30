@@ -70,7 +70,10 @@ If[Not[FileExistsQ[temporarydirectory]],
 ];
 Echo["[Info]: set temporary directory to " <> temporarydirectory];
 
-workingdirectory = Check[NotebookDirectory[], temporarydirectory];
+workingdirectory = If[$Notebooks,
+  Check[NotebookDirectory[], temporarydirectory],
+	temporarydirectory
+];
 Echo["[Info]: set working directory to " <> workingdirectory];
 SetDirectory[workingdirectory];
 

@@ -63,7 +63,7 @@ tagged[expr:Set[lhs_, _], args___] := (
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[HoldForm[expr]]},
-  If[Not[$Notebooks], Print[tag, ":\t", expr],
+  If[Not[$Notebooks], (Print[];Print["[", tag, "]:"];Print[expr]),
 	  (
     CellPrint[ExpressionCell[
       expr // func //
@@ -86,7 +86,8 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Hol
 
 SetAttributes[untagged, HoldFirst]
 untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
-untagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Unique["eq"]]},   If[Not[$Notebooks], Print[tag, ":\t", expr],
+untagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Unique["eq"]]},
+  If[Not[$Notebooks],  (Print[];Print["[", tag, "]:"];Print[expr]),
     (
 		  CellPrint[ExpressionCell[
 			  expr // func  //
