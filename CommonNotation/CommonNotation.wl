@@ -83,7 +83,7 @@ Begin["`Private`"]
 
 SetAttributes[setSubscript, {Listable}];
 setSubscript[x_Symbol] := (
-  x /: Format[x[i_List], TraditionalForm] := Subscript[x, Row[i, ","]];
+  x /: Format[x[i_List], TraditionalForm] := Subscript[x, ToString@Row[i, ","]];
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
   x
 );
@@ -92,7 +92,7 @@ setSubscript[x__] := setSubscript[{x}];
 
 SetAttributes[setSuperscript, {Listable}];
 setSuperscript[x_Symbol] := (
-  x /: Format[x[i_List], TraditionalForm] := Superscript[x, Row[i, ","]];
+  x /: Format[x[i_List], TraditionalForm] := Superscript[x, ToString@Row[i, ","]];
   x /: Format[x[i_], TraditionalForm] := Superscript[x, i];
   x
 );
@@ -102,15 +102,15 @@ setSuperscript[x__] := setSuperscript[{x}];
 SetAttributes[setIndexed, {Listable}];
 setIndexed[x_Symbol] := (
   setSubscript[x];
-  x /: Format[x[i_List, j_List], TraditionalForm] := Subsuperscript[x, Row[i, ","], Row[j, ","]];
-  x /: Format[x[i_, j_List], TraditionalForm] := Subsuperscript[x, i, Row[j, ","]];
-  x /: Format[x[i_List, j_], TraditionalForm] := Subsuperscript[x, Row[i, ","], j];
+  x /: Format[x[i_List, j_List], TraditionalForm] := Subsuperscript[x, ToString@Row[i, ","], ToString@Row[j, ","]];
+  x /: Format[x[i_, j_List], TraditionalForm] := Subsuperscript[x, i, ToString@Row[j, ","]];
+  x /: Format[x[i_List, j_], TraditionalForm] := Subsuperscript[x, ToString@Row[i, ","], j];
   x /: Format[x[i_, j_], TraditionalForm] := Subsuperscript[x, i, j];
   x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
   x /: Format[x[], TraditionalForm] := x;
   x
 );
-setIndexed[x__] := setIndexed[{x}];
+setIndexed[x__Symbol] := setIndexed[{x}, sep];
 
 
 SetAttributes[setTilde, {Listable}];

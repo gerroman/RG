@@ -62,9 +62,9 @@ tagged[expr:Set[lhs_, _], args___] := (
   tagged[lhs, args];
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
-tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
-  If[Not[$Notebooks], Return[expr]];
-  With[{tag = ToString[HoldForm[expr]]},
+tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[HoldForm[expr]]},
+  If[Not[$Notebooks], Print[tag, ":\t", expr],
+	  (
     CellPrint[ExpressionCell[
       expr // func //
         If[OptionValue[tagged, "colorize"], colorize[_HoldForm], Identity] //
@@ -79,36 +79,34 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
 				SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
       ]
     ];
+		)
   ];
-);
+];
 
 
 SetAttributes[untagged, HoldFirst]
 untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
-untagged[expr_, func_:Identity, opts:OptionsPattern[]] := (
-  If[Not[$Notebooks]
-    , expr
-    , With[{tag = ToString[Unique["eq"]]}, CellPrint[ExpressionCell[
-      expr // func  //
-        If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
-				OptionValue[untagged, "form"],
-	"Output", CellTags->tag, ShowCellTags -> True
-    ]];
-    NotebookLocate[tag];
-    If[Length[SelectedCells[]] > 1,
-      Message[tagged::shdw, tag],
-      If[OptionValue[untagged, "final"],
-			  (
-          FrontEndExecute[FrontEndToken["OpenCloseGroup"]];
-    		  SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
-				), (
-				  SelectionMove[EvaluationNotebook[], Previous, CellContents];
-				)
-      ]
-    ];
-    ];
+untagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Unique["eq"]]},   If[Not[$Notebooks], Print[tag, ":\t", expr],
+    (
+		  CellPrint[ExpressionCell[
+			  expr // func  //
+          If[OptionValue[untagged, "colorize"], colorize[_HoldForm], Identity] //
+				  OptionValue[untagged, "form"],
+				"Output", CellTags->tag, ShowCellTags -> True
+      ]];
+      NotebookLocate[tag];
+      If[Length[SelectedCells[]] > 1,
+        Message[tagged::shdw, tag],
+        If[OptionValue[untagged, "final"], (
+            FrontEndExecute[FrontEndToken["OpenCloseGroup"]];
+    		    SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
+				  ),
+					SelectionMove[EvaluationNotebook[], Previous, CellContents];
+        ]
+      ];
+    );
   ];
-);
+];
 
 
 colorize[xs_List] := With[{n = Length[xs]},
