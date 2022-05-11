@@ -110,7 +110,7 @@ setIndexed[x_Symbol] := (
   x /: Format[x[], TraditionalForm] := x;
   x
 );
-setIndexed[x__Symbol] := setIndexed[{x}, sep];
+setIndexed[x__Symbol] := setIndexed[{x}];
 
 
 SetAttributes[setTilde, {Listable}];
