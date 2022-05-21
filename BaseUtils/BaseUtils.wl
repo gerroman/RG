@@ -49,6 +49,9 @@ loadFigure::usage = "
 off::usage = "
   off[message, expr] evaluate expression with the message temporally off
 ";
+on::usage = "
+  on[message, expr] evaluate expression with the message temporally on
+";
 
 
 hold::usage = "
@@ -145,6 +148,15 @@ off[message__, expr_] := (
   Off[message];
 	With[{result = expr},
 	  On[message];
+		result
+	]
+);
+
+SetAttributes[on, HoldAll];
+on[message__, expr_] := (
+  On[message];
+	With[{result = expr},
+	  Off[message];
 		result
 	]
 );
