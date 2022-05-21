@@ -109,6 +109,10 @@ group`irreduciblesplit::usage = "
   group`irreduciblesplit[repr] split representation to irreducible using group`charactertable
 "
 
+group`formatpermutation::usage = "
+  group`formatpermutation[n] format Cycles as matrix 2 x n
+"
+
 
 Begin["`Private`"]
 
@@ -209,6 +213,10 @@ group`producttable[expr_List/;MatrixQ[expr]] := Outer[
 ] // Map[Transpose] // Map[Map[Flatten/*Union/*group`sort]]
 
 
+group`formatpermutation[n_] := With[
+  {r = Range[n]},
+	p \[Function] {r, Permute[r, p]}
+]
 
 group`permutation[expr_] := With[
   {func={#, Permute[#, (expr/.group`permutationrule)]}&},
