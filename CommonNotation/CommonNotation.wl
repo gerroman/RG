@@ -185,11 +185,11 @@ sum /: Format[sum[expr_], TraditionalForm] := (
 limit /: Format[limit[expr_, args_], TraditionalForm] := HoldForm[Limit[expr, args]];
 
 
-SetAttributes[d, HoldFirst];
+SetAttributes[d, HoldAll];
 d /: Format[d[expr_, args_], TraditionalForm] := HoldForm[D[expr, args]];
 d /: Format[d[expr_], TraditionalForm] := HoldForm[Dt[expr]];
 
-SetAttributes[dt, HoldFirst];
+SetAttributes[dt, HoldAll];
 dt /: Format[dt[expr_, args_], TraditionalForm] := HoldForm[Dt[expr, args]];
 
 

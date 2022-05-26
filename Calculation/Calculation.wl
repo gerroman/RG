@@ -447,6 +447,7 @@ force[at] = ReplaceAll[#, {
 
 force[limit] = ReplaceAll[#, limit->Limit]
 force[d] = ReplaceAll[#, d -> D] &;
+force[dt] = ReplaceAll[#, dt -> Dt] &;
 force[sum] = ReplaceAll[#, sum -> Sum] &;
 force[integrate] = ReplaceAll[#, integrate -> Integrate] &;
 force[integrate, N] = ReplaceAll[#, integrate -> NIntegrate] &;
