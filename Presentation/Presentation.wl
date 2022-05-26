@@ -45,6 +45,7 @@ shorten::usage = "
 
 getRunner::usage = "
   getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
+	getRunner[nb]  \[LongDash] create pallete in new window
 ";
 
 
