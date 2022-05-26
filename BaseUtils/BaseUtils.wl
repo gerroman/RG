@@ -16,23 +16,6 @@ verbose::usage = "
 
 
 (* ::Text:: *)
-(*Environment: temporary-, figure-, and working- directories*)
-
-
-temporarydirectory::usage = "
-  temporarydirectory return location to save auxiliary files
-";
-
-figuredirectory::usage = "
-  figuredirectory return location to save figures
-";
-
-workingdirectory::usage = "
-  workingdirectory \[LongDash] current working directory
-";
-
-
-(* ::Text:: *)
 (*Load definitions and figures from files*)
 
 
@@ -66,31 +49,13 @@ Begin["`Private`"];
 Protect[verbose];
 Protect[update];
 
-
-temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
-If[Not[FileExistsQ[temporarydirectory]],
-  CreateDirectory[temporarydirectory]
-];
-Echo["[Info]: set temporary directory to " <> temporarydirectory];
-
-workingdirectory = If[$Notebooks,
-  Check[NotebookDirectory[], temporarydirectory],
-	temporarydirectory
-];
-Echo["[Info]: set working directory to " <> workingdirectory];
-SetDirectory[workingdirectory];
-
-figuredirectory = workingdirectory;
-Echo["[Info]: set figure directory to " <> figuredirectory];
-
-
 SetAttributes[load, HoldAll];
 Options[load] = {update -> False, verbose -> False};
 load::get = "[Info] load `1` ...";
 load::save = "[Info] save `1` ...";
 load::failed = "[Error] failed to load file `1`";
 load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
-    path = FileNameJoin[{temporarydirectory, fname}]
+    path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
   If[FileExistsQ[path] && Not[OptionValue[update]], (
       If[OptionValue[verbose],
@@ -108,7 +73,7 @@ load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
 ];
 
 load[fname_String, OptionsPattern[]] := With[{
-    path = FileNameJoin[{temporarydirectory, fname}]
+    path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
   If[FileExistsQ[path],
     (
@@ -128,7 +93,7 @@ load[fname_String, OptionsPattern[]] := With[{
 SetAttributes[loadFigure, HoldAll];
 Options[loadFigure] = {update -> False, verbose -> False};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
-    path = FileNameJoin[{figuredirectory, fname}]
+    path = FileNameJoin[{Global`figuredirectory, fname}]
 	},
   If[Not@FileExistsQ[path] || OptionValue[update], (
       If[OptionValue[verbose],
