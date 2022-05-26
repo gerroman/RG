@@ -77,6 +77,10 @@ dt::usage = "
   dt[expr, var] represent full differential
 ";
 
+pd::usage = "
+  pd[expr, var] represent partial differential
+";
+
 at::usage = "
   at[expr, {x, x0}] or at[expr, {x, x1, x2}] for limits substitute
 ";
@@ -198,6 +202,13 @@ d /: Format[d[expr_], TraditionalForm] := HoldForm[Dt[expr]];
 
 SetAttributes[dt, HoldAll];
 dt /: Format[dt[expr_, args_], TraditionalForm] := HoldForm[Dt[expr, args]];
+
+
+ClearAll[pd];
+SetAttributes[pd, HoldAll];
+pd /: Format[pd[expr_], TraditionalForm] := HoldForm[Row[{"\[PartialD]", expr}]];
+pd /: Format[pd[expr_, arg_Symbol], TraditionalForm] := HoldForm[Row[{Subscript["\[PartialD]", arg], expr}]];
+pd /: Format[pd[expr_, arg_], TraditionalForm] := HoldForm[D[expr, HoldForm[arg]]];
 
 
 ClearAll[at, force];
