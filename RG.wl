@@ -25,15 +25,18 @@ workingdirectory::usage = "
 
 temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
 If[Not[FileExistsQ[temporarydirectory]], CreateDirectory[temporarydirectory]];
-Echo["[Info]: set temporary directory to " <> temporarydirectory];
+Print["[Info]: set temporary directory to " <> temporarydirectory];
 workingdirectory = If[$Notebooks,
   Check[NotebookDirectory[], temporarydirectory],
 	temporarydirectory
 ];
-Echo["[Info]: set working directory to " <> workingdirectory];
+Print["[Info]: set working directory to " <> workingdirectory];
 SetDirectory[workingdirectory];
-figuredirectory = workingdirectory;
-Echo["[Info]: set figure directory to " <> figuredirectory];
+figuredirectory = If[$Notebooks,
+  Check[NotebookDirectory[], temporarydirectory],
+	$InitialDirectory
+];
+Print["[Info]: set figure directory to " <> figuredirectory];
 
 
 Needs /@ {

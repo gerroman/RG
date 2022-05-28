@@ -59,7 +59,7 @@ getpdg[names__] := getpdg[{names}];
 End[]
 
 
-Echo[$Context];
+Print[$Context];
 
 
 EndPackage[]

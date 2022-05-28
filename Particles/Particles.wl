@@ -244,7 +244,7 @@ getFrequentDecays[part_, branching_:1.*^-8] := (
 End[]
 
 
-Echo[$Context];
+Print[$Context];
 
 
 EndPackage[]

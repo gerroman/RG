@@ -405,7 +405,7 @@ group`represent[rule_List] := group`elems // rewriteIt[
 End[]
 
 
-Echo[$Context]
+Print[$Context];
 
 
 EndPackage[]

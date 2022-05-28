@@ -493,7 +493,7 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
 End[];
 
 
-Echo[$Context];
+Print[$Context];
 
 
 EndPackage[];

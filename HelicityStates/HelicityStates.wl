@@ -258,6 +258,6 @@ rule`SProduct = {
 
 End[];
 
-Echo[$Context];
+Print[$Context];
 
 EndPackage[];

@@ -224,6 +224,8 @@ line`photon = photonLine;
 arc`electron = electronArc;
 arc`photon = photonArc;
 
-Echo[$Context];
+
+Print[$Context];
+
 
 EndPackage[]

@@ -306,7 +306,7 @@ setIndexed[\[Xi], \[Eta]];
 End[];
 
 
-Echo[$Context];
+Print[$Context];
 
 
 EndPackage[];

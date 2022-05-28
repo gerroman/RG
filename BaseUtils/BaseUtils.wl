@@ -51,26 +51,27 @@ Protect[update];
 
 SetAttributes[load, HoldAll];
 Options[load] = {update -> False, verbose -> False};
-load::get = "[Info] load `1` ...";
-load::save = "[Info] save `1` ...";
-load::failed = "[Error] failed to load file `1`";
+load::get = "[Info]: load `1` ...";
+load::save = "[Info]: save `1` ...";
+load::failed = "[Error]: failed to load file `1`";
 load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
     path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
   If[FileExistsQ[path] && Not[OptionValue[update]], (
       If[OptionValue[verbose],
-			  Echo[ToString[StringForm[load::get, path]]]
+			  Print[ToString[StringForm[load::get, path]]];
 			];
       Get[path]
     ), (
       expr;
 			If[OptionValue[verbose],
-        Echo[ToString[StringForm[load::save, path]]]
+        Print[ToString[StringForm[load::save, path]]];
 			];
       DumpSave[path, symbol];
     )
   ]
 ];
+
 
 load[fname_String, OptionsPattern[]] := With[{
     path = FileNameJoin[{Global`temporarydirectory, fname}]
@@ -78,7 +79,7 @@ load[fname_String, OptionsPattern[]] := With[{
   If[FileExistsQ[path],
     (
 		  If[OptionValue[verbose],
-			  Echo[ToString[StringForm[load::get, path]]]
+			  Print[ToString[StringForm[load::get, path]]];
 			];
 			Get[path]
 		),
@@ -97,12 +98,12 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 	},
   If[Not@FileExistsQ[path] || OptionValue[update], (
       If[OptionValue[verbose],
-			  Echo[ToString[StringForm[load::save, path]]]
+			  Print[ToString[StringForm[load::save, path]]];
 			];
       Export[path, expr];
 	)];
 	If[OptionValue[verbose],
-	  Echo[ToString[StringForm[load::get, path]]]
+	  Print[ToString[StringForm[load::get, path]]];
 	];
 	Import[path]
 ];
@@ -148,7 +149,7 @@ hold[xs__] := hold[{xs}];
 End[];
 
 
-Echo[$Context];
+Print[$Context];
 
 
 EndPackage[];
