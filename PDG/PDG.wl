@@ -41,7 +41,7 @@ load["pdg.mx", pdg,
 
 SetAttributes[getpdg, Listable];
 getpdg[name_String] := With[
-  {fname = FileNameJoin[{temporarydirectory, name<>".pdf"}]},
+  {fname = FileNameJoin[{Global`temporarydirectory, name<>".pdf"}]},
   If[FileExistsQ[fname],
     (PrintTemporary["[Info]: File "<>fname<>" does exists"]; fname),
     If[MemberQ[pdg, name],
