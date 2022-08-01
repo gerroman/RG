@@ -94,6 +94,7 @@ setSubscript[x_Symbol] := (
   x /: Format[x[i_List], TraditionalForm] := Subscript[x, Row[i]];
   x /: Format[x[i_List], TeXForm] := Subscript[x, ToString@Row[i, ","]];
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
+	x /: Format[x[i__], TraditionalForm] := Subscript[x, Row[{i}]];
   x /: Format[x[], TraditionalForm] := x;
   x
 );
