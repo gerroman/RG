@@ -1,54 +1,59 @@
 (* ::Text:: *)
-(*RG.wl: base file to load all subpackages and definitions *)
-
-(*
-  [NOTE]: [!] this is not a package, since in another case autocompletion does not work
-*)
+(* [RG.wl]: base script to load packages and definitions *)
 
 
 (* ::Text:: *)
-(*Environment: temporary-, figure-, and working- directories*)
+(* [note]: this is not a package, since in the other case autocompletion does not work *)
 
 
-temporarydirectory::usage = "
-  temporarydirectory return location to save auxiliary files
+(* ::Text:: *)
+(* [info]: setting temporary-, figure-, and working- directories*)
+
+
+SetDirectory[$InitialDirectory];
+
+
+temporarydirectory::usage = "temporarydirectory return location to save auxiliary files,
+	[default]: '/tmp/RG/'
 ";
+temporarydirectory = FileNameJoin[{
+  $TemporaryDirectory, "RG"
+}] // AbsoluteFileName;
+If[Not@FileExistsQ[temporarydirectory],
+  CreateDirectory[temporarydirectory]
+];
+Print["[info]: set temporary_directory to " <> temporarydirectory];
 
-figuredirectory::usage = "
-  figuredirectory return location to save figures
+workingdirectory::usage = "workingdirectory \[LongDash] current working directory
+	[default]: NotebookDirectory[] or 'temporarydirectory'
 ";
-
-workingdirectory::usage = "
-  workingdirectory \[LongDash] current working directory
-";
-
-
-temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
-If[Not[FileExistsQ[temporarydirectory]], CreateDirectory[temporarydirectory]];
-Print["[Info]: set temporary directory to " <> temporarydirectory];
 workingdirectory = If[$Notebooks,
   Check[NotebookDirectory[], temporarydirectory],
 	temporarydirectory
-];
-Print["[Info]: set working directory to " <> workingdirectory];
+] // AbsoluteFileName;
 SetDirectory[workingdirectory];
-figuredirectory = If[$Notebooks,
-  Check[NotebookDirectory[], temporarydirectory],
-	$InitialDirectory
-];
-Print["[Info]: set figure directory to " <> figuredirectory];
+Print["[info]: set working_directory to " <> workingdirectory];
+
+
+figuredirectory::usage = "
+  figuredirectory return location to save figures
+	[default]: NoteBookDirectory[] or 'temporarydirectory'
+";
+figuredirectory = If[$Notebooks, workingdirectory, temporarydirectory] // AbsoluteFileName;
+
+Print["[info]: set figure directory to " <> figuredirectory];
 
 
 Needs /@ {
-	"RG`BaseUtils`"
-	, "RG`Presentation`"
-	, "RG`CommonNotation`"
-	, "RG`Calculation`"
-	(* , "RG`Notation`" *)
-	(* , "RG`Kinematics`" *)
-	(* , "RG`Traces`" *)
-	(* , "RG`FeynmanDiagrams`" *)
-	(* , "RG`Particles`" *)
-	, "RG`Diagrams`"
-	(* , "RG`HelicityStates`" *)
+	"RG`BaseUtils`"								(* load, loadFigure, off, on, hold *)
+	, "RG`Presentation`"					(* tagged, untagged, colorize, column, grid, shorten, getRunner *)
+	, "RG`CommonNotation`"				(* set[Indexed, Superscript, Subscript, Prime, Bar, Hat, Tilde] *)
+		 														(*, minus, plus, min, max, integrate, sum, limit, d, dt, pd, at *)
+	, "RG`Calculation`"						(* modify, pullFactors, groupIt, fixedPoint, release, factorIt *)
+		 														(* factorItFast, pullIt, powersPattern, changeSign, rewriteIt, *)
+		 														(* toRules, toEquals, powerExpand, collectLogs, changeLogPower *)
+		 														(* complexToAbs, solve, changeIntegrateVars, changeSumVars, setIntegrateLimits *)
+		 														(* pullIntegrateFactors, pullSumFactors, groupIntegrals, groupSums, *)
+																(* process, processList, ffirst, force, jacobian, changeVars *)
+	, "RG`Diagrams`"							(* draw[Line, Arrow, Spring, Wave, Label, Frame], lineDirectives, waveParams*)
 };
