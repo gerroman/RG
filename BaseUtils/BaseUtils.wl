@@ -29,6 +29,10 @@ loadFigure::usage = "
 ";
 
 
+(* ::Text:: *)
+(*turn off/on messages during evaluating an expression*)
+
+
 off::usage = "
   off[message, expr] evaluate expression with the message temporally off
 ";
@@ -51,9 +55,9 @@ Protect[update];
 
 SetAttributes[load, HoldAll];
 Options[load] = {update -> False, verbose -> False};
-load::get = "[Info]: load `1` ...";
-load::save = "[Info]: save `1` ...";
-load::failed = "[Error]: failed to load file `1`";
+load::get = "[info]: load `1` ...";
+load::save = "[info]: save `1` ...";
+load::failed = "[error]: failed to load file `1`";
 load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
     path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
