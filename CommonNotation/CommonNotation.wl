@@ -205,14 +205,12 @@ SetAttributes[dt, HoldAll];
 dt /: Format[dt[expr_, args_], TraditionalForm] := HoldForm[Dt[expr, args]];
 
 
-ClearAll[pd];
 SetAttributes[pd, HoldAll];
 pd /: Format[pd[expr_], TraditionalForm] := HoldForm[Row[{"\[PartialD]", expr}]];
 pd /: Format[pd[expr_, arg_Symbol], TraditionalForm] := HoldForm[Row[{Subscript["\[PartialD]", arg], expr}]];
 pd /: Format[pd[expr_, arg_], TraditionalForm] := HoldForm[D[expr, HoldForm[arg]]];
 
 
-ClearAll[at, force];
 at /: Format[at[expr_, {x_, y_}], TraditionalForm] :=
   HoldForm[Subscript[""[expr], x -> y]]
 at /: Format[at[expr_, {x_, y_, z_}], TraditionalForm] :=
