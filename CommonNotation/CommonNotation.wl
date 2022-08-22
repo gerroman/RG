@@ -85,6 +85,10 @@ at::usage = "
   at[expr, {x, x0}] or at[expr, {x, x1, x2}] for limits substitute
 ";
 
+perp::usage = "
+  perp for perpendicular symbol
+";
+
 
 Begin["`Private`"]
 
@@ -215,6 +219,9 @@ at /: Format[at[expr_, {x_, y_}], TraditionalForm] :=
   HoldForm[Subscript[""[expr], x -> y]]
 at /: Format[at[expr_, {x_, y_, z_}], TraditionalForm] :=
   HoldForm[Subsuperscript[""[expr], x -> y, x -> z]]
+
+
+perp = "\[Perpendicular]";
 
 
 End[]
