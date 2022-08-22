@@ -18,7 +18,7 @@ temporarydirectory::usage = "temporarydirectory return location to save au
 ";
 temporarydirectory = FileNameJoin[{
   $TemporaryDirectory, "RG"
-}] // AbsoluteFileName;
+}];
 If[Not@FileExistsQ[temporarydirectory],
   CreateDirectory[temporarydirectory]
 ];
