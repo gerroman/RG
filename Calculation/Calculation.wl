@@ -149,6 +149,10 @@ changeVars::usage = "
 ";
 
 
+push::usage = "
+  push[outer, inner][expr] pushes the outer function through the inner function
+";
+
 
 Begin["`Private`"];
 
@@ -387,6 +391,12 @@ pullSumFactors[va_] := ReplaceAll[
 	 sum[expr_. * factor_, va] :> factor * sum[expr, va] /; FreeQ[factor, va]
   }
 ];
+
+
+pushRule[outer_Function, inner_Function] := outer[inner[expr_]] :> inner[outer[expr]];
+pushRule[outer_Function, inner_List] := Map[pushRule[outer, #]&, inner];
+pushRule[outer_Function, inner__] := pushRule[outer, {inner}];
+push[outer_, inner__] := ReplaceRepeated[#, pushRule[outer, inner]]&;
 
 
 groupIntegrals[va_] := ReplaceRepeated[#,
