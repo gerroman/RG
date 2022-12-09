@@ -27,6 +27,9 @@ setBar::usage = "
 setHat::usage = "
   setHat[x] set symbol hat`x in the TraditionalForm to have overhat
 ";
+setVec::usage = "
+  setVec[x] set symbol vec`x to be bold in the TraditionalForm
+";
 
 minus::usage = "
   minus for sign minus
@@ -142,6 +145,14 @@ setTilde[x_Symbol] := With[{
 ];
 setTilde[x__] := setTilde[{x}];
 
+SetAttributes[setVec, {Listable}];
+setVec[x_Symbol] := With[{
+    symbol = ToExpression["vec`" <> ToString[x]]
+  },
+  symbol /: Format[symbol, TraditionalForm] = OverVector[x];
+	symbol
+];
+setVec[x__] := setVec[{x}];
 
 SetAttributes[setPrime, {Listable}];
 setPrime[x_Symbol] := With[{
