@@ -83,6 +83,16 @@ getIG::usage = "
 formatIG::usage = "
   formatIG[particle] - format particle's Isospin, G-Parity as I^{G}
 "
+getJP::usage = "
+  getJP[particle] - get list {J, P} of particle's Spin, Parity
+"
+formatJP::usage = "
+  formatJP[particle] - format  particle's Spin, Parity as J^{P}
+"
+
+getPM::usage = "
+  getPM[+1], getPM[-1] return plus or minus sign string
+"
 
 
 Begin["`Private`"]
@@ -211,7 +221,10 @@ describeParticle[particle_] := {#, getProperty[#][particle]}& /@ {
 } // grid[#, {"property", "values"}, Alignment -> Left] &;
 
 
-getPM[p_] := If[Head[p] === Missing, "\[EmptySquare]", plusminus[[(3 - p) / 2]]];
+getPM[p_] := If[Head[p] === Missing, 
+  "\[EmptySquare]", 
+  plusminus[[(3 - p) / 2]]
+];
 
 getJPC[particle_] := Through@Thread[getProperty[{"Spin", "Parity", "CParity"}]][particle];
 formatJPC[particle_] := Module[{j, p, c},
@@ -219,6 +232,14 @@ formatJPC[particle_] := Module[{j, p, c},
   p = getPM[p];
   c = getPM[c];
   Superscript[j, Row[{p, c}, ""]]
+];
+
+
+getJP[particle_] := Through@Thread[getProperty[{"Spin", "Parity"}]][particle];
+formatJP[particle_] := Module[{j, p},
+  {j, p} = getJP[particle];
+  p = getPM[p];
+  Superscript[j, p]
 ];
 
 getIG[particle_] := Through@Thread[getProperty[{"Isospin", "GParity"}]][particle];
