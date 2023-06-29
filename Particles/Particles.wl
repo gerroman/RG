@@ -154,13 +154,15 @@ symbolizeParticles[expr_, All] := ReplaceAll[expr, {
 }];
 
 
-
 SetAttributes[getProperty, Listable];
 getProperty[property_][Entity["Particle", x_]] := ParticleData[x, property];
 getProperty[property_][name_String] := ParticleData[name, property];
 getProperty[property_][l_List] := Map[getProperty[property], l];
 getProperty[property_][r_Rule] := Map[getProperty[property], r];
-
+(* additive and multiplicative quantum numbers *)
+getProperty[property_][f_ p_] := f * getProperty[property][p] /; NumericQ[f];
+getProperty[property_][expr_Plus] := Map[getProperty[property], expr];
+getProperty[property_][expr_Times] := Map[getProperty[property], expr];
 
 
 Options[describeProcess] = {ShowMissing -> True};
@@ -221,8 +223,8 @@ describeParticle[particle_] := {#, getProperty[#][particle]}& /@ {
 } // grid[#, {"property", "values"}, Alignment -> Left] &;
 
 
-getPM[p_] := If[Head[p] === Missing, 
-  "\[EmptySquare]", 
+getPM[p_] := If[Head[p] === Missing,
+  "\[EmptySquare]",
   plusminus[[(3 - p) / 2]]
 ];
 
