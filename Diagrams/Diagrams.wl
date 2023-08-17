@@ -212,7 +212,7 @@ drawFrame[d_: 1] := drawFrame[{-d, -d}, {d, d}];
 End[]
 
 
-Print[$Context];
+(* Print[$Context]; *)
 
 
 EndPackage[]
