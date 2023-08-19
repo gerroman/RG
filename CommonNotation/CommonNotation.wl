@@ -238,7 +238,7 @@ perp = "\[Perpendicular]";
 End[]
 
 
-Print[$Context];
+(* Print[$Context]; *)
 
 
 EndPackage[]

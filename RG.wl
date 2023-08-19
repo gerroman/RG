@@ -22,7 +22,7 @@ temporarydirectory = FileNameJoin[{
 If[Not@FileExistsQ[temporarydirectory],
   CreateDirectory[temporarydirectory]
 ];
-Print["[info]: set temporary_directory to " <> temporarydirectory];
+(* Print["[info]: set temporary_directory to " <> temporarydirectory]; *)
 
 workingdirectory::usage = "workingdirectory \[LongDash] current working directory
 	[default]: NotebookDirectory[] or 'temporarydirectory'
@@ -32,7 +32,7 @@ workingdirectory = If[$Notebooks,
 	temporarydirectory
 ] // AbsoluteFileName;
 SetDirectory[workingdirectory];
-Print["[info]: set working_directory to " <> workingdirectory];
+(* Print["[info]: set working_directory to " <> workingdirectory]; *)
 
 
 figuredirectory::usage = "
@@ -41,7 +41,7 @@ figuredirectory::usage = "
 ";
 figuredirectory = If[$Notebooks, workingdirectory, temporarydirectory] // AbsoluteFileName;
 
-Print["[info]: set figure directory to " <> figuredirectory];
+(* Print["[info]: set figure directory to " <> figuredirectory]; *)
 
 
 Needs /@ {

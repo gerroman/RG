@@ -262,7 +262,7 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
 End[];
 
 
-Print[$Context];
+(* Print[$Context]; *)
 
 
 EndPackage[];

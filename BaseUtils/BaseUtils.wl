@@ -100,19 +100,19 @@ Options[loadFigure] = {update -> False, verbose -> True};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
     path = FileNameJoin[{Global`figuredirectory, fname}],
 		hash = Hash[Hold[expr]],
-		hash\[LetterSpace]path = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash"
+		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash"
 	},
   If[(Not@FileExistsQ[path]
-	    || Not@FileExistsQ[hash\[LetterSpace]path]
-			|| (hash =!= Get[hash\[LetterSpace]path] && OptionValue[update])), (
+	    || Not@FileExistsQ[hashpath]
+			|| (hash =!= Get[hashpath] && OptionValue[update])), (
       If[OptionValue[verbose],
 			  Print[ToString[StringForm[load::save, path]]];
-			  Print[ToString[StringForm[load::save, hash\[LetterSpace]path]]];
+			  Print[ToString[StringForm[load::save, hashpath]]];
 			];
       Export[path, expr];
-			Put[hash, hash\[LetterSpace]path];
+			Put[hash, hashpath];
 	)];
-  If[hash =!= Get[hash\[LetterSpace]path],
+  If[hash =!= Get[hashpath],
     Print["[warning]: expression hashs differ, consider force update ..."];
 	];
 	Import[path]
@@ -159,7 +159,7 @@ hold[xs__] := hold[{xs}];
 End[];
 
 
-Print[$Context];
+(* Print[$Context]; *)
 
 
 EndPackage[];
