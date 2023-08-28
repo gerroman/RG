@@ -188,7 +188,7 @@ pion::usage = "
 Begin["`Private`"]
 
 
-Echo["[Info]: Notation.wl allow to use Replace(|All|Repeated)[Equal[...]], "];
+(* Echo["[Info]: Notation.wl allow to use Replace(|All|Repeated)[Equal[...]], "]; *)
 
 
 Unprotect[Replace, ReplaceAll, ReplaceRepeated];
@@ -306,7 +306,7 @@ setIndexed[\[Xi], \[Eta]];
 End[];
 
 
-Print[$Context];
+(* Print[$Context]; *)
 
 
 EndPackage[];
