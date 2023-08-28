@@ -9,6 +9,8 @@ tagged::usage = "
   tagged[eq`tag = ...] make definition for eq`tag and produce output cell with the tag \"eq`tag\"
   tagged[expr] evaluate expr and produce output cell with the tag \"expr\"
 ";
+
+
 untagged::usage = "
   just present expression in traditional form
 ";
@@ -29,9 +31,11 @@ row::usage = "
   row is shortcut for Row[#, \",\t\"]&
 ";
 
+
 column::usage = "
   column is shortcut for Column[#, Spacings->1.5]&
 "
+
 
 grid::usage = "
   grid[list] decorate list as grid
@@ -46,6 +50,17 @@ shorten::usage = "
 getRunner::usage = "
   getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
 	getRunner[nb]  \[LongDash] create pallete in new window
+";
+
+
+TeXString::usage = "
+  TeXString[expr] format ``expr'' as TeX-string
+";
+
+
+TeXPrint::usage = "
+  TeXPrint[expr] print ``expr'' surrounded by \\begin{equation}, \\end{equation}
+  TeXPrint[expr, tag] print ``expr'' surrounded by \\begin{equation}\\label{tag}, \\end{equation}
 ";
 
 
@@ -64,7 +79,7 @@ tagged[expr:Set[lhs_, _], args___] := (
 );
 tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
 tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[HoldForm[expr]]},
-  If[Not[$Notebooks], (Print[];Print["[", tag, "]:"];Print[expr]),
+  If[Not[$Notebooks], TeXPrint[func[expr], tag],
 	  (
     CellPrint[ExpressionCell[
       expr // func //
@@ -88,7 +103,7 @@ tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Hol
 SetAttributes[untagged, HoldFirst]
 untagged[expr_, opts:OptionsPattern[]] := untagged[expr, Identity, opts];
 untagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[Unique["eq"]]},
-  If[Not[$Notebooks],  (Print[];Print["[", tag, "]:"];Print[expr]),
+  If[Not[$Notebooks],  TeXPrint[func[expr], tag],
     (
 		  CellPrint[ExpressionCell[
 			  expr // func  //
@@ -257,6 +272,24 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
   },
   With[{args=func /@ xn // Append[str]}, head@@args]
 ];
+
+
+TeXString = Function[expr, expr // TeXForm // ToString];
+
+SetOptions[OutputStream["stdout", 1], PageWidth -> Infinity];
+
+TeXPrint[expr_] := (WriteString["stdout", #]& /@ {
+  "\\begin{equation}\n",
+  TeXForm[expr],
+  "\n\\end{equation}\n"
+};);
+
+TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
+  "\\begin{equation}\n",
+  StringForm["\\label{``}\n", tag],
+  TeXForm[expr],
+  "\n\\end{equation}\n"
+};);
 
 
 End[];
