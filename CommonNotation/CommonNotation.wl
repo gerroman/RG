@@ -31,6 +31,10 @@ setVec::usage = "
   setVec[x] set symbol vec`x to be bold in the TraditionalForm
 ";
 
+zero::usage = "
+  zero for zero
+";
+
 minus::usage = "
   minus for sign minus
 ";
@@ -41,6 +45,9 @@ plus::usage = "
 
 plusminus::usage = "
   plusminus for both signs
+";
+minusplus::usage = "
+  minusplus for both signs
 ";
 
 min::usage = "
@@ -187,7 +194,8 @@ setHat[x__] := setHat[{x}];
 minus /: Format[minus] = "-";
 plus /: Format[plus] = "+";
 plusminus /: Format[plusminus]= "\[PlusMinus]";
-
+minusplus /: Format[minusplus]= "\[MinusPlus]";
+zero /: Format[zero] = "0";
 
 min /: Format[min] = "min";
 max /: Format[max] = "max";

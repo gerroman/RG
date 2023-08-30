@@ -233,7 +233,7 @@ formatJPC[particle_] := Module[{j, p, c},
   {j, p, c} = getJPC[particle];
   p = getPM[p];
   c = getPM[c];
-  Superscript[j, Row[{p, c}, ""]]
+  Superscript[j, ToString@Row[{p, c}, " "]]
 ];
 
 
@@ -267,7 +267,7 @@ getFrequentDecays[part_, branching_:1.*^-8] := (
 End[]
 
 
-Print[$Context];
+(*Print[$Context];*)
 
 
 EndPackage[]
