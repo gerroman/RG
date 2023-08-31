@@ -15,6 +15,10 @@ untagged::usage = "
   just present expression in traditional form
 ";
 
+pass::usage = "
+  pass[expr, other] evaluate first exprsions, returns nothing, used for mute tagged/untagged
+";
+
 
 UnderBar::usage = "
   UnderBar[expr] is equivalent for HoldForm[expr]
@@ -290,6 +294,10 @@ TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
   TeXForm[expr],
   "\n\\end{equation}\n"
 };);
+
+
+SetAttributes[pass, HoldAll];
+pass[expr_, ___] := (expr;);
 
 
 End[];
