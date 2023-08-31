@@ -133,6 +133,10 @@ ffirst::usage = "
   ffirst[list] return first element of flattened list
   ffirst[list, verbose -> False] suppress warnings
 ";
+flast::usage = "
+  flast[list] return last element of flattened list
+  flast[list, verbose -> False] suppress warnings
+";
 
 
 force::usage = "
@@ -446,6 +450,14 @@ ffirst::warning = "List `1` contains contains more than one element";
 ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
   If[OptionValue[verbose] && Length[flat] > 1, Message[ffirst::warning, flat]];
   First[flat]
+];
+
+
+Options[flast] = {verbose -> True};
+flast::warning = "List `1` contains contains more than one element";
+flast[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
+  If[OptionValue[verbose] && Length[flat] > 1, Message[flast::warning, flat]];
+  Last[flat]
 ];
 
 
