@@ -16,7 +16,7 @@ untagged::usage = "
 ";
 
 pass::usage = "
-  pass[expr, other] evaluate first exprsions, returns nothing, used for mute tagged/untagged
+  pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged
 ";
 
 

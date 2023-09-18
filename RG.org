@@ -1,0 +1,96 @@
+* Temporary directory 												   :temp:
+#+BEGIN_SRC wl :tangle ./RG.wl :comments org
+  temporarydirectory::usage = "temporarydirectory - location to save auxiliary files,
+      [default]: '/tmp/RG/'
+  ";
+  temporarydirectory = FileNameJoin[{$TemporaryDirectory, "RG"}];
+#+END_SRC
+
+* Working directory													   :work:
+#+BEGIN_SRC wl :tangle ./RG.wl :comments org
+  workingdirectory::usage = "workingdirectory \[LongDash] current working directory
+      [default]: NotebookDirectory[] or 'temporarydirectory'
+  ";
+  workingdirectory = AbsoluteFileName[If[$Notebooks, Check[NotebookDirectory[], temporarydirectory], temporarydirectory]];
+#+END_SRC
+
+* Figure directory													 :figure:
+#+BEGIN_SRC wl :tangle ./RG.wl :comments org
+  figuredirectory::usage = "figuredirectory return location to save figures
+      [default]: NoteBookDirectory[] or 'temporarydirectory'
+  ";
+  figuredirectory = AbsoluteFileName[If[$Notebooks, workingdirectory, temporarydirectory]];
+#+END_SRC
+
+* Packages														   :packages:
+#+BEGIN_SRC wl :tangle ./RG.wl :comments org
+  If[Not@FileExistsQ[temporarydirectory], CreateDirectory[temporarydirectory]];
+  SetDirectory[workingdirectory];
+
+  Needs["RG`BaseUtils`"];
+  Needs["RG`Presentation`"];
+  Needs["RG`CommonNotation`"];
+  Needs["RG`Calculation`"];
+  Needs["RG`Diagrams`"];
+#+END_SRC
+
+- =RG`BaseUtils= 
+  + =load=, =loadFigure=
+  + =hold=
+  + =on=, =off=
+- =RG`Presentation=
+  + =tagged=, =untagged=, =pass=
+  + =UnderBar=
+  + =colorize=
+  + =row=, =column=, =grid=, =shorten=,
+  + =getRunner=
+  + =TeXString=, =TeXPrint=
+- =RG`CommonNotation=
+  + =setIndexed=, =setSuperscript=, =setSubscript=
+  + =setPrime=
+  + =setBar=, =setHat=, =setVec=, =setTilde=
+  + =integrate=, =sum=, =limit=, =d=, =dt=, =pd=, =at=
+  + =zero=, =minus=, =plus=, =plus_minus=, =minus_plus=
+  + =max=, =min=
+  + =perp=
+- =RG`Calculation=
+  + =modify=
+  + =pullFactors=
+  + =groupIt=
+  + =fixedPoint=
+  + =release=
+  + =factorIt=
+  + =factorItFast=
+  + =pullIt=
+  + =powersPattern=
+  + =changeSign=
+  + =rewriteIt=
+  + =toRules=
+  + =toEquals=
+  + =powerExpand=
+  + =collectLogs=
+  + =changeLogPower=
+  + =complexToAbs=
+  + =solve=
+  + =changeIntegrateVars=
+  + =changeSumVars=
+  + =setIntegrateLimits=
+  + =pullIntegrateFactors=
+  + =pullSumFactors=
+  + =groupIntegrals=
+  + =groupSums=
+  + =process=, =processList=
+  + =force=
+  + =ffirst=, =flast=
+  + =jacobian=, =changeVars=
+  + =push=
+- =RG`Diagrams=
+  + =drawLine=
+  + =drawArrow=
+  + =drawSpring=
+  + =drawWave=
+  + =drawLabel=
+  + =drawFrame=
+  + =lineDirectives=
+  + =waveParams=
+
