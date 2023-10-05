@@ -15,8 +15,15 @@ untagged::usage = "
   just present expression in traditional form
 ";
 
+
 pass::usage = "
   pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged
+";
+
+
+print::usage = "
+  print[expr] evaluate first expr, print result
+  print[expr, func] evaluate first expr, apply func, print result
 ";
 
 
@@ -283,12 +290,14 @@ TeXString = Function[expr, expr // TeXForm // ToString];
 SetOptions[OutputStream["stdout", 1], PageWidth -> Infinity];
 
 TeXPrint[expr_] := (WriteString["stdout", #]& /@ {
+  "\n",
   "\\begin{equation}\n",
   TeXForm[expr],
   "\n\\end{equation}\n"
 };);
 
 TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
+  "\n",
   "\\begin{equation}\n",
   StringForm["\\label{``}\n", tag],
   TeXForm[expr],
@@ -298,6 +307,15 @@ TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
 
 SetAttributes[pass, HoldAll];
 pass[expr_, ___] := (expr;);
+
+
+SetAttributes[print, HoldFirst];
+print[expr_, opts:OptionsPattern[]] := print[expr, Identity, opts];
+print[expr_, func_:Identity, opts:OptionsPattern[]] := (WriteString["stdout", #]& /@ {
+  "\n",
+  expr // func // ToString,
+  "\n"
+};);
 
 
 End[];
