@@ -16,17 +16,6 @@ untagged::usage = "
 ";
 
 
-pass::usage = "
-  pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged
-";
-
-
-print::usage = "
-  print[expr] evaluate first expr, print result
-  print[expr, func] evaluate first expr, apply func, print result
-";
-
-
 UnderBar::usage = "
   UnderBar[expr] is equivalent for HoldForm[expr]
 ";
@@ -302,19 +291,6 @@ TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
   StringForm["\\label{``}\n", tag],
   TeXForm[expr],
   "\n\\end{equation}\n"
-};);
-
-
-SetAttributes[pass, HoldAll];
-pass[expr_, ___] := (expr;);
-
-
-SetAttributes[print, HoldFirst];
-print[expr_, opts:OptionsPattern[]] := print[expr, Identity, opts];
-print[expr_, func_:Identity, opts:OptionsPattern[]] := (WriteString["stdout", #]& /@ {
-  "\n",
-  expr // func // ToString,
-  "\n"
 };);
 
 
