@@ -5,6 +5,7 @@
 
 
 BeginPackage["RG`Kinematics`", {
+  "RG`BaseUtils`",
   "RG`CommonNotation`",
   "RG`Notation`",
   "RG`Calculation`"
