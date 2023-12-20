@@ -173,6 +173,14 @@ push::usage = "
 ";
 
 
+clearScreen::usage = "
+  clearScreen[] \[LongDash] call Print for 50 empty lines
+";
+reset::usage = "
+  reset[] \[LongDash] call clearScreen[], then Quit[];
+";
+
+
 Begin["`Private`"];
 
 
@@ -578,6 +586,15 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
     }
 	] & // ReplaceAll[f_[Sequence @@ xs] -> f[Sequence @@ ys]] // ReplaceAll[rules] // release // Expand
 ];
+
+
+clearScreen[] := Do[Print[], 50];
+
+reset[] := (
+  clearScreen[];
+  Write["stderr", ToString@StringForm["[``]: close wolfram session ...", DateString[]]];
+  Quit[];
+);
 
 
 End[];
