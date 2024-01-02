@@ -588,7 +588,7 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
 ];
 
 
-clearScreen[] := Do[Print[], 50];
+clearScreen[] := If[!$Notebooks, Do[Print[], 50]];
 
 reset[] := (
   clearScreen[];
