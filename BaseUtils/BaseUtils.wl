@@ -181,6 +181,17 @@ reset::usage = "
 ";
 
 
+pprint::usage = "
+  pprint[expr] \[LongDash] call print[HoldForm[expr] == expr]
+  pprint[expr, func] \[LongDash] call print[HoldForm[expr] == func[expr]]
+  pprint[expr, func, opts] \[LongDash] call print[HoldForm[expr] == func[expr], opts]
+";
+info::usage = "
+ info[func] \[LongDash] get information about func: context, usage, attributes, options
+ info[func, All] \[LongDash] get full information about func including up/down values
+";
+
+
 Begin["`Private`"];
 
 
@@ -594,6 +605,40 @@ reset[] := (
   clearScreen[];
   Write["stderr", ToString@StringForm["[``]: close wolfram session ...", DateString[]]];
   Quit[];
+);
+
+
+SetAttributes[pprint, {HoldFirst}];
+pprint[expr_, opts:OptionsPattern[]] := print[
+  HoldForm[expr] // rewriteIt[ReleaseHold]
+	, opts
+];
+pprint[expr_List, opts:OptionsPattern[]] := print[
+ Thread[HoldForm[expr]] // rewriteIt[ReleaseHold] // Column
+ , opts
+];
+pprint[expr_List, func_, opts:OptionsPattern[]] := print[
+ Thread[HoldForm[expr]] // rewriteIt[ReleaseHold, func] // Column
+ , opts
+];
+pprint[expr_, func_, opts:OptionsPattern[]] := print[
+  HoldForm[expr] // rewriteIt[ReleaseHold, func]
+	, opts
+];
+
+
+SetAttributes[info, HoldAll];
+info[expr_Symbol] := (
+  pprint[Context[expr], verbose->True];
+	print[expr::usage, verbose->False];
+	pprint[Attributes[expr], verbose->False];
+	pprint[Options[expr], verbose->False];
+);
+info[expr_Symbol, All] := (
+  info[expr];
+  pprint[UpValues[expr], Column, verbose->False];
+  pprint[OwnValues[expr], Column, verbose->False];
+  pprint[DownValues[expr], Column, verbose->False];
 );
 
 
