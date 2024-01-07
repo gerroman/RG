@@ -260,7 +260,8 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
   If[hash =!= Get[hashpath],
     Print["[warning]: expression hashs differ, consider force update ..."];
 	];
-	Import[path]
+	Import[path];
+	path
 ];
 
 
@@ -627,18 +628,19 @@ pprint[expr_, func_, opts:OptionsPattern[]] := print[
 ];
 
 
+emptyQ[l_List] := Length[l] == 0;
 SetAttributes[info, HoldAll];
 info[expr_Symbol] := (
   pprint[Context[expr], verbose->True];
 	print[expr::usage, verbose->False];
-	pprint[Attributes[expr], verbose->False];
-	pprint[Options[expr], verbose->False];
+	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, verbose->False]];
+	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
 );
 info[expr_Symbol, All] := (
   info[expr];
-  pprint[UpValues[expr], Column, verbose->False];
-  pprint[OwnValues[expr], Column, verbose->False];
-  pprint[DownValues[expr], Column, verbose->False];
+  If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, verbose->False]];
+  If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
+  If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, verbose->False]];
 );
 
 

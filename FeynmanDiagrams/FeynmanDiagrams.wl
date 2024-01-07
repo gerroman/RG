@@ -62,7 +62,7 @@ electronLine[points:{{_,_}...}, labels_List, flip_:False, arrowWidth_:Automatic,
     FoldList[{#1[[2]] + #2 / 2, #1[[2]] + #2}&, {0, 0}, lengths] // Map[First] // Rest
   ) / Total[lengths];
   labelPositions = Map[getMiddlePosition, subsequentPoints];
-  Graphics[{
+  {
     {
       Arrowheads[Map[{arrowWidth, #}&, arrowHeadsPositions]],
       Arrow[points]
@@ -72,7 +72,7 @@ electronLine[points:{{_,_}...}, labels_List, flip_:False, arrowWidth_:Automatic,
       labelPositions,
       shiftFactors * flipFactors * crossDirections
     ]]
-  }]
+  }
 ];
 
 
@@ -91,7 +91,7 @@ photonLine[points:{p1:{_,_}, p2:{_,_}}, label_, nWiggles_:4, flip_:False, arrowW
     p1 + direction * (n - 1/2) * segmentLength - crossDirection * segmentLength / 2,
     p1 + direction * n * segmentLength
   }, nWiggles] // Flatten[#, 1]& // Prepend[#, p1]&;
-  Graphics[{
+  {
     BezierCurve[bezierPoints],
     With[{pos=getMiddlePosition[N@points]}, {
     If[drawArrow,
@@ -104,7 +104,7 @@ photonLine[points:{p1:{_,_}, p2:{_,_}}, label_, nWiggles_:4, flip_:False, arrowW
       }, Nothing],
       Text[label, pos - crossDirection * segmentLength / 2, shiftFactor*crossDirection]
     }]
-  }]
+  }
 ];
 
 
@@ -147,7 +147,7 @@ photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip
     }, nWiggles]
   ] // Flatten[#, 1]& // Prepend[#, p1]&;
 
-  Graphics[{
+  {
     BezierCurve[bezierPoints],
     With[{
         pos = centerPosition + radius * {Cos[initialAngle + nWiggles / 2 * segmentAngle], Sin[initialAngle + nWiggles / 2 * segmentAngle]}
@@ -163,7 +163,7 @@ photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip
 	    }
       }
     ]
-  }]
+  }
 ];
 (*  *)
 
@@ -178,7 +178,7 @@ electronArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWid
   },
   {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle,
     segmentAngle, segmentLength} = arcHelper[points, 1, arcAngle, flip];
-  Graphics[{
+  {
     Circle[centerPosition, radius, {initialAngle, initialAngle+segmentAngle}],
     With[{pos = centerPosition + radius * {Cos[initialAngle + segmentAngle / 2], Sin[initialAngle + segmentAngle / 2]}},
       {
@@ -189,7 +189,7 @@ electronArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWid
         }
       }
     ]
-  }]
+  }
 ];
 
 (*  *)
@@ -225,7 +225,7 @@ arc`electron = electronArc;
 arc`photon = photonArc;
 
 
-Print[$Context];
+(*Print[$Context];*)
 
 
 EndPackage[]
