@@ -187,10 +187,12 @@ pprint::usage = "
   pprint[expr, func, opts] \[LongDash] call print[HoldForm[expr] == func[expr], opts]
 ";
 info::usage = "
- info[func] \[LongDash] get information about func: context, usage, attributes, options
- info[func, All] \[LongDash] get full information about func including up/down values
+  info[func] \[LongDash] get information about func: context, usage, attributes, options
+  info[func, All] \[LongDash] get full information about func including up/down values
 ";
-
+show::usage = "
+  show[expr] \[LongDash] forms an equation: HoldForm[expr] == expr
+";
 
 Begin["`Private`"];
 
@@ -642,6 +644,10 @@ info[expr_Symbol, All] := (
   If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
   If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, verbose->False]];
 );
+
+
+SetAttributes[show, HoldAll];
+show[expr_] := HoldForm[expr] == expr;
 
 
 End[];
