@@ -116,6 +116,11 @@ vector::usage = "
 ";
 
 
+dots::usage = "
+  dots represent \"...\"
+";
+
+
 Begin["`Private`"]
 
 
@@ -151,8 +156,7 @@ setIndexed[x_Symbol] := (
   x /: Format[x[i_, j_List], TeXForm] := Subsuperscript[x, i, ToString@Row[j, ","]];
   x /: Format[x[i_List, j_], TraditionalForm] := Subsuperscript[x, Row[i], j];
   x /: Format[x[i_List, j_], TeXForm] := Subsuperscript[x, ToString@Row[i, ","], j];
-  x /: Format[x[i_, j_], TraditionalForm] := Subsuperscript[x, i, j];
-  x /: Format[x[i_, j_], TeXForm] := Superscript[Subscript[x, i], j];
+  x /: Format[x[i_, j_], TraditionalForm] := DisplayForm[SubsuperscriptBox[x, i, j]];
   x /: Format[x[], TraditionalForm] := x;
   x
 );
@@ -229,7 +233,7 @@ integrate /: Format[integrate[expr_, ls:{{_, _}..}], TraditionalForm] := With[
   {lbs = Apply[RowBox[{SuperscriptBox["\[DifferentialD]", #2], #1}]&] /@ ls},
   DisplayForm[RowBox[{"\[Integral]", Sequence@@lbs, expr}]]
 ];
-integrate /: Format[integrate[expr_, {{l1_, dim1_}, "...", {l2_, dim2_}}], TraditionalForm] := DisplayForm[
+integrate /: Format[integrate[expr_, {{l1_, dim1_}, dots, {l2_, dim2_}}], TraditionalForm] := DisplayForm[
   RowBox[{
 	 "\[Integral]",
    RowBox[{SuperscriptBox["\[DifferentialD]", dim1], l1}],
@@ -286,6 +290,9 @@ ket=Ket;
 
 
 vector /: Format[vector[expr_], TraditionalForm] := Style[expr, Bold, Italic];
+
+
+dots /: Format[dots, TraditionalForm] := "...";
 
 
 End[]
