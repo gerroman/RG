@@ -111,6 +111,11 @@ ket::usage = "
 ";
 
 
+vector::usage = "
+  vector[x] represent vector x
+";
+
+
 Begin["`Private`"]
 
 
@@ -140,7 +145,7 @@ setSuperscript[x__] := setSuperscript[{x}];
 SetAttributes[setIndexed, {Listable}];
 setIndexed[x_Symbol] := (
   setSubscript[x];
-  x /: Format[x[i_List, j_List], TraditionalForm] := Subsuperscript[x,Row[i], Row[j]];
+  x /: Format[x[i_List, j_List], TraditionalForm] := Subsuperscript[x, Row[i], Row[j]];
   x /: Format[x[i_List, j_List], TeXForm] := Subsuperscript[x, ToString@Row[i, ","], ToString@Row[j, ","]];
   x /: Format[x[i_, j_List], TraditionalForm] := Subsuperscript[x, i, Row[j]];
   x /: Format[x[i_, j_List], TeXForm] := Subsuperscript[x, i, ToString@Row[j, ","]];
@@ -212,6 +217,27 @@ min /: Format[min] = "min";
 max /: Format[max] = "max";
 
 
+integrate /: Format[integrate[expr_, {{l_, dim_}}], TraditionalForm] := DisplayForm[
+  RowBox[
+	{
+	  "\[Integral]",
+    RowBox[{SuperscriptBox["\[DifferentialD]", dim], l}],
+	  expr
+	}]
+];
+integrate /: Format[integrate[expr_, ls:{{_, _}..}], TraditionalForm] := With[
+  {lbs = Apply[RowBox[{SuperscriptBox["\[DifferentialD]", #2], #1}]&] /@ ls},
+  DisplayForm[RowBox[{"\[Integral]", Sequence@@lbs, expr}]]
+];
+integrate /: Format[integrate[expr_, {{l1_, dim1_}, "...", {l2_, dim2_}}], TraditionalForm] := DisplayForm[
+  RowBox[{
+	 "\[Integral]",
+   RowBox[{SuperscriptBox["\[DifferentialD]", dim1], l1}],
+	 "\[Ellipsis]",
+   RowBox[{SuperscriptBox["\[DifferentialD]", dim2], l2}],
+	 expr
+	}]
+];
 integrate /: Format[integrate[expr_, region__], TraditionalForm] := (
   HoldForm[Integrate[expr, region]]
 );
@@ -257,6 +283,10 @@ Format[braket[a_, b__, c_], TraditionalForm] := HoldForm[Times["\[LeftAngleBrack
 
 bra=Bra;
 ket=Ket;
+
+
+vector /: Format[vector[expr_], TraditionalForm] := Style[expr, Bold, Italic];
+
 
 End[]
 

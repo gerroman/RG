@@ -59,7 +59,6 @@ fillKinematicsCMS::usage = "
 Begin["`Private`"];
 
 
-sp[expr_] := sp[expr, expr];
 sp[a___, b_ * mult_?NumberQ, c___] := mult * sp[a, b, c];
 sp[p_List, q_List] := Which[
   Length[p] == Length[q] == 4, With[{prod = p*q}, 2 prod[[1]] - Total[prod]],

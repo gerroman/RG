@@ -227,7 +227,8 @@ sp /: Format[sp[expr_Symbol], TraditionalForm] := Superscript[expr, 2];
 sp /: Format[sp[expr_Symbol, expr_Symbol], TraditionalForm] := Superscript[expr, 2];
 sp /: Format[sp[expr_], TraditionalForm] := HoldForm[expr]^2;
 sp /: Format[sp[expr_, expr_], TraditionalForm] := HoldForm[expr]^2;
-sp /: Format[sp, TraditionalForm] := "";
+sp /: Format[sp, TraditionalForm] := ""; (*TODO: rewrite with DisplayForm *)
+sp[expr_] := sp[expr, expr];
 
 
 abs /: Format[abs[expr_], TraditionalForm] := HoldForm[BracketingBar[expr]];
