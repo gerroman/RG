@@ -194,6 +194,10 @@ show::usage = "
   show[expr] \[LongDash] forms an equation: HoldForm[expr] == expr
 ";
 
+partition::usage = "partition[l, n] \[LongDash] partitions list to n
+onoverlapping sublists of length n, and (if necessary) appends the rest elements";
+
+
 Begin["`Private`"];
 
 
@@ -605,8 +609,7 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
 clearScreen[] := If[!$Notebooks, Do[Print[], 50]];
 
 reset[] := (
-  clearScreen[];
-  Write["stderr", ToString@StringForm["[``]: close wolfram session ...", DateString[]]];
+  print[ToString@StringForm["[``]: close wolfram session ...", DateString[]]];
   Quit[];
 );
 
@@ -648,6 +651,17 @@ info[expr_Symbol, All] := (
 
 SetAttributes[show, HoldAll];
 show[expr_] := HoldForm[expr] == expr;
+
+
+partition[expr_List, n_Integer] := With[{
+    l = Length[expr], 
+    m = Partition[expr, n]
+  },
+  If[Mod[l, n] != 0, 
+    m, 
+    m~Join~{expr[[l - Mod[l, n] + 1;;]]}
+  ]
+];
 
 
 End[];
