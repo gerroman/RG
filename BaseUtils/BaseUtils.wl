@@ -636,7 +636,11 @@ pprint[expr_, func_, opts:OptionsPattern[]] := print[
 emptyQ[l_List] := Length[l] == 0;
 SetAttributes[info, {HoldAll, Listable}];
 info[expr_Symbol, None] := (
-	print[expr::usage];
+  print[If[ValueQ[expr::usage],
+		  expr::usage,
+			ToString@StringForm["[warning]: `` is undefined", expr::usage]
+		]
+	];
 );
 info[expr_Symbol] := (
   pprint[Context[expr]];
