@@ -635,6 +635,9 @@ pprint[expr_, func_, opts:OptionsPattern[]] := print[
 
 emptyQ[l_List] := Length[l] == 0;
 SetAttributes[info, {HoldAll, Listable}];
+info[expr_Symbol, None] := (
+	print[expr::usage];
+);
 info[expr_Symbol] := (
   pprint[Context[expr]];
 	print[expr::usage, verbose->False];
@@ -642,6 +645,7 @@ info[expr_Symbol] := (
 	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
 );
 info[expr_Symbol, All] := (
+  pprint[Context[expr]];
   info[expr];
   If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, verbose->False]];
   If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
