@@ -634,9 +634,9 @@ pprint[expr_, func_, opts:OptionsPattern[]] := print[
 
 
 emptyQ[l_List] := Length[l] == 0;
-SetAttributes[info, HoldAll];
+SetAttributes[info, {HoldAll, Listable}];
 info[expr_Symbol] := (
-  pprint[Context[expr], verbose->True];
+  pprint[Context[expr]];
 	print[expr::usage, verbose->False];
 	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, verbose->False]];
 	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
@@ -654,11 +654,11 @@ show[expr_] := HoldForm[expr] == expr;
 
 
 partition[expr_List, n_Integer] := With[{
-    l = Length[expr], 
+    l = Length[expr],
     m = Partition[expr, n]
   },
-  If[Mod[l, n] != 0, 
-    m, 
+  If[Mod[l, n] != 0,
+    m,
     m~Join~{expr[[l - Mod[l, n] + 1;;]]}
   ]
 ];
