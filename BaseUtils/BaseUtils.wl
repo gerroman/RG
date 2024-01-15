@@ -247,24 +247,34 @@ load[fname_String, OptionsPattern[]] := With[{
 
 
 SetAttributes[loadFigure, HoldAll];
-Options[loadFigure] = {update -> False, verbose -> True};
+Options[loadFigure] = {update -> False, verbose -> True, "force"->False};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 		path = FileNameJoin[{Global`figuredirectory, fname}],
 		hash = Hash[Hold[expr]],
-		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash"
+		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash",
+		force = OptionValue["force"]
 	},
 	If[(Not@FileExistsQ[path]
 			|| Not@FileExistsQ[hashpath]
 			|| (hash =!= Get[hashpath] && OptionValue[update])), (
 			If[OptionValue[verbose],
-				Print[ToString[StringForm[load::save, path]]];
-				Print[ToString[StringForm[load::save, hashpath]]];
+				print[ToString[StringForm[load::save, path]]];
+				print[ToString[StringForm[load::save, hashpath]]];
 			];
 			Export[path, expr];
 			Put[hash, hashpath];
 	)];
 	If[hash =!= Get[hashpath],
-		Print["[warning]: expression hashs differ, consider force update ..."];
+		print["[warning]: expression hashs differ, consider force update ..."];
+		If[force,
+  		print["[warning]: forcing update ... "];
+			If[OptionValue[verbose],
+				print[ToString[StringForm[load::save, path]]];
+				print[ToString[StringForm[load::save, hashpath]]];
+			];
+			Export[path, expr];
+			Put[hash, hashpath];
+		]
 	];
 	Import[path];
 	path
@@ -616,7 +626,7 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
 clearScreen[] := If[!$Notebooks, Do[Print[], 50]];
 
 reset[] := (
-	print[ToString@StringForm["[``]: close wolfram session ...", DateString[]]];
+	print[StringForm["[``]: close wolfram session ...", DateString[]]];
 	Quit[];
 );
 
@@ -672,7 +682,7 @@ partition[expr_List, n_Integer] := With[{
 		l = Length[expr],
 		m = Partition[expr, n]
 	},
-	If[Mod[l, n] != 0,
+	If[Mod[l, n] == 0,
 		m,
 		m~Join~{expr[[l - Mod[l, n] + 1;;]]}
 	]
