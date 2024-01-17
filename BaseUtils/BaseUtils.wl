@@ -279,6 +279,14 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 	Import[path];
 	path
 ];
+loadFigure[fname_String] := With[{
+		path = FileNameJoin[{Global`figuredirectory, fname}]
+	},
+  If[FileExistsQ[path], Import[path], 
+    print[StringForm["[error]: '``' not found", path]];
+    path
+  ]
+];
 
 
 SetAttributes[off, HoldAll];
