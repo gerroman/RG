@@ -270,8 +270,14 @@ dt /: Format[dt[expr_, args_], TraditionalForm] := HoldForm[Dt[expr, args]];
 
 
 SetAttributes[pd, HoldAll];
-pd /: Format[pd[expr_], TraditionalForm] := HoldForm[Row[{"\[PartialD]", expr}]];
-pd /: Format[pd[expr_, arg_Symbol], TraditionalForm] := HoldForm[Row[{Subscript["\[PartialD]", arg], expr}]];
+pd /: Format[pd[expr_], TraditionalForm] := DisplayForm[RowBox[{"\[PartialD]", expr}]];
+pd /: Format[pd[expr_, arg_Symbol], TraditionalForm] := DisplayForm[
+  RowBox[{
+	  SubscriptBox["\[PartialD]", ToBoxes[arg, TraditionalForm]],
+		" ",
+	  ToBoxes[expr, TraditionalForm]
+	}]
+];
 pd /: Format[pd[expr_, arg_], TraditionalForm] := HoldForm[D[expr, HoldForm[arg]]];
 
 
