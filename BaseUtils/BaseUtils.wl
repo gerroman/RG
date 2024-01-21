@@ -198,6 +198,11 @@ partition::usage = "partition[l, n] \[LongDash] partitions list to n
 onoverlapping sublists of length n, and (if necessary) appends the rest elements";
 
 
+installFrontEnd::usage = "installFrontEnd[] \[LongDash] install auxiliary FrontEnd";
+uninstallFrontEnd::usage = "uninstallFrontEnd[] \[LongDash] uninstall auxiliary FrontEnd";
+eval::usage = "eval[expr] \[LongDash] use auxiliary FrontEnd to present result of expr";
+
+
 Begin["`Private`"];
 
 
@@ -282,7 +287,7 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 loadFigure[fname_String] := With[{
 		path = FileNameJoin[{Global`figuredirectory, fname}]
 	},
-  If[FileExistsQ[path], Import[path], 
+  If[FileExistsQ[path], Import[path],
     print[StringForm["[error]: '``' not found", path]];
     path
   ]
@@ -681,6 +686,10 @@ info[expr_Symbol, All] := (
 	If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, verbose->False]];
 );
 
+info[expr_String] := (
+  print[Names[expr] // partition[#, 4]&, Column];
+);
+
 
 SetAttributes[show, HoldAll];
 show[expr_] := HoldForm[expr] == expr;
@@ -693,6 +702,30 @@ partition[expr_List, n_Integer] := With[{
 	If[Mod[l, n] == 0,
 		m,
 		m~Join~{expr[[l - Mod[l, n] + 1;;]]}
+	]
+];
+
+
+installFrontEnd[serverFlag_:False] := (
+  Developer`InstallFrontEnd["Server"->serverFlag];
+	Links[]
+);
+uninstallFrontEnd[] := With[
+  {link=System`UseFrontEndDump`$felink},
+  If[MemberQ[Links[], link],
+	  LinkClose[link];
+	];
+	Links[]
+];
+
+
+SetAttributes[eval, {HoldFirst, Listable}];
+eval[expr_, func_:Identity] := If[$Notebooks,
+  expr,
+	UsingFrontEnd[
+	  CreateDialog[Column[{Labeled[Framed[func[expr], FrameMargins->10, ImageMargins->10, RoundingRadius->5], HoldForm[expr], Top], DefaultButton[]}, Alignment->Center],
+	    WindowTitle->ToString[StringForm["Out[``]", $Line]]
+	  ]
 	]
 ];
 

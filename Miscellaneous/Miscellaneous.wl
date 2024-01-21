@@ -26,9 +26,6 @@ stringsortp[expr1_String, expr2_String] := Module[{
 ];
 
 
-Prin[];
-
-
 Echo[$Context];
 
 
