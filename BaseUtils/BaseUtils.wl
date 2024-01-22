@@ -190,8 +190,8 @@ info::usage = "
 	info[func] \[LongDash] get information about func: context, usage, attributes, options
 	info[func, All] \[LongDash] get full information about func including up/down values
 ";
-show::usage = "
-	show[expr] \[LongDash] forms an equation: HoldForm[expr] == expr
+present::usage = "
+	present[expr] \[LongDash] forms an equation: HoldForm[expr] == expr
 ";
 
 partition::usage = "partition[l, n] \[LongDash] partitions list to n
@@ -200,7 +200,7 @@ onoverlapping sublists of length n, and (if necessary) appends the rest elements
 
 installFrontEnd::usage = "installFrontEnd[] \[LongDash] install auxiliary FrontEnd";
 uninstallFrontEnd::usage = "uninstallFrontEnd[] \[LongDash] uninstall auxiliary FrontEnd";
-eval::usage = "eval[expr] \[LongDash] use auxiliary FrontEnd to present result of expr";
+show::usage = "show[expr] \[LongDash] use auxiliary FrontEnd to present result of expr";
 
 
 Begin["`Private`"];
@@ -691,8 +691,8 @@ info[expr_String] := (
 );
 
 
-SetAttributes[show, HoldAll];
-show[expr_] := HoldForm[expr] == expr;
+SetAttributes[present, HoldAll];
+present[expr_] := HoldForm[expr] == expr;
 
 
 partition[expr_List, n_Integer] := With[{
@@ -719,14 +719,15 @@ uninstallFrontEnd[] := With[
 ];
 
 
-SetAttributes[eval, {HoldFirst, Listable}];
-eval[expr_, func_:Identity] := If[$Notebooks,
-  expr,
-	UsingFrontEnd[
-	  CreateDialog[Column[{Labeled[Framed[func[expr], FrameMargins->10, ImageMargins->10, RoundingRadius->5], HoldForm[expr], Top], DefaultButton[]}, Alignment->Center],
-	    WindowTitle->ToString[StringForm["Out[``]", $Line]]
-	  ]
-	]
+SetAttributes[show, {HoldFirst, Listable}];
+Options[show] = {WindowTitle:>ToString[StringForm["Out[``]", $Line]]};
+show[expr_, func_:Identity, opts:OptionsPattern[]] := With[
+  {wrapper = If[$Notebooks, Identity, UsingFrontEnd]},
+  wrapper[
+    CreateDialog[Column[{Labeled[Framed[func[expr], FrameMargins->10, ImageMargins->10, RoundingRadius->5], HoldForm[expr], Top], DefaultButton[]}, Alignment->Center],
+  	    WindowTitle->OptionValue[WindowTitle]
+  	]
+  ]
 ];
 
 
