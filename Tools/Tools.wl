@@ -42,6 +42,8 @@ installFrontEnd::usage = "installFrontEnd[] \[LongDash] install auxiliary FrontE
 
 uninstallFrontEnd::usage = "uninstallFrontEnd[] \[LongDash] uninstall auxiliary FrontEnd wolfram scripts";
 
+show::usage = "show[expr] \[LongDash] use auxiliary FrontEnd to present result of expr";
+
 
 Begin["`Private`"];
 
@@ -139,10 +141,10 @@ partition[expr_List, n_Integer] := With[{
 ];
 
 
-installFrontEnd[serverFlag_:False] := (
-  Developer`InstallFrontEnd["Server"->serverFlag];
+installFrontEnd[serverFlag_:False] := With[{link = System`UseFrontEndDump`$felink},
+  If[Not@MemberQ[Links[], link], Developer`InstallFrontEnd["Server"->serverFlag]];
 	Links[]
-);
+];
 
 
 uninstallFrontEnd[] := With[{link = System`UseFrontEndDump`$felink},
