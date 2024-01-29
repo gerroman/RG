@@ -1,213 +1,101 @@
 (* ::Package:: *)
 
-BeginPackage["RG`BaseUtils`"];
+(* ::Section:: *)
+(*BaseUtils*)
 
 
-(* ::Text:: *)
-(*Common options: update, verbose.*)
+BeginPackage["RG`BaseUtils`", {"RG`Tools`"}];
 
 
-update::usage = "
-	update -> True option to force call definitions and save to file in load[]
-";
-verbose::usage = "
-	verbose -> True make function more verbose
-";
+update::usage="update -> True option to update definitions and save to file"
 
 
-(* ::Text:: *)
-(*Load definitions and figures from files*)
+load::usage = "load[file, symbol, definitions] load from file (if it exists) or execute symbol's definitions and save it to file"
 
 
-load::usage = "
-	load[file, symbol, definitions] load from file (if it exists) or
-	execute symbol's definitions and save it to file
-";
-
-loadFigure::usage = "
-	loadFigure[fname, expr] load figure from file if it exists or execute expr and save figure to the file
-";
+loadFigure::usage = "loadFigure[fname, expr] load figure from file if it exists or execute expr and save figure to the file"
 
 
-(* ::Text:: *)
-(*turn off/on messages during evaluating an expression*)
+off::usage = "off[message, expr] evaluate expression with the message temporally off"
 
 
-off::usage = "
-	off[message, expr] evaluate expression with the message temporally off
-";
-on::usage = "
-	on[message, expr] evaluate expression with the message temporally on
-";
+on::usage = "on[message, expr] evaluate expression with the message temporally on"
 
 
-hold::usage = "
-	hold[pattern] apply HoldForm to matches of pattern
-	hold[{x1,...}] apply HoldForm to specific xs
-";
+hold::usage = "hold[pattern] apply HoldForm to matches of pattern
+hold[{x1,...}] apply HoldForm to specific xs"
 
 
-pass::usage = "
-	pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged
-";
+pass::usage = "pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged"
 
 
-print::usage = "
-	print[expr] evaluate first expr, print result
-	print[expr, func] evaluate first expr, apply func, print result
-";
-modify::usage = "
-	modify[pattern, func] create function to replace all matches of the pattern to results of application of the function func to these matches
-	modify[{x1, ...}, func] create function for specific x1, ...
-";
+modify::usage = "modify[pattern, func] create function to replace all matches of the pattern to results of application of the function func to these matches
+modify[{x1, ...}, func] create function for specific x1, ..."
 
 
-pullFactors::usage = "
-	pullFactors[pattern, func] pull factors x from func which match func[___, (x:pattern) * ___, ___]
-	pullFactors[{x1,...}, func] pull concrete xs
-";
+pullFactors::usage = "pullFactors[pattern, func] pull factors x from func which match func[___, (x:pattern) * ___, ___]
+pullFactors[{x1,...}, func] pull concrete xs"
 
 
-groupIt::usage = "
-	groupIt[expr, func] find and group expr modified by functions func
-";
+groupIt::usage = "groupIt[expr, func] find and group expr modified by functions func"
 
 
-fixedPoint::usage = "
-	fixedPoint[func] is shortcut for FixedPoint[#, func] &
-";
+fixedPoint::usage = "fixedPoint[func] is shortcut for FixedPoint[#, func] &"
 
 
-release::usage = "
-	release[expr] apply ReleaseHold repeatedly
-";
+release::usage = "release[expr] apply ReleaseHold repeatedly"
 
 
-factorIt::usage = "
-	factorIt[pattern, func] factor out factors matches pattern from func
-	factorIt[{x1, ...}, func] factor out concrete xs
-";
-
-factorItFast::usage = "
-	factorItFast[x, func] faster version of factorIt
-";
+factorIt::usage = "factorIt[pattern, func] factor out factors matches pattern from func
+factorIt[{x1, ...}, func] factor out concrete xs"
 
 
-pullIt::usage = "
-	pullIt[pattern] pull out factors matches pattern
-	pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments
-";
+factorItFast::usage = "factorItFast[x, func] faster version of factorIt"
 
 
-powersPattern::usage = "
-	powersPattern[{x1, ...}] return patterns for all possible powers of xs
-";
+pullIt::usage = "pullIt[pattern] pull out factors matches pattern
+pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments"
 
 
-changeSign::usage = "
-	changeSign[x] change sign of x
-";
+powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs"
 
 
-rewriteIt::usage = "
-	rewriteIt[func] rewrite equation (or rule, or expression) using func for the right hand side
-	rewriteIt[funcL, funcR] rewrite equation (or rule, or expression) using funcL for the left hand side \
-and funcR for the right hand side
-";
+changeSign::usage = "changeSign[x] change sign of x"
 
 
-toRules::usage = "
-	toRules shortcut for replacing equations to rules
-";
-
-toEquals::usage = "
-	toEquals shortcut for replacing rules to equations
-";
+toRules::usage = "toRules shortcut for replacing equations to rules"
 
 
-powerExpand::usage = "
-	powerExpand shortcut for PowerExpand, but it leaves Logs unchanged
-";
-collectLogs::usage = "
-	collectLogs reduce sums of logarithms assuming real positive arguments
-";
-changeLogPower::usage = "
-	changeLogPower[power] change arguments of logarithms exponenting them to the power,\
-assuming real positive arguments
-";
-
-complexToAbs::usage = "
-	complexToAbs replace products expr * Conjugate[expr] to Abs[expr]
-";
+toEquals::usage = "toEquals shortcut for replacing rules to equations"
 
 
-solve::usage = "
-	solve[eqs_, vars_] solve equations eqs w.r.t. vars
-";
+powerExpand::usage = "powerExpand shortcut for PowerExpand, but it leaves Logs unchanged"
 
 
-processList::usage = "
-	processList[fs][expr] apply list of functions to expression return results of all steps
-";
-process::usage = "
-	process[fs][expr] apply list of functions returns a list {expr, result}
-";
-
-ffirst::usage = "
-	ffirst[list] return first element of flattened list
-	ffirst[list, verbose -> False] suppress warnings
-";
-flast::usage = "
-	flast[list] return last element of flattened list
-	flast[list, verbose -> False] suppress warnings
-";
-jacobian::usage = "
-	jacobian[xs, ys, rules] return jacobian matrix, J,in terms of new variables, ys, for variable transitions xs -> ys, with transitions rules of type x[i] -> f[i][ys],
-	J[[i, j]] = D[y[i], x[j]] in terms of ys
-";
-changeVars::usage = "
-	changeVars[xs, ys, rules][expr] changes variables in expr, including in differential operators
-";
-push::usage = "
-	push[outer, inner][expr] pushes the outer function through the inner function
-";
+collectLogs::usage = "collectLogs reduce sums of logarithms assuming real positive arguments"
 
 
-clearScreen::usage = "
-	clearScreen[] \[LongDash] call Print for 50 empty lines
-";
-reset::usage = "
-	reset[] \[LongDash] call clearScreen[], then Quit[];
-";
+changeLogPower::usage = "changeLogPower[power] change arguments of logarithms exponenting them to the power, assuming real positive arguments"
 
 
-pprint::usage = "
-	pprint[expr] \[LongDash] call print[HoldForm[expr] == expr]
-	pprint[expr, func] \[LongDash] call print[HoldForm[expr] == func[expr]]
-	pprint[expr, func, opts] \[LongDash] call print[HoldForm[expr] == func[expr], opts]
-";
-info::usage = "
-	info[func] \[LongDash] get information about func: context, usage, attributes, options
-	info[func, All] \[LongDash] get full information about func including up/down values
-";
-present::usage = "
-	present[expr] \[LongDash] forms an equation: HoldForm[expr] == expr
-";
-
-partition::usage = "partition[l, n] \[LongDash] partitions list to n
-onoverlapping sublists of length n, and (if necessary) appends the rest elements";
+complexToAbs::usage = "complexToAbs replace products expr * Conjugate[expr] to Abs[expr]"
 
 
-installFrontEnd::usage = "installFrontEnd[] \[LongDash] install auxiliary FrontEnd";
-uninstallFrontEnd::usage = "uninstallFrontEnd[] \[LongDash] uninstall auxiliary FrontEnd";
-show::usage = "show[expr] \[LongDash] use auxiliary FrontEnd to present result of expr";
+solve::usage = "solve[eqs_, vars_] solve equations eqs w.r.t. vars"
+
+
+jacobian::usage = "jacobian[xs, ys, rules] return jacobian matrix, J,in terms of new variables, ys, for variable transitions xs -> ys, with transitions rules of type x[i] -> f[i][ys],
+J[[i, j]] = D[y[i], x[j]] in terms of ys"
+
+
+changeVars::usage = "changeVars[xs, ys, rules][expr] changes variables in expr, including in differential operators"
+
+
+push::usage = "push[outer, inner][expr] pushes the outer function through the inner function"
 
 
 Begin["`Private`"];
 
-
-Protect[verbose];
-Protect[update];
 
 SetAttributes[load, HoldAll];
 Options[load] = {update -> False, verbose -> False};
@@ -215,7 +103,7 @@ load::get = "[info]: load `1` ...";
 load::save = "[info]: save `1` ...";
 load::failed = "[error]: failed to load file `1`";
 load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`temporarydirectory, fname}]
+		path = FileNameJoin[{Global`temporary\[LetterSpace]directory, fname}]
 	},
 	If[FileExistsQ[path] && Not[OptionValue[update]], (
 			If[OptionValue[verbose],
@@ -234,7 +122,7 @@ load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
 
 
 load[fname_String, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`temporarydirectory, fname}]
+		path = FileNameJoin[{Global`temporary\[LetterSpace]directory, fname}]
 	},
 	If[FileExistsQ[path],
 		(
@@ -254,38 +142,38 @@ load[fname_String, OptionsPattern[]] := With[{
 SetAttributes[loadFigure, HoldAll];
 Options[loadFigure] = {update -> False, verbose -> True, "force"->False};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`figuredirectory, fname}],
+		path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}],
 		hash = Hash[Hold[expr]],
-		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash",
+		hash\[LetterSpace]path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}] <> ".hash",
 		force = OptionValue["force"]
 	},
 	If[(Not@FileExistsQ[path]
-			|| Not@FileExistsQ[hashpath]
-			|| (hash =!= Get[hashpath] && OptionValue[update])), (
+			|| Not@FileExistsQ[hash\[LetterSpace]path]
+			|| (hash =!= Get[hash\[LetterSpace]path] && OptionValue[update])), (
 			If[OptionValue[verbose],
 				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hashpath]]];
+				print[ToString[StringForm[load::save, hash\[LetterSpace]path]]];
 			];
 			Export[path, expr];
-			Put[hash, hashpath];
+			Put[hash, hash\[LetterSpace]path];
 	)];
-	If[hash =!= Get[hashpath],
+	If[hash =!= Get[hash\[LetterSpace]path],
 		print["[warning]: expression hashs differ, consider force update ..."];
 		If[force,
   		print["[warning]: forcing update ... "];
 			If[OptionValue[verbose],
 				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hashpath]]];
+				print[ToString[StringForm[load::save, hash\[LetterSpace]path]]];
 			];
 			Export[path, expr];
-			Put[hash, hashpath];
+			Put[hash, hash\[LetterSpace]path];
 		]
 	];
 	Import[path];
 	path
 ];
 loadFigure[fname_String] := With[{
-		path = FileNameJoin[{Global`figuredirectory, fname}]
+		path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}]
 	},
   If[FileExistsQ[path], Import[path],
     print[StringForm["[error]: '``' not found", path]];
@@ -335,25 +223,6 @@ SetAttributes[pass, HoldAll];
 pass[expr_, ___] := (expr;);
 
 
-SetAttributes[print, HoldFirst];
-Options[print] = {
-	verbose->False,
-	"stream"->"stdout",
-	"header" :> DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)\n"}],
-	"sep"->"\n"
-};
-print[expr_, opts:OptionsPattern[]] := print[expr, Identity, opts];
-print[expr_, func_:Identity, opts:OptionsPattern[]] := With[{
-		stream=OptionValue["stream"],
-		sep=OptionValue["sep"],
-		verbose=OptionValue["verbose"]
-	},
-	If[verbose, WriteString[stream, ToString@OptionValue["header"]]];
-	WriteString[stream, (expr // func // ToString)];
-	WriteString[stream, sep];
-];
-
-
 modify[xs_List, func_] := With[{
 		rules = Thread[Rule[xs, Map[func, xs]]]
 	},
@@ -379,6 +248,7 @@ pullFactors[pattern_, func_, maxIter_:$IterationLimit] := Function[expr,
 		pullFactors[xs, func, maxIter][expr]
 	]
 ];
+
 
 (* pullFactors[arg_, func_, maxIter_:$IterationLimit] := With[{ *)
 (*		pattern = If[Head[arg] === List, *)
@@ -555,51 +425,6 @@ pushRule[outer_Function, inner__] := pushRule[outer, {inner}];
 push[outer_, inner__] := ReplaceRepeated[#, pushRule[outer, inner]]&;
 
 
-processList::duplicates = "processList contains unused functions";
-processList[fs_List][expr_] := With[
-	{result = FoldList[#2[#1]&, expr, fs]},
-	If[Not @ DuplicateFreeQ[result], Message[processList::duplicates]];
-	result
-];
-processList[fs__][expr_] := processList[{fs}][expr];
-
-
-process[fs_List][expr_] := {expr, (RightComposition@@fs)[expr]};
-process[fs__][expr_] := process[{fs}][expr];
-
-
-rewriteIt[lfunc_List, rfunc_List][l_List] := rewriteIt[lfunc, rfunc] /@ l;
-rewriteIt[lfunc_List, rfunc_List][(h:(Equal|Rule))[lhs_, rhs_]] := With[{
-		x = (RightComposition @@ lfunc)[lhs],
-		y = (RightComposition @@ rfunc)[rhs]
-	},
-	h[x, y]
-];
-rewriteIt[lfunc_List, rfunc_List][expr_] := With[{
-		x = (RightComposition @@ lfunc)[expr],
-		y = (RightComposition @@ rfunc)[expr]
-	},
-	x == y
-];
-rewriteIt[fs__][expr_] := rewriteIt[{Identity}, {fs}][expr];
-
-
-Options[ffirst] = {verbose -> True};
-ffirst::warning = "List `1` contains contains more than one element";
-ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
-	If[OptionValue[verbose] && Length[flat] > 1, Message[ffirst::warning, flat]];
-	First[flat]
-];
-
-
-Options[flast] = {verbose -> True};
-flast::warning = "List `1` contains contains more than one element";
-flast[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
-	If[OptionValue[verbose] && Length[flat] > 1, Message[flast::warning, flat]];
-	Last[flat]
-];
-
-
 jacobian[xs_List, ys_List, rules_List:{}] := Inverse[Outer[D, xs /. rules, ys]];
 
 
@@ -636,105 +461,7 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
 ];
 
 
-clearScreen[] := If[!$Notebooks, Do[Print[], 50]];
-
-reset[] := (
-	print[StringForm["[``]: close wolfram session ...", DateString[]]];
-	Quit[];
-);
-
-
-SetAttributes[pprint, {HoldFirst}];
-pprint[expr_, opts:OptionsPattern[]] := print[
-	HoldForm[expr] // rewriteIt[ReleaseHold]
-	, opts
-];
-pprint[expr_List, opts:OptionsPattern[]] := print[
- Thread[HoldForm[expr]] // rewriteIt[ReleaseHold] // Column
- , opts
-];
-pprint[expr_List, func_, opts:OptionsPattern[]] := print[
- Thread[HoldForm[expr]] // rewriteIt[ReleaseHold, func] // Column
- , opts
-];
-pprint[expr_, func_, opts:OptionsPattern[]] := print[
-	HoldForm[expr] // rewriteIt[ReleaseHold, func]
-	, opts
-];
-
-
-emptyQ[l_List] := Length[l] == 0;
-SetAttributes[info, {HoldAll, Listable}];
-info[expr_Symbol, None] := (
-	print[If[ValueQ[expr::usage],
-			expr::usage,
-			ToString@StringForm["[warning]: `` is undefined", expr::usage]
-		]
-	];
-);
-info[expr_Symbol] := (
-	pprint[Context[expr]];
-	print[expr::usage, verbose->False];
-	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, verbose->False]];
-	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
-);
-info[expr_Symbol, All] := (
-	pprint[Context[expr]];
-	info[expr];
-	If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, verbose->False]];
-	If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
-	If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, verbose->False]];
-);
-
-info[expr_String] := (
-  print[Names[expr] // partition[#, 4]&, Column];
-);
-
-
-SetAttributes[present, HoldAll];
-present[expr_] := HoldForm[expr] == expr;
-
-
-partition[expr_List, n_Integer] := With[{
-		l = Length[expr],
-		m = Partition[expr, n]
-	},
-	If[Mod[l, n] == 0,
-		m,
-		m~Join~{expr[[l - Mod[l, n] + 1;;]]}
-	]
-];
-
-
-installFrontEnd[serverFlag_:False] := (
-  Developer`InstallFrontEnd["Server"->serverFlag];
-	Links[]
-);
-uninstallFrontEnd[] := With[
-  {link=System`UseFrontEndDump`$felink},
-  If[MemberQ[Links[], link],
-	  LinkClose[link];
-	];
-	Links[]
-];
-
-
-SetAttributes[show, {HoldFirst, Listable}];
-Options[show] = {WindowTitle:>ToString[StringForm["Out[``]", $Line]]};
-show[expr_, func_:Identity, opts:OptionsPattern[]] := With[
-  {wrapper = If[$Notebooks, Identity, UsingFrontEnd]},
-  wrapper[
-    CreateDialog[Column[{Labeled[Framed[func[expr], FrameMargins->10, ImageMargins->10, RoundingRadius->5], HoldForm[expr], Top], DefaultButton[]}, Alignment->Center],
-  	    WindowTitle->OptionValue[WindowTitle]
-  	]
-  ]
-];
-
-
 End[];
-
-
-(* Print[$Context]; *)
 
 
 EndPackage[];

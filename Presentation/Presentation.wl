@@ -1,8 +1,10 @@
 (* ::Package:: *)
-(* Utils to present results of evaluation *)
+
+(* ::Title:: *)
+(*Presentation*)
 
 
-BeginPackage["RG`Presentation`", {"RG`BaseUtils`"}];
+BeginPackage["RG`Presentation`", {"RG`Tools`", "RG`BaseUtils`"}];
 
 
 tagged::usage = "
@@ -73,12 +75,37 @@ Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> F
 
 SetAttributes[tagged, HoldFirst];
 tagged::shdw = "Warning: `` appeares more than once, so it can shadow the previous result";
+tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
+
 tagged[expr:Set[lhs_, _], args___] := (
   expr;
   tagged[lhs, args];
 );
-tagged[expr_, opts:OptionsPattern[]] := tagged[expr, Identity, opts];
-tagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[HoldForm[expr]]},
+
+tagged[expr:present[lhs_], func_, opts:OptionsPattern[]] := With[
+  {tag = ToString[HoldForm[lhs]]},
+  If[Not[$Notebooks],
+		TeXPrint[func[expr], tag]
+		,
+	  (
+      CellPrint[ExpressionCell[
+        expr // func //
+          If[OptionValue[tagged, "colorize"], colorize[_HoldForm], Identity] //
+          OptionValue[tagged, "form"],
+        "Output", CellTags -> tag, ShowCellTags -> True, opts
+      ]];
+      NotebookLocate[tag];
+      If[Length[SelectedCells[]] > 1,
+        Message[tagged::shdw, tag],
+        If[OptionValue[tagged, "final"],
+          FrontEndExecute[FrontEndToken["OpenCloseGroup"]];
+  				SelectionMove[NextCell[CellStyle -> "Input"], All, Cell];
+        ]
+      ];
+		)
+  ];
+];
+tagged[expr_, func_, opts:OptionsPattern[]] := With[{tag = ToString[HoldForm[expr]]},
   If[Not[$Notebooks], TeXPrint[func[expr], tag],
 	  (
     CellPrint[ExpressionCell[
@@ -270,7 +297,7 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
     func = If[OptionValue["HoldForm"], HoldForm, Identity],
     xn = {xs}[[;; Min[OptionValue["n"], Length[{xs}]]]]
   },
-  If[Length[{xs}] <= OptionValue["n"], head[xs], 
+  If[Length[{xs}] <= OptionValue["n"], head[xs],
     With[{args=func /@ xn // Append[str]}, head@@args]
   ]
 ];
