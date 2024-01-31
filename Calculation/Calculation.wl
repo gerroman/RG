@@ -60,7 +60,7 @@ changeIntegrateVars[rulex_List, ruley_List] := With[{
 	},
 	ReplaceAll[
 	  integrate[expr_, Sequence@@xs] :>
-		  integrate[(expr /. rulex) * Det[Outer[D, fs, ys]], Sequence@@ys]
+		  integrate[(expr //. rulex) * Det[Outer[D, fs //. rulex, ys]], Sequence@@ys]
   ]
 ];
 
