@@ -123,7 +123,6 @@ info[expr_Symbol] := (
 	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
 );
 info[expr_Symbol, All] := (
-	pprint[Context[expr]];
 	info[expr];
 	If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, verbose->False]];
 	If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
