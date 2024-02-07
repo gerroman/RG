@@ -58,12 +58,12 @@ changeIntegrateVars[rulex_List, ruley_List] := With[{
 		ys = First/@ruley,
 		fs = Last/@rulex
 	},
-	ReplaceAll[
-	  integrate[expr_, Sequence@@xs] :>
-		  integrate[(expr //. rulex) * Det[Outer[D, fs //. rulex, ys]], Sequence@@ys]
-  ]
+	With[{det = Det[Outer[D, fs, ys]]},
+		ReplaceAll[
+		  integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * det, Sequence@@ys]
+  	]
+	]
 ];
-
 setIntegrateLimits[vx:{x_, xMin_, xMax_}] := ReplaceAll[
   integrate[expr_, y___, x, z___] :> integrate[expr, y, vx, z]
 ];

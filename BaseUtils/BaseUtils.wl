@@ -103,7 +103,7 @@ load::get = "[info]: load `1` ...";
 load::save = "[info]: save `1` ...";
 load::failed = "[error]: failed to load file `1`";
 load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`temporary\[LetterSpace]directory, fname}]
+		path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
 	If[FileExistsQ[path] && Not[OptionValue[update]], (
 			If[OptionValue[verbose],
@@ -122,7 +122,7 @@ load[fname_String, symbol_Symbol, expr___, OptionsPattern[]] := With[{
 
 
 load[fname_String, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`temporary\[LetterSpace]directory, fname}]
+		path = FileNameJoin[{Global`temporarydirectory, fname}]
 	},
 	If[FileExistsQ[path],
 		(
@@ -142,38 +142,38 @@ load[fname_String, OptionsPattern[]] := With[{
 SetAttributes[loadFigure, HoldAll];
 Options[loadFigure] = {update -> False, verbose -> True, "force"->False};
 loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}],
+		path = FileNameJoin[{Global`figuredirectory, fname}],
 		hash = Hash[Hold[expr]],
-		hash\[LetterSpace]path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}] <> ".hash",
+		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash",
 		force = OptionValue["force"]
 	},
 	If[(Not@FileExistsQ[path]
-			|| Not@FileExistsQ[hash\[LetterSpace]path]
-			|| (hash =!= Get[hash\[LetterSpace]path] && OptionValue[update])), (
+			|| Not@FileExistsQ[hashpath]
+			|| (hash =!= Get[hashpath] && OptionValue[update])), (
 			If[OptionValue[verbose],
 				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hash\[LetterSpace]path]]];
+				print[ToString[StringForm[load::save, hashpath]]];
 			];
 			Export[path, expr];
-			Put[hash, hash\[LetterSpace]path];
+			Put[hash, hashpath];
 	)];
-	If[hash =!= Get[hash\[LetterSpace]path],
+	If[hash =!= Get[hashpath],
 		print["[warning]: expression hashs differ, consider force update ..."];
 		If[force,
   		print["[warning]: forcing update ... "];
 			If[OptionValue[verbose],
 				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hash\[LetterSpace]path]]];
+				print[ToString[StringForm[load::save, hashpath]]];
 			];
 			Export[path, expr];
-			Put[hash, hash\[LetterSpace]path];
+			Put[hash, hashpath];
 		]
 	];
 	Import[path];
 	path
 ];
 loadFigure[fname_String] := With[{
-		path = FileNameJoin[{Global`figure\[LetterSpace]directory, fname}]
+		path = FileNameJoin[{Global`figuredirectory, fname}]
 	},
   If[FileExistsQ[path], Import[path],
     print[StringForm["[error]: '``' not found", path]];
