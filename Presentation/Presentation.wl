@@ -197,16 +197,10 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
      SetSelectedNotebook[nb];
      NotebookPrint[nb, Interactive->True]
    )],
-   Button["Help",
-     FrontEndExecute[FrontEndTokenExecute[nb, "SelectionHelpDialog"]]
+   Button["Save",
+     FrontEndTokenExecute[nb, "Save"]
    ]},
    {
-   Button["Show Code", (
-     SetSelectedNotebook[nb];
-     NotebookFind[nb, "in", All, CellTags];
-     NotebookFind[nb, "Input", All, CellStyle];
-     NotebookFind[nb, "in", All, CellTags];
-   )],
    Button["Clear All Outputs", (
      SetSelectedNotebook[nb];
      NotebookFind[nb, "in", All, CellTags];
@@ -219,6 +213,12 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
      FrontEndExecute[
        FrontEndToken[nb, "DeleteGeneratedCells"]
      ];
+     NotebookFind[nb, "in", All, CellTags];
+   )],
+   Button["Show Code", (
+     SetSelectedNotebook[nb];
+     NotebookFind[nb, "in", All, CellTags];
+     NotebookFind[nb, "Input", All, CellStyle];
      NotebookFind[nb, "in", All, CellTags];
    )],
    Button["Get handouts", (
