@@ -92,6 +92,7 @@ changeVars::usage = "changeVars[xs, ys, rules][expr] changes variables in expr, 
 
 
 push::usage = "push[outer, inner][expr] pushes the outer function through the inner function"
+pushRule::usage = "pushRule[outer, inner] creates a rule to push outer function into the inner function"
 
 
 Begin["`Private`"];
