@@ -2,7 +2,7 @@
 
 MLINKDIR=${MATHEMATICA_BASE}/SystemFiles/Links/WSTP/DeveloperKit/Linux-x86-64
 CADDSDIR=${MLINKDIR}/CompilerAdditions
-EXTRA_CFLAGS=-std=c++11 -m64
+EXTRA_CFLAGS=-std=c++11 -m64 #-DDEBUG
 MLLIB=WSTP64i4
 
 INCDIR=${CADDSDIR}
