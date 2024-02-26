@@ -1,4 +1,4 @@
-#!/usr/bin/expect
+#!/bin/env expect
 
 spawn  "./G.bin"
 expect "Create link: " { send "6464\r" }

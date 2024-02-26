@@ -2,21 +2,16 @@ BeginPackage["RG`GiNaC`"]
 
 
 G::usage = "G[{z1, ..., zn}, y] evaluate iterative polylog";
-
-
-process = StartProcess[{"make", "-C", "/home/roman/Documents/Projects/RG/GiNaC", "link"}];
-Print[ProcessStatus[process]];
-Pause[1];
-Print[ProcessStatus[process]];
-Pause[1];
-link = Install[LinkConnect["6464"]];
-Print[link];
+EvalG::usage = "EvalG[{Re[z1], ..., Re[zn]}, {Im[z1], .., Im[zn]}, y] -- for Complex {z1, ..., zn} and Real y";
 
 
 Begin["`Private`"];
 
 
-G[zs_List, y_] := EvalG[Re[zs], Im[zs], y];
+Install[FileNameJoin[{"RG", "GiNaC", "G.bin"}]];
+
+
+G[zs_List, y_Real] := Complex @@ EvalG[Re[zs], Im[zs], y];
 
 
 End[]
