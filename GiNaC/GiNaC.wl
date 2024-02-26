@@ -11,7 +11,7 @@ Begin["`Private`"];
 Install[FileNameJoin[{"RG", "GiNaC", "G.bin"}]];
 
 
-G[zs_List, y_Real] := Complex @@ EvalG[Re[zs], Im[zs], y];
+G[zs_List, y_] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];
 
 
 End[]
