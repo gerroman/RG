@@ -1,9 +1,18 @@
 :Begin:
-:Function:       G
-:Pattern:        G[z_Real /; (z >= 1 || z < 0), y_Real /; (0 <= y && y < 1)]
-:Arguments:      {z, y}
-:ArgumentTypes:  {Real, Real}
-:ReturnType:     Real
+:Function:       EvalG
+:Pattern:        EvalG[zs_List, y_Real]
+:Arguments:      {zs, y}
+:ArgumentTypes:  {RealList, Real}
+:ReturnType:     Manual
 :End:
 
-:Evaluate: G::usage = "G[z, y] evaluates G[{z}, y] for real values of z (z >= 1 || z < 0) and y ((0 <= y && y < 1))"
+
+:Begin:
+:Function:       EvalG
+:Pattern:        EvalG[zsRe_List, zsIm_List, y_Real]
+:Arguments:      {zsRe, zsIm, y}
+:ArgumentTypes:  {RealList, RealList, Real}
+:ReturnType:     Manual
+:End:
+
+:Evaluate: EvalG::usage = "EvalG[{z1, ..., zn}, y] -- for Real {z1, ..., zn}, and Real y, EvalG[{Re[z1], ..., Re[zn]}, {Im[z1], .., Im[zn]}, y] -- for Complex {z1, ..., zn} and Real y"

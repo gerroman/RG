@@ -1,3 +1,3 @@
 #!/usr/bin/MathematicaScript -script
-Install["./G.bin"]
-Print[G[1.0/0.5, 0.3]]
+Print[G[{0.1, 0.2}, 0.3]]
+Print[G[{0.1, 0.2}, {Sqrt[0.99], 0.}, 0.3]]
