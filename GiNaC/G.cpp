@@ -22,7 +22,6 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
     imZs++;
   }
 
-  std::cerr << "[info]: zs = " << zs << std::endl;
   GiNaC::numeric y(yValue);
   std::cerr << "[info]: y = " << y << std::endl;
 
