@@ -301,6 +301,7 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
     With[{args=func /@ xn // Append[str]}, head@@args]
   ]
 ];
+shorten[expr_, OptionsPattern[]] := expr;
 
 
 TeXString = Function[expr, expr // TeXForm // ToString];
