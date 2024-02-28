@@ -1,7 +1,7 @@
 Needs["RG`GiNaC`"];
 
 SetAttributes[show, HoldFirst]
-show[expr_] := Write["stderr", ToString[OutputForm[HoldForm[expr]] == expr]];
+show[expr_] := Write["stdout", ToString[OutputForm[HoldForm[expr]] == expr]];
 show[G[{0.1, 0.2}, 0.3]];
 show[N@G[{0.1, 0.2}, 0.3]];
 show[EvalG[{0.1, 0.2}, {Sqrt[0.99], 0.}, 0.3]];
