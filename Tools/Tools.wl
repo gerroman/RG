@@ -291,11 +291,16 @@ SetAttributes[silent, HoldFirst];
 silent[expr_] := Block[{Print}, expr];
 
 
-SetAttributes[log, HoldAll];
+SetAttributes[log, HoldRest];
 Options[log] = {"endl" -> "\n", "prefix" -> "\033[1;37m[info]\033[0m: "};
+log[expr_String, OptionsPattern[]] :=(
+  WriteString["stderr",
+    StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
+  ];
+);
 log[expr_, OptionsPattern[]] := (
   WriteString["stderr",
-    StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
+    StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
   ];
 );
 log[message_, expr_, OptionsPattern[]] := (
