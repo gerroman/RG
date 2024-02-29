@@ -60,6 +60,25 @@ flast[list, verbose -> False] suppress warnings"
 
 emptyQ::usage = "emptyQ[list] returns True for empty list {}"
 
+cases::usage = "cases[pattern] \[LongDash] function to get union expressions matching 'pattern'
+cases[expr_, patter_] call cases[pattern][expr]
+"
+
+makeDirectory::usage = "makeDirectory[path] \[LongDash] creates 'path' if it does note exists"
+
+silent::usage = "silent[expr] \[LongDash] evaluates 'expr' with turned off Print"
+
+log::usage = "log[expr] \[LongDash] converts 'expr' to string and write an info message to 'stderr'"
+
+timing::usage = "timing[expr] \[LongDash] timing 'expr' and write an info message to 'stderr'"
+
+check::usage = "check[expr] \[LongDash] check 'expr' to be True, write an info message to 'stderr'"
+
+exit::usage = "exit[code] \[LongDash] exit with code from script"
+
+note::usage = "note[expr] \[LongDash] converts 'expr' (HoldForm input and InputForm output) to strings and write an info message to 'stderr'"
+
+
 
 (* ::Section:: *)
 (*Private*)
@@ -68,7 +87,7 @@ emptyQ::usage = "emptyQ[list] returns True for empty list {}"
 Begin["`Private`"];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Kernel working and logging*)
 
 
@@ -133,7 +152,12 @@ info[expr_String] := (
 );
 
 
-(* ::Subsection::Closed:: *)
+cases[patt_] := Function[expr, Union@Cases[expr, patt, Infinity]];
+cases[expr_, patt_] := Union@Cases[expr, patt, Infinity];
+
+
+
+(* ::Subsection:: *)
 (*FrontEnd operations from scripts*)
 
 
@@ -165,7 +189,7 @@ show[expr_, func_:Identity, opts:OptionsPattern[]] := With[
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Equations*)
 
 
@@ -204,7 +228,7 @@ rewriteIt[lfunc_List, rfunc_List][expr_] := With[{
 rewriteIt[fs__][expr_] := rewriteIt[{Identity}, {fs}][expr];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Lists*)
 
 
@@ -240,6 +264,70 @@ partition[expr_List, n_Integer] := With[{
 		m~Join~{expr[[l - Mod[l, n] + 1;;]]}
 	]
 ];
+
+
+(* ::Subsection:: *)
+(*Script utilities*)
+
+
+SetAttributes[silent, HoldFirst];
+silent[expr_] := Block[{Print}, expr];
+
+
+SetAttributes[log, HoldAll];
+Options[log] = {"endl" -> "\n", "prefix" -> "\033[1;37m[info]\033[0m: "};
+log[expr_, OptionsPattern[]] := (
+  WriteString["stderr",
+    StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
+  ];
+);
+log[message_, expr_, OptionsPattern[]] := (
+  WriteString["stderr",
+    StringJoin[OptionValue["prefix"], ToString[message], " ... "]
+  ];
+  silent[expr];
+  WriteString["stderr", OptionValue["endl"]];
+);
+
+
+SetAttributes[timing, HoldAll];
+timing[message_, expr_] := (
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "\033[0;35m[time]\033[0m: ", "endl" -> " ... "];
+  With[{time = First@Timing[silent[expr];]},
+    log[NumberForm[time, {6, 2}], "prefix" -> "\033[0;35m", "endl" -> " [seconds]\033[0m\n"]
+  ];
+);
+timing[expr_] := timing[HoldForm[expr], expr];
+
+
+makeDirectory[path_] := (
+	If[Not@FileExistsQ[path],
+		log[StringForm["making directory '``' ... ", path]];
+		CreateDirectory[path];
+	];
+	If[Not@DirectoryQ[path],
+		log[StringForm["failed to make/find directory '``'", path], "prefix" -> "[error]: "];
+		exit[1];
+	];
+  log[StringForm["``", AbsoluteFileName[path]]];
+);
+
+
+SetAttributes[check, HoldAll];
+check[message_, expr_] := Module[{result},
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"\033[1;34m[test]\033[0m: ", "endl" -> " ... "];
+  result = ((expr) === True);
+  log[If[result, "\033[1;32m[OK]\033[0m", "\033[1;31m[FAIL]\033[0m"], "prefix"->""];
+  Return[result];
+];
+check[expr_] := check[HoldForm[expr], expr];
+
+
+exit[code_:0] := (Exit[code]; Abort[]);
+
+
+SetAttributes[note, HoldAll]
+note[expr_] := log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[expr], "prefix"->"\033[1;33m[note]\033[0m: "];
 
 
 (* ::Section:: *)
