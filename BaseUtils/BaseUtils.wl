@@ -29,10 +29,6 @@ hold[{x1,...}] apply HoldForm to specific xs"
 pass::usage = "pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged"
 
 
-modify::usage = "modify[pattern, func] create function to replace all matches of the pattern to results of application of the function func to these matches
-modify[{x1, ...}, func] create function for specific x1, ..."
-
-
 pullFactors::usage = "pullFactors[pattern, func] pull factors x from func which match func[___, (x:pattern) * ___, ___]
 pullFactors[{x1,...}, func] pull concrete xs"
 
@@ -222,19 +218,6 @@ hold[xs__] := hold[{xs}];
 
 SetAttributes[pass, HoldAll];
 pass[expr_, ___] := (expr;);
-
-
-modify[xs_List, func_] := With[{
-		rules = Thread[Rule[xs, Map[func, xs]]]
-	},
-	ReplaceAll[rules]
-];
-modify[pattern_, func_] := Function[
-	expr,
-	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-		modify[xs, func][expr]
-	]
-];
 
 
 pullFactors[{}, func_, maxIter_:$IterationLimit] = Identity;

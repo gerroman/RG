@@ -41,6 +41,10 @@ rewriteIt::usage = "rewriteIt[func][expr] \[LongDash] rewrite expr (equation, ru
 rewriteIt[funcL, funcR][expr] \[LongDash] rewrite expr (equation, rule) using funcL for the left hand sideand funcR for the right hand side"
 
 
+modify::usage = "modify[pattern, func] create function to replace all matches of the pattern to results of application of the function func to these matches
+modify[{x1, ...}, func] create function for specific x1, ..."
+
+
 processList::usage = "processList[fs][expr] apply list of functions to expression, returns results of all steps"
 
 
@@ -226,6 +230,19 @@ rewriteIt[lfunc_List, rfunc_List][expr_] := With[{
 	x == y
 ];
 rewriteIt[fs__][expr_] := rewriteIt[{Identity}, {fs}][expr];
+
+
+modify[xs_List, func_] := With[{
+		rules = Thread[Rule[xs, Map[func, xs]]]
+	},
+	ReplaceAll[rules]
+];
+modify[pattern_, func_] := Function[
+	expr,
+	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
+		modify[xs, func][expr]
+	]
+];
 
 
 (* ::Subsection:: *)
