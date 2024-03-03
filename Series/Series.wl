@@ -17,6 +17,7 @@ seriesToRules::usage = "seriesToRules[series] \[LongDash] converts series to rul
 leadingSeries::usage = "leadingSeries[expr, {var, pole, order}] \[LongDash] shortcut for leading[Series[expr, {var, pole, order}]]
 leadingSeries[expr, {var, pole, order}, n] \[LongDash] shortcut for leading[Series[expr, {var, pole, order}], n]"
 
+remainder::usage = "remainder[series] \[LongDash] return the remainder of the series"
 
 Begin["`Private`"]
 
@@ -110,6 +111,12 @@ seriesToRules[s_SeriesData] := Module[
 
 leadingSeries[expr_, {var_, pole_, order_}] := leading[Series[expr, {var, pole, order}]];
 leadingSeries[expr_, {var_, pole_, order_}, n_Integer] := leading[Series[expr, {var, pole, order}], n];
+
+SetAttributes[remainder, Listable];
+remainder[s_SeriesData] := Module[{var, pole, nmin, nmax, den},
+	{var, pole, nmin, nmax, den} = getSeriesData[s];
+	Return[SeriesData[var, pole, {}, nmax, nmax, den]];
+];
 
 
 End[]
