@@ -1,5 +1,6 @@
 BeginPackage["RG`Series`"]
 
+
 leadingTermOrder::usage = "leadingTermOrder[series] \[LongDash] get order of the leading term in 'series' expansion"
 
 seriesOrder::usage = "seriesOrder[series] \[LongDash] get order the last term in 'series' expansion"
@@ -12,6 +13,9 @@ leading::usage = "leading[series] \[LongDash] get leadingTerm + O[subLeadingTerm
 leading[series, n] \[LongDash] get the first 'n' leadingTerms + O[remainderTerms]"
 
 seriesToRules::usage = "seriesToRules[series] \[LongDash] converts series to rules for coefficents"
+
+leadingSeries::usage = "leadingSeries[expr, {var, pole, order}] \[LongDash] shortcut for leading[Series[expr, {var, pole, order}]]
+leadingSeries[expr, {var, pole, order}, n] \[LongDash] shortcut for leading[Series[expr, {var, pole, order}], n]"
 
 
 Begin["`Private`"]
@@ -102,6 +106,10 @@ seriesToRules[s_SeriesData] := Module[
 	  Thread[cs -> coeffs]
 	}]
 ];
+
+
+leadingSeries[expr_, {var_, pole_, order_}] := leading[Series[expr, {var, pole, order}]];
+leadingSeries[expr_, {var_, pole_, order_}, n_Integer] := leading[Series[expr, {var, pole, order}], n];
 
 
 End[]

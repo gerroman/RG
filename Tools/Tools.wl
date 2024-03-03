@@ -104,7 +104,7 @@ reset[] := (
 SetAttributes[print, {HoldFirst}];
 Options[print] = {
 	"verbose"->False,
-	"stream"->"stdout",
+	"stream"->"stderr",
 	"header" :> DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)\n"}],
 	"sep"->"\n"
 };
@@ -201,18 +201,20 @@ SetAttributes[present, HoldFirst];
 present[expr_] := HoldForm[expr] == expr;
 
 
-processList::duplicates = "processList contains unused functions"
-
-
-processList[fs_List][expr_] := With[
-	{result = FoldList[#2[#1]&, expr, fs]},
-	If[Not @ DuplicateFreeQ[result], Message[processList::duplicates]];
+processList::unused = "function '``' has no effect in processList";
+processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
+	If[Not @ DuplicateFreeQ[result],
+    Module[{prev, pos},
+      pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
+      log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"\033[1;31m[error]\033[0m: "];
+    ];
+  ];
 	result
 ];
 processList[fs__][expr_] := processList[{fs}][expr];
 
 Options[process] = {verbose -> False};
-process[fs_List, opts:OptionsPattern[]][expr_] := If[OptionValue[verbose], 
+process[fs_List, opts:OptionsPattern[]][expr_] := If[OptionValue[verbose],
   processList[fs][expr][[{1, -1}]],
   {expr, (RightComposition@@fs)[expr]}
 ];
@@ -295,7 +297,7 @@ silent[expr_] := Block[{Print}, expr];
 
 
 SetAttributes[log, HoldRest];
-Options[log] = {"endl" -> "\n", "prefix" -> "\n\033[1;37m[info]\033[0m: "};
+Options[log] = {"endl" -> "\n", "prefix" -> "\033[1;37m[info]\033[0m: "};
 log[expr_String, OptionsPattern[]] :=(
   WriteString["stderr",
     StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
@@ -317,7 +319,7 @@ log[message_, expr_, OptionsPattern[]] := (
 
 SetAttributes[timing, HoldAll];
 timing[message_, expr_] := (
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "\n\033[0;35m[time]\033[0m: ", "endl" -> " ... "];
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "\033[0;35m[time]\033[0m: ", "endl" -> " ... "];
   With[{time = First@Timing[silent[expr];]},
     log[ToString@NumberForm[time, {6, 2}], "prefix" -> "\033[0;35m", "endl" -> " [seconds]\033[0m\n"]
   ];
@@ -327,20 +329,20 @@ timing[expr_] := timing[HoldForm[expr], expr];
 
 makeDirectory[path_] := (
 	If[Not@FileExistsQ[path],
-		log[StringForm["making directory '``' ... ", path]];
+		log[ToString@StringForm["making directory '``' ... ", path]];
 		CreateDirectory[path];
 	];
 	If[Not@DirectoryQ[path],
-		log[StringForm["failed to make/find directory '``'", path], "prefix" -> "[error]: "];
+		log[ToString@StringForm["failed to make/find directory '``'", path], "prefix" -> "[error]: "];
 		exit[1];
 	];
-  log[StringForm["``", AbsoluteFileName[path]]];
+  log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
 );
 
 
 SetAttributes[check, HoldAll];
 check[message_, expr_] := Module[{result},
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"\n\033[1;34m[test]\033[0m: ", "endl" -> " ... "];
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"\033[1;34m[test]\033[0m: ", "endl" -> " ... "];
   result = ((expr) === True);
   log[If[result, "\033[1;32m[OK]\033[0m", "\033[1;31m[FAIL]\033[0m"], "prefix"->""];
   Return[result];
@@ -352,7 +354,7 @@ exit[code_:0] := (Exit[code]; Abort[]);
 
 
 SetAttributes[note, HoldAll]
-note[expr_] := log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[expr], "prefix"->"\n\033[1;33m[note]\033[0m: "];
+note[expr_] := log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[expr], "prefix"->"\033[1;33m[note]\033[0m: "];
 
 
 (* ::Section:: *)
