@@ -354,7 +354,10 @@ exit[code_:0] := (Exit[code]; Abort[]);
 
 
 SetAttributes[note, HoldAll]
-note[expr_] := log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[expr], "prefix"->"\033[1;33m[note]\033[0m: "];
+note[expr_] := With[{result = expr}, 
+  log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[result], "prefix"->"\033[1;33m[note]\033[0m: "];
+  Return[result];
+];
 
 
 (* ::Section:: *)
