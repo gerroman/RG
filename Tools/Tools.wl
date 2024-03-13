@@ -95,9 +95,9 @@ Begin["`Private`"];
 (*Kernel working and logging*)
 
 
-reset[] := (
-	print[StringForm["[``]: closing wolfram session ...", DateString[]]];
-	Quit[];
+reset[exitcode_:0] := (
+	log[ToString@StringForm["[``]: closing wolfram session ...", DateString[]]];
+	exit[exitcode];
 );
 
 
@@ -206,7 +206,7 @@ processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
     Module[{prev, pos},
       pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-      log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"\033[1;31m[error]\033[0m: "];
+      log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"[ERROR]: "];
     ];
   ];
 	result
@@ -296,34 +296,48 @@ SetAttributes[silent, HoldFirst];
 silent[expr_] := Block[{Print}, expr];
 
 
+ruleLogWrite = {
+  "[info]" -> "\033[1;37m[info]\033[0m",
+  "[ERROR]" -> "\033[1;31m[ERROR]\033[0m", 
+  "[time]" -> "\033[0;35m[time]\033[0m", 
+  "[seconds]" -> "\033[0;35m[seconds]\033[0m", 
+  "[test]" -> "\033[1;34m[test]\033[0m",
+  "[OK]" -> "\033[1;32m[OK]\033[0m",
+  "[note]" -> "\033[1;33m[note]\033[0m"
+};
+
+logwrite[message_] := If[$Notebooks, 
+  Print[message], 
+  WriteString["stderr", StringReplace[ToString@message, ruleLogWrite]]
+];
+
+
 SetAttributes[log, HoldRest];
-Options[log] = {"endl" -> "\n", "prefix" -> "\033[1;37m[info]\033[0m: "};
-log[expr_String, OptionsPattern[]] :=(
-  WriteString["stderr",
-    StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
-  ];
-);
-log[expr_, OptionsPattern[]] := (
-  WriteString["stderr",
-    StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
-  ];
-);
+Options[log] = {"endl" -> "\n", "prefix" -> "[info]: "};
+log[expr_String, OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
+  },
+  logwrite[message];
+];
+log[expr_, OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
+  },
+  logwrite[message];
+];
 log[message_, expr_, OptionsPattern[]] := (
-  WriteString["stderr",
-    StringJoin[OptionValue["prefix"], ToString[message]]
-  ];
+  logwrite[StringJoin[OptionValue["prefix"], ToString[message]]];
   silent[expr];
-  WriteString["stderr", OptionValue["endl"]];
+  logwrite[OptionValue["endl"]];
 );
 
 
 SetAttributes[timing, HoldAll];
-timing[message_, expr_] := (
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "\033[0;35m[time]\033[0m: ", "endl" -> " ... "];
-  With[{time = First@Timing[silent[expr];]},
-    log[ToString@NumberForm[time, {6, 2}], "prefix" -> "\033[0;35m", "endl" -> " [seconds]\033[0m\n"]
-  ];
-);
+timing[message_, expr_] := Module[{time},
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... "];
+  time = First@Timing[silent[expr]];
+  log[ToString@NumberForm[time, {6, 2}], "prefix" -> "", "endl" -> " [seconds]\n"];
+  Return[time];
+];
 timing[expr_] := timing[HoldForm[expr], expr];
 
 
@@ -333,7 +347,7 @@ makeDirectory[path_] := (
 		CreateDirectory[path];
 	];
 	If[Not@DirectoryQ[path],
-		log[ToString@StringForm["failed to make/find directory '``'", path], "prefix" -> "[error]: "];
+		log[ToString@StringForm["failed to make/find directory '``'", path], "prefix" -> "[ERROR]: "];
 		exit[1];
 	];
   log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
@@ -342,9 +356,9 @@ makeDirectory[path_] := (
 
 SetAttributes[check, HoldAll];
 check[message_, expr_] := Module[{result},
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"\033[1;34m[test]\033[0m: ", "endl" -> " ... "];
+  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"[test]: ", "endl" -> " ... "];
   result = ((expr) === True);
-  log[If[result, "\033[1;32m[OK]\033[0m", "\033[1;31m[FAIL]\033[0m"], "prefix"->""];
+  log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
   Return[result];
 ];
 check[expr_] := check[HoldForm[expr], expr];
@@ -356,8 +370,8 @@ exit[code_:0] := (Exit[code]; Abort[]);
 SetAttributes[note, HoldAll]
 note[expr_] := With[{result = expr},
   If[result =!= Null,
-    log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[result], "prefix"->"\033[1;33m[note]\033[0m: "],
-    log[ToString@HoldForm[expr], "prefix"->"\033[1;33m[note]\033[0m: "]
+    log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[result], "prefix"->"[note]: "],
+    log[ToString@HoldForm[expr], "prefix"->"[note]: "]
   ];
   Return[result];
 ];
