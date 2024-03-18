@@ -83,6 +83,8 @@ exit::usage = "exit[code] \[LongDash] exit with code from script"
 note::usage = "note[expr] \[LongDash] converts 'expr' (HoldForm input and InputForm output) to strings and write an info message to 'stderr'"
 
 
+sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'"
+
 
 (* ::Section:: *)
 (*Private*)
@@ -298,16 +300,16 @@ silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
   "[info]" -> "\033[1;37m[info]\033[0m",
-  "[ERROR]" -> "\033[1;31m[ERROR]\033[0m", 
-  "[time]" -> "\033[0;35m[time]\033[0m", 
-  "[seconds]" -> "\033[0;35m[seconds]\033[0m", 
+  "[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
+  "[time]" -> "\033[0;35m[time]\033[0m",
+  "[seconds]" -> "\033[0;35m[seconds]\033[0m",
   "[test]" -> "\033[1;34m[test]\033[0m",
   "[OK]" -> "\033[1;32m[OK]\033[0m",
   "[note]" -> "\033[1;33m[note]\033[0m"
 };
 
-logwrite[message_] := If[$Notebooks, 
-  Print[message], 
+logwrite[message_] := If[$Notebooks,
+  Print[message],
   WriteString["stderr", StringReplace[ToString@message, ruleLogWrite]]
 ];
 
@@ -374,6 +376,18 @@ note[expr_] := With[{result = expr},
     log[ToString@HoldForm[expr], "prefix"->"[note]: "]
   ];
   Return[result];
+];
+
+
+sizeOf[expr_] := Module[
+  {leafs = LeafCount[expr], bytes = Quantity[ByteCount[expr], "Bytes"]},
+  bytes = 1`3 * Which[
+    QuantityMagnitude[bytes] > 10^9, UnitConvert[bytes, "Gigabytes"],
+    QuantityMagnitude[bytes] > 10^6, UnitConvert[bytes, "Megabytes"],
+    QuantityMagnitude[bytes] > 10^3, UnitConvert[bytes, "Kilobytes"],
+    True, bytes
+  ];
+  {leafs, bytes}
 ];
 
 
