@@ -2,3 +2,5 @@
 *.o
 *tm.c
 *tm.cpp
+*/bin/*
+*/build/*
