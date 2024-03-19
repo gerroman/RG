@@ -14,7 +14,6 @@ FIND_PACKAGE(cln)
 include_directories("C:\\Wolfram\\Mathematica\\10.4\\SystemFiles\\Links\\WSTP\\DeveloperKit\\Windows-x86-64\\CompilerAdditions\\mldev64\\include")
 link_directories("C:\\Wolfram\\Mathematica\\10.4\\SystemFiles\\Links\\WSTP\\DeveloperKit\\Windows-x86-64\\CompilerAdditions\\mldev64\\lib")
 
-set(CMAKE_EXECUTABLE_SUFFIX .bin)
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(G G-tm.cpp G.cpp)
