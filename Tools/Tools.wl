@@ -366,7 +366,14 @@ check[message_, expr_] := Module[{result},
 check[expr_] := check[HoldForm[expr], expr];
 
 
-exit[code_:0] := (Exit[code]; Abort[]);
+exit[code_:0] := (
+	log[ToString@StringForm["[``]: uninstalling all links ... ", DateString[]],
+     Uninstall /@ Links[],
+     endl->"[Ok]\n"
+  ];
+	log[ToString@StringForm["[``]: calling Exit[] ...", DateString[]]];
+  Exit[code]; 
+);
 
 
 SetAttributes[note, HoldAll]
