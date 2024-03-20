@@ -1,19 +1,21 @@
 #include "wstp.h"
 #include <ginac/ginac.h>
 #include <cassert>
+#include <limits>
 
 void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
 {
   double gvalue[2];
-  const int k = 2;
-  gvalue[0] = 0.;
-  gvalue[1] = 0.;
+  gvalue[0] = std::numeric_limits<double>::quiet_NaN();
+  gvalue[1] = std::numeric_limits<double>::quiet_NaN();
 
-  GiNaC::lst zs;
-
-  if (nReZs == nImZs && nReZs >= 0) {
+  assert(nReZs == nImZs);
+  if (nReZs != nImZs) {
+    WSPutReal64List(stdlink, gvalue, 2);
+    return;
   }
 
+  GiNaC::lst zs;
   for (int i = 0; i < nReZs; ++i) {
     GiNaC::ex z = (*reZs) + GiNaC::I * (*imZs);
     zs.append(z);
@@ -21,16 +23,18 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
     imZs++;
   }
   GiNaC::numeric y(yValue);
-
+  
   GiNaC::ex GValue = GiNaC::G(zs, y);
+  
   assert(GiNaC::is_a<GiNaC::numeric>(GValue));
+  if (!GiNaC::is_a<GiNaC::numeric>(GValue)) {
+    WSPutReal64List(stdlink, gvalue, 2);
+    return;
+  }
 
   gvalue[0] = GiNaC::ex_to<GiNaC::numeric>(GiNaC::real_part(GValue)).to_double();
   gvalue[1] = GiNaC::ex_to<GiNaC::numeric>(GiNaC::imag_part(GValue)).to_double();
-
-  int result = WSPutReal64List(stdlink, gvalue, k);
-  if (result > 0) {
-  }
+  WSPutReal64List(stdlink, gvalue, 2);
 }
 
 int main(int argc, char* argv[])
