@@ -16,6 +16,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
   set(WL_INCLUDE_PATH "${WL_COMPILER_PREFIX}")
   set(WL_LIB "WSTP64i4")
   set(CMAKE_EXECUTABLE_SUFFIX ".exe")
+	find_package(UUID REQUIRED)
 endif()
 
 message("[note]: platform = '${WL_PLATFORM}'")
