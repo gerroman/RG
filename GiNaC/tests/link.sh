@@ -1,5 +1,5 @@
 #!/bin/env expect
 
-spawn  "./G.bin"
+spawn  "./bin/G.exe"
 expect "Create link: " { send "6464\r" }
 interact
