@@ -13,13 +13,7 @@ find_package(GiNaC REQUIRED)
 find_package(CLN REQUIRED)
 
 wsprep(${CMAKE_CURRENT_SOURCE_DIR}/G.tm G-tm.cpp)
-
 add_executable(G G-tm.cpp G.cpp)
-if(${WL_PLATFORM} STREQUAL "Linux-x86-64")
-  target_link_libraries(G ${WL_LIB} uuid pthread rt dl ginac cln)
-else()
-  target_link_libraries(G ${WL_LIB} ginac cln)
-endif()
+wslink(G ginac cln)
 
-
-install(TARGETS G DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/package/bin")
+install(TARGETS G DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/bin")
