@@ -85,6 +85,7 @@ note::usage = "note[expr] \[LongDash] converts 'expr' (HoldForm input and InputF
 
 sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'"
 
+$COLORIZE::usage = "$COLORIZE = TRUE to colorize output (default: False for Windows, True for Linux)"
 
 (* ::Section:: *)
 (*Private*)
@@ -95,6 +96,9 @@ Begin["`Private`"];
 
 (* ::Subsection:: *)
 (*Kernel working and logging*)
+
+
+$COLORIZE = ($OperatingSystem === "Unix");
 
 
 reset[exitcode_:0] := (
@@ -297,7 +301,6 @@ partition[expr_List, n_Integer] := With[{
 SetAttributes[silent, HoldFirst];
 silent[expr_] := Block[{Print}, expr];
 
-
 ruleLogWrite = {
   "[info]" -> "\033[1;37m[info]\033[0m",
   "[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
@@ -308,9 +311,10 @@ ruleLogWrite = {
   "[note]" -> "\033[1;33m[note]\033[0m"
 };
 
+
 logwrite[message_] := If[$Notebooks,
   Print[message],
-  WriteString["stderr", StringReplace[ToString@message, ruleLogWrite]]
+  WriteString["stderr", If[$COLORIZE, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
 ];
 
 
