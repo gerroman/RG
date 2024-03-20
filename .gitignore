@@ -5,3 +5,6 @@
 */bin/*
 */build/*
 *.exe
+debug/
+release/
+build/
