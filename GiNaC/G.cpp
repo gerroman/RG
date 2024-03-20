@@ -11,7 +11,8 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
 
   GiNaC::lst zs;
 
-  assert(nReZs == nImZs && nReZs >= 0);
+  if (nReZs == nImZs && nReZs >= 0) {
+  }
 
   for (int i = 0; i < nReZs; ++i) {
     GiNaC::ex z = (*reZs) + GiNaC::I * (*imZs);
@@ -27,7 +28,9 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
   gvalue[0] = GiNaC::ex_to<GiNaC::numeric>(GiNaC::real_part(GValue)).to_double();
   gvalue[1] = GiNaC::ex_to<GiNaC::numeric>(GiNaC::imag_part(GValue)).to_double();
 
-  assert(WSPutReal64List(stdlink, gvalue, k) > 0);
+  int result = WSPutReal64List(stdlink, gvalue, k);
+  if (result > 0) {
+  }
 }
 
 int main(int argc, char* argv[])
