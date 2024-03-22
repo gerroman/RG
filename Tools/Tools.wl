@@ -85,7 +85,7 @@ note::usage = "note[expr] \[LongDash] converts 'expr' (HoldForm input and InputF
 
 sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'"
 
-$COLORIZE::usage = "$COLORIZE = TRUE to colorize output (default: False for Windows, True for Linux)"
+$Colorize::usage = "$Colorize = True to colorize output (default: 'False' for Windows, 'True' for Linux)"
 
 (* ::Section:: *)
 (*Private*)
@@ -98,11 +98,11 @@ Begin["`Private`"];
 (*Kernel working and logging*)
 
 
-$COLORIZE = ($OperatingSystem === "Unix");
+$Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 
 reset[exitcode_:0] := (
-	log[ToString@StringForm["[``]: closing wolfram session ...", DateString[]]];
+	log["closing wolfram session ..."];
 	exit[exitcode];
 );
 
@@ -210,19 +210,19 @@ present[expr_] := HoldForm[expr] == expr;
 processList::unused = "function '``' has no effect in processList";
 processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
-    Module[{prev, pos},
-      pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-      log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"[ERROR]: "];
-    ];
-  ];
+		Module[{prev, pos},
+			pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
+			log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"[ERROR]: "];
+		];
+	];
 	result
 ];
 processList[fs__][expr_] := processList[{fs}][expr];
 
 Options[process] = {verbose -> False};
 process[fs_List, opts:OptionsPattern[]][expr_] := If[OptionValue[verbose],
-  processList[fs][expr][[{1, -1}]],
-  {expr, (RightComposition@@fs)[expr]}
+	processList[fs][expr][[{1, -1}]],
+	{expr, (RightComposition@@fs)[expr]}
 ];
 process[fs__][expr_] := process[{fs}][expr];
 
@@ -302,47 +302,49 @@ SetAttributes[silent, HoldFirst];
 silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
-  "[info]" -> "\033[1;37m[info]\033[0m",
-  "[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
-  "[time]" -> "\033[0;35m[time]\033[0m",
-  "[seconds]" -> "\033[0;35m[seconds]\033[0m",
-  "[test]" -> "\033[1;34m[test]\033[0m",
-  "[OK]" -> "\033[1;32m[OK]\033[0m",
-  "[note]" -> "\033[1;33m[note]\033[0m"
+	"[info]" -> "\033[1;37m[info]\033[0m",
+	"[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
+	"[time]" -> "\033[1;35m[time]\033[0m",
+	"[seconds]" -> "\033[1;35m[seconds]\033[0m",
+	"[test]" -> "\033[1;34m[test]\033[0m",
+	"[OK]" -> "\033[1;32m[OK]\033[0m",
+	"[note]" -> "\033[1;33m[note]\033[0m",
+	"[running]" -> "\033[1;36m[running]\033[0m",
+	"[exit]" -> "\033[1;36m[exit]\033[0m"
 };
 
 
 logwrite[message_] := If[$Notebooks,
-  Print[message],
-  WriteString["stderr", If[$COLORIZE, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
+	Print[message],
+	WriteString["stderr", If[$Colorize, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
 ];
 
 
 SetAttributes[log, HoldRest];
 Options[log] = {"endl" -> "\n", "prefix" -> "[info]: "};
 log[expr_String, OptionsPattern[]] := With[{
-    message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
-  },
-  logwrite[message];
+		message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
+	},
+	logwrite[message];
 ];
 log[expr_, OptionsPattern[]] := With[{
-    message = StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
-  },
-  logwrite[message];
+		message = StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
+	},
+	logwrite[message];
 ];
 log[message_, expr_, OptionsPattern[]] := (
-  logwrite[StringJoin[OptionValue["prefix"], ToString[message]]];
-  silent[expr];
-  logwrite[OptionValue["endl"]];
+	logwrite[StringJoin[OptionValue["prefix"], ToString[message]]];
+	silent[expr];
+	logwrite[OptionValue["endl"]];
 );
 
 
 SetAttributes[timing, HoldAll];
 timing[message_, expr_] := Module[{time},
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... "];
-  time = First@Timing[silent[expr]];
-  log[ToString@NumberForm[time, {6, 2}], "prefix" -> "", "endl" -> " [seconds]\n"];
-  Return[time];
+	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... "];
+	time = First@Timing[silent[expr]];
+	log[ToString@NumberForm[time, {6, 2}], "prefix" -> "", "endl" -> " [seconds]\n"];
+	Return[time];
 ];
 timing[expr_] := timing[HoldForm[expr], expr];
 
@@ -356,49 +358,54 @@ makeDirectory[path_] := (
 		log[ToString@StringForm["failed to make/find directory '``'", path], "prefix" -> "[ERROR]: "];
 		exit[1];
 	];
-  log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
+	log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
 );
 
 
 SetAttributes[check, HoldAll];
 check[message_, expr_] := Module[{result},
-  log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"[test]: ", "endl" -> " ... "];
-  result = ((expr) === True);
-  log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
-  Return[result];
+	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"[test]: ", "endl" -> " ... "];
+	result = ((expr) === True);
+	log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
+	Return[result];
 ];
 check[expr_] := check[HoldForm[expr], expr];
 
 
 exit[code_:0] := (
-	log[ToString@StringForm["[``]: uninstalling all links ... ", DateString[]],
-     Uninstall /@ Links[],
-     endl->"[Ok]\n"
-  ];
-	log[ToString@StringForm["[``]: calling Exit[] ...", DateString[]]];
-  Exit[code]; 
+	log["closing links before exit ... ",
+		 LinkClose /@ Links[],
+		 endl->"[OK]\n"
+	];
+	log[ToString@StringForm["[``]", DateString[]],
+		prefix->"[exit]: "
+	];
+	Exit[code]
 );
 
 
-SetAttributes[note, HoldAll]
-note[expr_] := With[{result = expr},
-  If[result =!= Null,
-    log[ToString@HoldForm[expr] <> " = " <> ToString@InputForm[result], "prefix"->"[note]: "],
-    log[ToString@HoldForm[expr], "prefix"->"[note]: "]
-  ];
-  Return[result];
+SetAttributes[note, HoldFirst];
+note[expr_, func_] := With[{result = expr, hf=HoldForm[InputForm[expr]]},
+	If[result =!= Null,
+		With[{hr = func[result]},
+      log[ToString@StringForm["`` = ``", hf, hr], "prefix"->"[note]: "]
+    ],
+		log[ToString@hf, "prefix"->"[note]: "]
+	];
+	Return[result];
 ];
+note[expr_] := note[expr, InputForm];
 
 
 sizeOf[expr_] := Module[
-  {leafs = LeafCount[expr], bytes = Quantity[ByteCount[expr], "Bytes"]},
-  bytes = 1`3 * Which[
-    QuantityMagnitude[bytes] > 10^9, UnitConvert[bytes, "Gigabytes"],
-    QuantityMagnitude[bytes] > 10^6, UnitConvert[bytes, "Megabytes"],
-    QuantityMagnitude[bytes] > 10^3, UnitConvert[bytes, "Kilobytes"],
-    True, bytes
-  ];
-  {leafs, bytes}
+	{leafs = LeafCount[expr], bytes = Quantity[ByteCount[expr], "Bytes"]},
+	bytes = 1`3 * Which[
+		QuantityMagnitude[bytes] > 10^9, UnitConvert[bytes, "Gigabytes"],
+		QuantityMagnitude[bytes] > 10^6, UnitConvert[bytes, "Megabytes"],
+		QuantityMagnitude[bytes] > 10^3, UnitConvert[bytes, "Kilobytes"],
+		True, bytes
+	];
+	{leafs, bytes}
 ];
 
 
@@ -409,4 +416,13 @@ sizeOf[expr_] := Module[
 End[];
 
 
+log[ToString@StringForm["[``] using ``", DateString[], "RG`Tools`"]];
+
+
 EndPackage[];
+
+
+(* Local Variables: *)
+(* mode: wl *)
+(* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
+(* End: *)
