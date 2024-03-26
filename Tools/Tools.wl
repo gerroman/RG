@@ -87,6 +87,14 @@ sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in 
 
 $Colorize::usage = "$Colorize = True to colorize output (default: 'False' for Windows, 'True' for Linux)"
 
+
+install::usage = "install[fname] \[LongDash] install 'fname.ext' adding correct extension from 'bin' directory
+install[fname, path] \[LongDash] install 'fname.ext' adding correct extension using 'path' as directory
+"
+
+error::usage = "error[expr] \[LongDash] log  'expr' with error prefix"
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -373,6 +381,10 @@ check[expr_] := check[HoldForm[expr], expr];
 
 
 exit[code_:0] := (
+	log["killing processes before exit ... ",
+		 KillProcess /@ Processes[],
+		 endl->"[OK]\n"
+	];
 	log["closing links before exit ... ",
 		 LinkClose /@ Links[],
 		 endl->"[OK]\n"
@@ -408,6 +420,35 @@ sizeOf[expr_] := Module[
 	{leafs, bytes}
 ];
 
+
+error[expr_] := log[expr, prefix->"[ERROR]: "];
+
+
+install[fname_String, path_String:"bin"] := With[{
+    fnameWindows=FileNameJoin[{path, ToString@StringForm["``.exe", fname]}],
+    fnameUnix=FileNameJoin[{path, fname}],
+		fnameWSL=FileNameJoin[{path, ToString@StringForm["``.bin", fname]}]
+  },
+	Which[
+	 ($OperatingSystem === "Unix" && FileExistsQ[fnameUnix]), (* plane Linux installation *)
+   (
+	   log[Evaluate["installing '" <> fnameUnix <>"' ... "]];
+      Install[fnameUnix]
+   ),
+   ($OperatingSystem === "Windows" && FileExistsQ[fnameWindows]), (* plain Windows installation *)
+	 (
+	   log[Evaluate["installing '" <> fnameWindows <>"' ... "]];
+		 Install[fnameWindows]
+   ),
+   (FileExistsQ[fnameWSL]), (* WSL on Windows installation *)
+	 (
+	   Abort[];
+	   log[Evaluate["installing '" <> fnameWSL <>"' ... "]];
+		 log[RunProcess[{fnameWSL, "-linkcreate", "-linkprotocol", "TCPIP"}]];
+   ),
+	 True, error[StringForm["can not find correct file for ``", $OperatingSystem]];
+  ]
+];
 
 (* ::Section:: *)
 (*End*)
