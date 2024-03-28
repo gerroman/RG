@@ -174,8 +174,8 @@ info[expr_String] := (
 );
 
 
-cases[patt_] := Function[expr, Union@Cases[expr, patt, Infinity]];
-cases[expr_, patt_] := Union@Cases[expr, patt, Infinity];
+cases[patt_] := Function[expr, Union@Cases[{expr}, patt, Infinity]];
+cases[expr_, patt_] := Union@Cases[{expr}, patt, Infinity];
 
 
 
