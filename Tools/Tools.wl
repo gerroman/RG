@@ -431,19 +431,19 @@ error[expr_] := log[expr, prefix->"[ERROR]: "];
 warning[expr_] := log[expr, prefix->"[warning]: "];
 
 SetAttributes[llog, HoldRest];
-llog[message_String, expr_] := With[{
+llog[message_String, expr_, opts:OptionsPattern[]] := With[{
     messageString = StringPadRight[message <> " ", 60, "."]
   },
   (
-    log[messageString, endl->" ... "];
+    log[messageString, endl->" ... ", opts];
     silent@expr;
-		log["[OK]", prefix->""];
+		log["[OK]", prefix->"", opts];
   )
 ];
-llog[message_, expr_] := With[{
+llog[message_, expr_, opts:OptionsPattern[]] := With[{
     messageString = ToString@HoldForm[InputForm[message]]
   },
-  llog[messageString, expr]
+  llog[messageString, expr, opts]
 ];
 
 install[fname_String, path_String:"bin"] := With[{
