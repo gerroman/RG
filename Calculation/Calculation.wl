@@ -117,11 +117,21 @@ force[sum] = ReplaceAll[#, sum -> Sum] &;
 force[integrate] = ReplaceAll[#, integrate -> Integrate] &;
 force[integrate, N] = ReplaceAll[#, integrate -> NIntegrate] &;
 
+force[integrate, x_] = ReplaceAll[#,
+  {
+    integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}]
+    , integrate[expr_, x] :> Integrate[expr, x]
+  }
+]&;
+
 
 End[];
 
 
-(* Print[$Context]; *)
-
-
 EndPackage[];
+
+
+(* Local Variables: *)
+(* mode: wl *)
+(* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
+(* End: *)
