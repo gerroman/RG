@@ -92,7 +92,8 @@ install::usage = "install[fname] \[LongDash] install 'fname.ext' adding correct 
 install[fname, path] \[LongDash] install 'fname.ext' adding correct extension using 'path' as directory
 "
 
-error::usage = "error[expr] \[LongDash] log  'expr' with error prefix"
+error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix"
+error::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
 
 
 (* ::Section:: *)
@@ -318,7 +319,8 @@ ruleLogWrite = {
 	"[OK]" -> "\033[1;32m[OK]\033[0m",
 	"[note]" -> "\033[1;33m[note]\033[0m",
 	"[running]" -> "\033[1;36m[running]\033[0m",
-	"[exit]" -> "\033[1;36m[exit]\033[0m"
+	"[exit]" -> "\033[1;36m[exit]\033[0m",
+	"[warning]" -> "\033[0;33m[warning]\033[0m"
 };
 
 
@@ -423,6 +425,7 @@ sizeOf[expr_] := Module[
 
 error[expr_] := log[expr, prefix->"[ERROR]: "];
 
+warning[expr_] := log[expr, prefix->"[warning]: "];
 
 install[fname_String, path_String:"bin"] := With[{
     fnameWindows=FileNameJoin[{path, ToString@StringForm["``.exe", fname]}],
