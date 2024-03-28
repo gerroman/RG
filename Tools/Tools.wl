@@ -93,7 +93,10 @@ install[fname, path] \[LongDash] install 'fname.ext' adding correct extension us
 "
 
 error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix"
-error::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
+
+warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
+
+llog::usage = "llog[message_, expr_] \[LongDash] prints 'message', call 'expr', print and '[OK]' at the end"
 
 
 (* ::Section:: *)
@@ -426,6 +429,22 @@ sizeOf[expr_] := Module[
 error[expr_] := log[expr, prefix->"[ERROR]: "];
 
 warning[expr_] := log[expr, prefix->"[warning]: "];
+
+SetAttributes[llog, HoldRest];
+llog[message_String, expr_] := With[{
+    messageString = StringPadRight[message <> " ", 60, "."]
+  },
+  (
+    log[messageString, endl->" ... "];
+    silent@expr;
+		log["[OK]", prefix->""];
+  )
+];
+llog[message_, expr_] := With[{
+    messageString = ToString@HoldForm[InputForm[message]]
+  },
+  llog[messageString, expr]
+];
 
 install[fname_String, path_String:"bin"] := With[{
     fnameWindows=FileNameJoin[{path, ToString@StringForm["``.exe", fname]}],
