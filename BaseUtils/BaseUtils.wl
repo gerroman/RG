@@ -201,9 +201,9 @@ on[message__, expr_] := (
 SetAttributes[hold, HoldAll];
 hold[xs_List] := With[{
 		rule = Join[
-			Thread[Thread[HoldForm[xs]] -> Thread[HoldForm[xs]]],
-			Thread[-xs -> -Thread[HoldForm[xs]]],
-			Thread[xs -> Thread[HoldForm[xs]]]
+			Thread[Thread[Hold[xs]] -> Thread[Hold[xs]]],
+			Thread[-xs -> -Thread[Hold[xs]]],
+			Thread[xs -> Thread[Hold[xs]]]
 		]
 	},
 	ReplaceRepeated[#, rule]&
