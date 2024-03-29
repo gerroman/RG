@@ -197,6 +197,9 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
      SetSelectedNotebook[nb];
      NotebookPrint[nb, Interactive->True]
    )],
+   Button["Select Input",
+	   NotebookFind[EvaluationNotebook[], "Input", All, CellStyle]
+   ],
    Button["Save",
      FrontEndTokenExecute[nb, "Save"]
    ]},
@@ -232,16 +235,18 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
 	SetSelectedNotebook[nb2];
       ]
     )],
+   Button["Select Code",
+	   NotebookFind[EvaluationNotebook[], "Code", All, CellStyle]
+   ],
    Button["Quit", (
        If[nb =!= EvaluationNotebook[],
           SetSelectedNotebook[nb];
           NotebookClose[ButtonNotebook[]];
        ];
-       Quit[];
+       RG`Tools`reset[];
      )]
   }} // Transpose, Spacings -> {0, 0}]
 ];
-
 
 getRunner[] := CellPrint[ExpressionCell[ReleaseHold[buttons[EvaluationNotebook[]]],
   "Text", CellTags->"run", ShowCellTags -> True, GeneratedCell->False
