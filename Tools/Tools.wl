@@ -340,6 +340,11 @@ log[expr_String, OptionsPattern[]] := With[{
 	},
 	logwrite[message];
 ];
+log[expr_StringForm, OptionsPattern[]] := With[{
+		message = StringJoin[OptionValue["prefix"], ToString@expr, OptionValue["endl"]]
+	},
+	logwrite[message];
+];
 log[expr_, OptionsPattern[]] := With[{
 		message = StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
 	},
@@ -427,7 +432,6 @@ sizeOf[expr_] := Module[
 
 
 error[expr_] := log[expr, prefix->"[ERROR]: "];
-
 warning[expr_] := log[expr, prefix->"[warning]: "];
 
 SetAttributes[llog, HoldRest];
@@ -440,6 +444,7 @@ llog[message_String, expr_, opts:OptionsPattern[]] := With[{
 		log["[OK]", prefix->"", opts];
   )
 ];
+llog[message_StringForm, expr___, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
 llog[message_, expr_, opts:OptionsPattern[]] := With[{
     messageString = ToString@HoldForm[InputForm[message]]
   },
