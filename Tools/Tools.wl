@@ -391,15 +391,13 @@ check[expr_] := check[HoldForm[expr], expr];
 
 
 exit[code_:0] := (
-	log["killing processes before exit ... ",
-		 KillProcess /@ Processes[],
-		 endl->"[OK]\n"
+	llog["killing processes",
+		 KillProcess /@ Processes[]
 	];
-	log["closing links before exit ... ",
-		 LinkClose /@ Links[],
-		 endl->"[OK]\n"
+	llog["closing links",
+		 LinkClose /@ Links[]
 	];
-	log[ToString@StringForm["[``]", DateString[]],
+	llog[ToString@StringForm["[``]", DateString[]],
 		prefix->"[exit]: "
 	];
 	Exit[code]
