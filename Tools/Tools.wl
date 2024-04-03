@@ -114,8 +114,11 @@ $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 
 reset[exitcode_:0] := (
-	log["closing wolfram session ..."];
-	exit[exitcode];
+  log["closing Wolfram session"];
+	llog["killing processes", KillProcess /@ Processes[], prefix->"[....]: "];
+	llog["closing links", LinkClose /@ Links[], prefix->"[....]: "];
+	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
+	Exit[exitcode];
 );
 
 
@@ -390,18 +393,14 @@ check[message_, expr_] := Module[{result},
 check[expr_] := check[HoldForm[expr], expr];
 
 
-exit[code_:0] := (
-	llog["killing processes",
-		 KillProcess /@ Processes[]
-	];
-	llog["closing links",
-		 LinkClose /@ Links[]
-	];
-	llog[ToString@StringForm["[``]", DateString[]],
-		prefix->"[exit]: "
-	];
-	Exit[code]
-);
+exit[code_:0] := If[
+  Not[$Notebooks], (
+	  llog["killing processes", KillProcess /@ Processes[], prefix->"[....]: "];
+	  llog["closing links", LinkClose /@ Links[], prefix->"[....]: "];
+  	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
+	  Exit[code];
+  )
+];
 
 
 SetAttributes[note, HoldFirst];
