@@ -115,8 +115,8 @@ $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 reset[exitcode_:0] := (
   log["closing Wolfram session"];
-	llog["killing processes", KillProcess /@ Processes[], prefix->"[....]: "];
-	llog["closing links", LinkClose /@ Links[], prefix->"[....]: "];
+	llog["killing processes", KillProcess /@ Processes[]];
+	llog["closing links", LinkClose /@ Links[]];
 	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
 	Exit[exitcode];
 );
@@ -395,9 +395,9 @@ check[expr_] := check[HoldForm[expr], expr];
 
 exit[code_:0] := If[
   Not[$Notebooks], (
-	  llog["killing processes", KillProcess /@ Processes[], prefix->"[....]: "];
-	  llog["closing links", LinkClose /@ Links[], prefix->"[....]: "];
-  	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
+	  log["killing processes", KillProcess /@ Processes[], prefix->"\n[....]: ", endl -> ""];
+	  log["closing links", LinkClose /@ Links[], prefix->"\n[....]: ", endl -> ""];
+  	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"\n[exit]: ", endl->"\n"];
 	  Exit[code];
   )
 ];
@@ -428,20 +428,27 @@ sizeOf[expr_] := Module[
 ];
 
 
-error[expr_] := log[expr, prefix->"[ERROR]: "];
-warning[expr_] := log[expr, prefix->"[warning]: "];
+error[expr_, opts:OptionsPattern[]] := log[expr, prefix->"[ERROR]: ", opts];
+warning[expr_, opts:OptionsPattern[]] := log[expr, prefix->"[warning]: ", opts];
 
 SetAttributes[llog, HoldRest];
+Options[llog] = {
+  prefix -> "[....]: ",
+  endl -> "\n[info]: complete\n"
+};
+
 llog[message_String, expr_, opts:OptionsPattern[]] := With[{
     messageString = StringPadRight[message <> " ", 60, "."]
   },
   (
-    log[messageString, endl->" ... ", opts];
+    log[messageString, prefix->OptionValue[prefix], endl -> " ... "];
     silent@expr;
-		log["[OK]", prefix->"", opts];
+    log["", prefix->"", endl ->OptionValue[endl]];
   )
 ];
-llog[message_StringForm, expr___, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
+llog[message_StringForm, expr_, opts:OptionsPattern[]] := (
+  llog[ToString@message, expr, opts];
+)
 llog[message_, expr_, opts:OptionsPattern[]] := With[{
     messageString = ToString@HoldForm[InputForm[message]]
   },
