@@ -99,6 +99,10 @@ warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
 llog::usage = "llog[message_, expr_] \[LongDash] prints 'message', call 'expr', print and '[OK]' at the end"
 
 
+checkExists::usage "checkExists[fname] \[LongDash] check if file exists and print messages to log return True/False
+checkExists[{fname1,...}] \[LongDash] check if all files in list"
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -326,6 +330,8 @@ ruleLogWrite = {
 	"[note]" -> "\033[1;33m[note]\033[0m",
 	"[running]" -> "\033[1;36m[running]\033[0m",
 	"[exit]" -> "\033[1;36m[exit]\033[0m",
+	"[RESULT]" -> "\033[1;31m[RESULT]\033[0m",
+	"[init]" -> "\033[1;36m[init]\033[0m",
 	"[warning]" -> "\033[0;33m[warning]\033[0m"
 };
 
@@ -337,7 +343,10 @@ logwrite[message_] := If[$Notebooks,
 
 
 SetAttributes[log, HoldRest];
-Options[log] = {"endl" -> "\n", "prefix" -> "[info]: "};
+Options[log] = {
+  prefix :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
+  endl :> If[$Notebooks, "", "\n"]
+};
 log[expr_String, OptionsPattern[]] := With[{
 		message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
 	},
@@ -393,27 +402,33 @@ check[message_, expr_] := Module[{result},
 check[expr_] := check[HoldForm[expr], expr];
 
 
-exit[code_:0] := If[
-  Not[$Notebooks], (
-	  log["killing processes", KillProcess /@ Processes[], prefix->"\n[....]: ", endl -> ""];
-	  log["closing links", LinkClose /@ Links[], prefix->"\n[....]: ", endl -> ""];
-  	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"\n[exit]: ", endl->"\n"];
+exit[code_Integer] := If[Not[$Notebooks],
+  (
+	  log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"];
+	  log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"];
+  	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
 	  Exit[code];
   )
 ];
+exit[True] := exit[0];
+exit[False] := exit[1];
 
 
 SetAttributes[note, HoldFirst];
-note[expr_, func_] := With[{result = expr, hf=HoldForm[InputForm[expr]]},
+Options[note] = {
+  prefix -> "[note]: ",
+  endl -> "\n"
+};
+note[expr_, func_, opts:OptionsPattern[]] := With[{result = expr, hf=HoldForm[InputForm[expr]]},
 	If[result =!= Null,
 		With[{hr = func[result]},
-      log[ToString@StringForm["`` = ``", hf, hr], "prefix"->"[note]: "]
+      log[ToString@StringForm["`` = ``", hf, hr], prefix->OptionValue[prefix], endl->OptionValue[endl]]
     ],
-		log[ToString@hf, "prefix"->"[note]: "]
+		log[ToString@hf, prefix->OptionValue[prefix], endl->OptionValue[endl]]
 	];
 	Return[result];
 ];
-note[expr_] := note[expr, InputForm];
+note[expr_, opts:OptionsPattern[]] := note[expr, InputForm, opts];
 
 
 sizeOf[expr_] := Module[
@@ -481,6 +496,20 @@ install[fname_String, path_String:"bin"] := With[{
   ]
 ];
 
+
+checkExists[results_List] := If[
+  And @@ (FileExistsQ /@ results),
+  (
+    log[StringForm["'``' exists", #], prefix->"[....]: "]& /@ results;
+    log["", prefix->"[RESULT]: ", endl->""];
+    Write["stdout", results];
+    True
+  ),
+  False
+];
+checkExists[result_] := checkExists[{result}];
+
+
 (* ::Section:: *)
 (*End*)
 
@@ -488,7 +517,7 @@ install[fname_String, path_String:"bin"] := With[{
 End[];
 
 
-log[ToString@StringForm["[``] using ``", DateString[], "RG`Tools`"]];
+log[ToString@StringForm["[``] using ``", DateString[], "RG`Tools`"], prefix->"[init]: "];
 
 
 EndPackage[];
