@@ -1,8 +1,7 @@
 #!/usr/bin/env wolfram_script.sh
 
-Get[FileNameJoin[{"src", "init.wl"}]];
-On[Assert];
+Needs["src`"];
 result = Get[fname`result];
 check[result == 4];
-check[x == 2];
+check[x == 1];
 exit[0];

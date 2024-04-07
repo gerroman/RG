@@ -1,80 +1,91 @@
 #+TITLE: Проект
+
 * Результаты
 | файл                      | описание    |
 |---------------------------+-------------|
 | ./src/init-definitions.wl | определения |
 | ./src/init-paths.wl       | пути        |
 | ./run/result.wl           | результат   |
+
 * Настройки
 	:PROPERTIES:
   :eval:     noexport
 	:exports:  code
 	:results:  none
 	:mkdirp:   yes
-	:dir:      ./src
 	:comments: no
-	:eval:     no
 	:END:
+
 ** Определения и обозначения
 #+begin_src wl :tangle ./src/init-definitions.wl
+x::usage = "x \[LongDash] is my variable"
 x = 1;
 #+end_src
-
 ** Пути
 #+begin_src wl :tangle ./src/init-paths.wl
 path`run = "run"
+
 fname`result = FileNameJoin[{path`run, "result.wl"}]
 #+end_src
+
 * Вычисления
 	:PROPERTIES:
   :eval:     noexport
 	:exports:  code
 	:results:  none
 	:mkdirp:   yes
-	:dir:      ./src
 	:comments: no
-	:eval:     no
 	:shebang: "#!/usr/bin/env wolfram_script.sh"
 	:END:
-
 ** Инициализация скриптов
 #+begin_src wl :tangle ./src/init.wl
-Needs["RG`Tools`"];
+BeginPackage["src`", {"RG`Tools`"}];
+
 Get[FileNameJoin@{"src", "init-definitions.wl"}];
+note[x];
+
 Get[FileNameJoin@{"src", "init-paths.wl"}];
-
 note[path`run, ExpandFileName];
-#+end_src
 
+EndPackage[];
+#+end_src
 ** Создание директорий
 #+begin_src wl :tangle ./src/make-directories.wl
 Needs["RG`Tools`"];
-Get["src`"];
+Needs["src`"];
 
 paths = Sort[ToExpression/@Names["path`*"]];
 
+If[checkExists[paths], exit[0]];
+
 llog["making directories",
   Scan[
-    If[Not@FileExistsQ[#], 
-      CreateDirectory[#], 
-      log[StringForm["`` already exist", #], prefix->"\n[....]: ", endl->" ... "]
-    ]&, 
+    If[Not@FileExistsQ[#],
+      CreateDirectory[#],
+      log[StringForm["'``' already exist", #], prefix->"\n[....]: ", endl->""]
+    ]&,
     paths
-  ];
+  ]
 ];
-Write["stdout", paths // StringReplace[{path`run~~x__ :> "."~~x}]];
 
-exit[0];
+exit[checkExists[paths]];
 #+end_src
-
 ** Скрипт
 #+begin_src wl :tangle ./src/script.wl
-Get["src`"];
+Needs["RG`Tools`"];
+Needs["src`"];
+
+results = {fname`result};
+
+If[checkExists[results], exit[0]];
 
 result = x + 3;
-llog["saving results", Put[result, fname`result]];
 
-exit[0];
+llog["saving results", 
+  Put[result, fname`result];
+];
+
+exit[checkExists[results]];
 #+end_src
 
 * Тесты
@@ -84,60 +95,89 @@ exit[0];
 	:results:  none
 	:mkdirp:   yes
 	:comments: no
-	:eval:     no
 	:shebang: "#!/usr/bin/env wolfram_script.sh"
 	:END:
+** Проверка инициализации
 #+begin_src wl :tangle ./tests/test.wl
-Get[FileNameJoin[{"src", "init.wl"}]];
-On[Assert];
+Needs["src`"];
 result = Get[fname`result];
 check[result == 4];
-check[x == 2];
+check[x == 1];
 exit[0];
 #+end_src
 
 * Makefile
 #+begin_src makefile :tangle ./Makefile
-.PHONY: check all clean wipe tar run diff tests
+.PHONY: check all clean wipe tar run diff test
 
-project=project
-scripts=./src/init.wl ./src/script.wl
+project=my-project
+scripts=./src/init.wl ./src/make-directories.wl
 inits=./src/init-definitions.wl ./src/init-paths.wl
+tests=./tests/test.wl
 external=
 
-archive_name=./data/${project}
-archive_content=./src/init-definitions.wl ./src/init-paths.wl ./run/*
+archive_path=${Projects}/data/${project}
+archive_name=${archive_path}/${project}
+archive_content=./src/init-*.wl ./run/* ./description.html
 
-all: ./run.log
-
-run: check
+all: check
+	wolfram -script ./src/make-directories.wl
 	wolfram -script ./src/script.wl
 
 clean:
-	-find ./run -type f -exec rm -v {} \;
+	-find ./run -mindepth 1 -maxdepth 5 -type f -exec rm -v {} \;
+	-rm ./run.log
+	-rm ./description.html
 
 wipe: clean
 	-find ./src -type f -exec rm -v {} \;
+	-find ./tests -type f -exec rm -v {} \;
+	-rm -rf ./run/*;
+	-rm ./run.log
+	-rm ./description.html
+	emacs --batch \
+				--eval "(require 'org)" \
+				--eval "(setq org-src-preserve-indentation t)" \
+				--eval "(add-to-list 'load-path \"~/.emacs.d/lisp\")" \
+				--eval "(load \"wl\")" \
+				--eval "(org-babel-tangle-file \"${project}.org\")"
 
 check: ${scripts} ${inits}
 	wolfram -script RG/SyntaxChecker/check.wl $^
 
 ./run.log: ${scripts} ${inits} ${external}
 	make clean
-	make run 2>&1 | tee ./run.log
+	make all 2>&1 | tee ./run.log
 	cat ./run.log | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g" >./run/run.txt
 
-tests: all
-	wolfram -script ./tests/test.wl
+test: ./run.log
+	wolfram -script RG/SyntaxChecker/check.wl ${tests}
+	@for t in `find ./tests -type f -print | sort`; do printf "$$t\n" && wolfram -script "$$t"; done
 
 diff:
 	-tar --diff -f ${archive_name}.tar .
 
+description.html: ./run.log
+	emacs --batch \
+				--eval "(require 'org)" \
+				--eval "(setq org-src-preserve-indentation t)" \
+				--eval "(add-to-list 'load-path \"~/.emacs.d/lisp\")" \
+				--eval "(load \"wl\")" \
+				${project}.org \
+				--eval "(org-export-as-html 1)"&& \
+		mv ${project}.html $@
+
 tar: ${archive_name}.tar
 
-${archive_name}.tar: ${archive_content} ./run.log
-	-[[ -f ${archive_name}.tar ]] && (printf "[warning]: '${archive_name}.tar' does exists ... \n" \
+${archive_name}.tar: ${archive_content}
+	@ [[ -d ${archive_path} ]] || mkdir -v ${archive_path}
+	@- [[ -f ${archive_name}.tar ]] && (printf "[warning]: '${archive_name}.tar' does exists ... \n" \
 		&& gzip --stdout ${archive_name}.tar >"${archive_name}-`date +%Y-%m-%d_%H%M%S`.tar.gz")
 
 	tar --create -f ${archive_name}.tar ${archive_content}
 #+end_src
+
+# * Emacs local variables
+# Local Variables:
+# ispell-local-dictionary: "russian"
+# End:

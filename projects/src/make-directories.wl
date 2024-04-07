@@ -1,19 +1,20 @@
 #!/usr/bin/env wolfram_script.sh
 
 Needs["RG`Tools`"];
-Get["src`"];
+Needs["src`"];
 
 paths = Sort[ToExpression/@Names["path`*"]];
 
+If[checkExists[paths], exit[0]];
+
 llog["making directories",
   Scan[
-    If[Not@FileExistsQ[#], 
-      CreateDirectory[#], 
-      log[StringForm["`` already exist", #], prefix->"\n[....]: ", endl->" ... "]
-    ]&, 
+    If[Not@FileExistsQ[#],
+      CreateDirectory[#],
+      log[StringForm["'``' already exist", #], prefix->"\n[....]: ", endl->""]
+    ]&,
     paths
-  ];
+  ]
 ];
-Write["stdout", paths // StringReplace[{path`run~~x__ :> "."~~x}]];
 
-exit[0];
+exit[checkExists[paths]];
