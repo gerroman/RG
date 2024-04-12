@@ -157,7 +157,7 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 	If[hash =!= Get[hashpath],
 		print["[warning]: expression hashs differ, consider force update ..."];
 		If[force,
-  		print["[warning]: forcing update ... "];
+			print["[warning]: forcing update ... "];
 			If[OptionValue[verbose],
 				print[ToString[StringForm[load::save, path]]];
 				print[ToString[StringForm[load::save, hashpath]]];
@@ -172,10 +172,10 @@ loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
 loadFigure[fname_String] := With[{
 		path = FileNameJoin[{Global`figuredirectory, fname}]
 	},
-  If[FileExistsQ[path], Import[path],
-    print[StringForm["[error]: '``' not found", path]];
-    path
-  ]
+	If[FileExistsQ[path], Import[path],
+		print[StringForm["[error]: '``' not found", path]];
+		path
+	]
 ];
 
 
@@ -388,19 +388,23 @@ complexToAbs[pattern_] = (ReplaceAll[#,
 ]&);
 
 
-solve[eqs_, vars_] := Block[{var`solve},
-	 With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
-		With[{rule = Thread[vars -> xs]},
-
-	 With[{sol =
-		Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
-				Assert[Length[sol] == 1];
-				First[sol]
+Options[solve] = {All -> False};
+solve[eqs_, vars_, opts:OptionsPattern[]] := Block[{var`solve},
+  With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
+	  With[{rule = Thread[vars -> xs]},
+		  With[{sol = Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
+			  If[!OptionValue[All], (
+				    Assert[Length[sol] == 1];
+				    First[sol]
+					),
+					sol
+				]
 			]
-		 ]
 		]
-	 ];
+	]
+];
 solve[vars_] := solve[#, vars]&;
+solve[vars_, All->all_] := solve[#, vars, All->all]&;
 
 
 pushRule[outer_Function, inner_Function] := outer[inner[expr_]] :> inner[outer[expr]];
