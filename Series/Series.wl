@@ -19,6 +19,9 @@ leadingSeries[expr, {var, pole, order}, n] \[LongDash] shortcut for leading[Seri
 
 remainder::usage = "remainder[series] \[LongDash] return the remainder of the series"
 
+getSeriesData::usage = "getSeriesData[series] return SeriesData without coefficients"
+getSeriesCoefficients::usage = "getSeriesCoefficients[series] return SeriesData without coefficients"
+
 Begin["`Private`"]
 
 (* [TODO] remove Listable attributes to work with matrices *)
@@ -50,9 +53,31 @@ leadingTerm[s_SeriesData] := With[{
 ];
 
 
+ClearAll[subLeadingTerms];
 SetAttributes[subLeadingTerms, Listable];
+Options[subLeadingTerms] = {Options -> "Fast"};
 subLeadingTerms[s_SeriesData] := leadingTerm[s - Normal@leadingTerm[s]];
-
+subLeadingTerms[s_SeriesData, opts:OptionsPattern[]] := (
+	If[OptionValue[Options] === "Fast",
+		With[{
+				var = Part[s, 1],
+				pole = Part[s, 2],
+				nmin = Part[s, 4],
+				nmax = Part[s, 5],
+				den = Part[s, 6]
+			},
+			SeriesData @@ {
+				var,
+				pole,
+				If[nmin + 1 < nmax, Rest@Part[s, 3], {}],
+				Min[nmin + 1, nmax],
+				Min[nmin + 2, nmax],
+				den
+			}
+		],
+		subLeadingTerms[s]
+	]
+);
 
 SetAttributes[getSeriesData, Listable];
 getSeriesData[s_SeriesData] := With[{
@@ -65,6 +90,11 @@ getSeriesData[s_SeriesData] := With[{
 	{var, pole, nmin, nmax, den}
 ];
 
+SetAttributes[getSeriesCoefficients, Listable];
+getSeriesCoefficients[s_SeriesData] := With[{coefs = Part[s, 3]},
+	Return[coefs]
+];
+
 SetAttributes[leading, Listable];
 leading[s_SeriesData] := Module[
 	{lo = Normal[leadingTerm[s]], var, pole, nmin, nmax, den},
@@ -72,19 +102,16 @@ leading[s_SeriesData] := Module[
   lo + SeriesData[var, pole, {}, nmin, nmin, den]
 ];
 
-leading[s_SeriesData, n_Integer /; n > 0] := Module[
-	{
-		expansion = Reap[
-		NestWhile[
-			(# - Sow[Normal @ leadingTerm[#]]) &,(*func*)
-			s,(*expr*)
-			Normal @ leadingTerm[#] =!= 0 &, (*test*)
-			1,(*most resent results to test*)
-			n
-	  	]
-		],
-		var, pole, nmin, nmax, den
+leading[s_SeriesData, n_Integer /; n > 0] := Module[{
+		expansion, var, pole, nmin, nmax, den
 	},
+	expansion = Reap[NestWhile[
+		(# - Sow[Normal @ leadingTerm[#]]) &,(*func*)
+		s,(*expr*)
+		Normal @ leadingTerm[#] =!= 0 &, (*test*)
+		1,(*most resent results to test*)
+		n
+	]];
 	{var, pole, nmin, nmax, den} = getSeriesData[First[expansion]];
 	Total[Last[expansion], 2] + SeriesData[var, pole, {}, nmin, nmin, den]
 ];
