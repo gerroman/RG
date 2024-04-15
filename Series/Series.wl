@@ -21,6 +21,7 @@ remainder::usage = "remainder[series] \[LongDash] return the remainder of the se
 
 Begin["`Private`"]
 
+(* [TODO] remove Listable attributes to work with matrices *)
 
 SetAttributes[leadingTermOrder, Listable];
 leadingTermOrder[s_SeriesData] := Part[s, 4];
@@ -33,7 +34,7 @@ seriesOrder[s_SeriesData] := Part[s, 5];
 SetAttributes[leadingTerm, Listable];
 leadingTerm[s_SeriesData] := With[{
 		var = Part[s, 1],
-	  pole = Part[s, 2],
+		pole = Part[s, 2],
 		nmin = Part[s, 4],
 		nmax = Part[s, 5],
 		den = Part[s, 6]
@@ -56,14 +57,13 @@ subLeadingTerms[s_SeriesData] := leadingTerm[s - Normal@leadingTerm[s]];
 SetAttributes[getSeriesData, Listable];
 getSeriesData[s_SeriesData] := With[{
 		var = Part[s, 1],
-	  pole = Part[s, 2],
+		pole = Part[s, 2],
 		nmin = Part[s, 4],
 		nmax = Part[s, 5],
 		den = Part[s, 6]
 	},
 	{var, pole, nmin, nmax, den}
 ];
-
 
 SetAttributes[leading, Listable];
 leading[s_SeriesData] := Module[
@@ -73,25 +73,25 @@ leading[s_SeriesData] := Module[
 ];
 
 leading[s_SeriesData, n_Integer /; n > 0] := Module[
-  {
+	{
 		expansion = Reap[
-      NestWhile[
-        (# - Sow[Normal@leadingTerm[#]]) &,(*func*)
-        s,(*expr*)
-        Normal@leadingTerm[#] =!= 0 &, (*test*)
-        1,(*most resent results to test*)
-        n
+		NestWhile[
+			(# - Sow[Normal @ leadingTerm[#]]) &,(*func*)
+			s,(*expr*)
+			Normal @ leadingTerm[#] =!= 0 &, (*test*)
+			1,(*most resent results to test*)
+			n
 	  	]
 		],
 		var, pole, nmin, nmax, den
-  },
+	},
 	{var, pole, nmin, nmax, den} = getSeriesData[First[expansion]];
-  Total[Last[expansion], 2] + SeriesData[var, pole, {}, nmin, nmin, den]
+	Total[Last[expansion], 2] + SeriesData[var, pole, {}, nmin, nmin, den]
 ];
 
 leading[s_SeriesData, 0] :=  Module[{var, pole, nmin, nmax, den},
 	{var, pole, nmin, nmax, den} = getSeriesData[s];
-  SeriesData[var, pole, {}, nmin, nmin, den]
+	SeriesData[var, pole, {}, nmin, nmin, den]
 ];
 
 
@@ -104,7 +104,7 @@ seriesToRules[s_SeriesData] := Module[
 	cs = Array[C, nmax - nmin, nmin];
 	Return[{
 		SeriesData[var, pole, cs, nmin, nmax, den],
-	  Thread[cs -> coeffs]
+		Thread[cs -> coeffs]
 	}]
 ];
 
