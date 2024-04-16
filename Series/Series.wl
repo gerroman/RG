@@ -55,7 +55,6 @@ leadingTerm[s_SeriesData] := With[{
 ];
 
 
-ClearAll[subLeadingTerms];
 SetAttributes[subLeadingTerms, Listable];
 Options[subLeadingTerms] = {Options -> "Fast"};
 subLeadingTerms[s_SeriesData] := leadingTerm[s - Normal@leadingTerm[s]];
