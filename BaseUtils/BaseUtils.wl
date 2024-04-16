@@ -265,6 +265,11 @@ groupIt[xs_List, func_:Expand] := With[
 ];
 groupIt[x_, func_:Expand] := groupIt[{x}, func];
 
+groupIt[expr:(_Hold|_HoldForm)] := groupIt[{expr}, ReleaseHold];
+groupIt[expr:(_Hold|_HoldForm), func] := groupIt[{expr}, ReleaseHold/*func];
+groupIt[expr:{(_Hold|_HoldForm)..}] := groupIt[expr, ReleaseHold];
+groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
+
 
 (* NOTE: strightforward matching can be long *)
 factorIt[xs_List, func_:Plus] := With[{

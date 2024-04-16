@@ -139,6 +139,10 @@ print[expr_, func_, opts:OptionsPattern[]] := With[{
 		sep=OptionValue["sep"],
 		verbose=OptionValue["verbose"]
 	},
+	If[$Notebooks,
+    Print[(expr // func)];
+    Return[]
+  ];
 	If[verbose, WriteString[stream, ToString@OptionValue["header"]]];
 	WriteString[stream, (expr // func // ToString)];
 	WriteString[stream, sep];
@@ -146,14 +150,8 @@ print[expr_, func_, opts:OptionsPattern[]] := With[{
 
 
 SetAttributes[pprint, {HoldFirst, Listable}];
-pprint[expr_, opts:OptionsPattern[]] := print[
-	HoldForm[expr] // rewriteIt[ReleaseHold]
-	, opts
-];
-pprint[expr_, func_, opts:OptionsPattern[]] := print[
-	HoldForm[expr] // rewriteIt[ReleaseHold, func]
-	, opts
-];
+pprint[expr_, opts:OptionsPattern[]] := pprint[expr, Identity, opts];
+pprint[expr_, func_, opts:OptionsPattern[]] := print[HoldForm[expr] // rewriteIt[ReleaseHold, func], opts];
 
 
 SetAttributes[info, {HoldAll, Listable}];
@@ -337,7 +335,7 @@ ruleLogWrite = {
 
 
 logwrite[message_] := If[$Notebooks,
-	Print[message],
+	PrintTemporary[message],
 	WriteString["stderr", If[$Colorize, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
 ];
 
@@ -370,11 +368,11 @@ log[message_, expr_, OptionsPattern[]] := (
 
 
 SetAttributes[timing, HoldAll];
-timing[message_, expr_] := Module[{time},
+timing[message_, expr_] := Module[{time, result},
 	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... "];
-	time = First@Timing[silent[expr]];
+	time = First@Timing[result = silent[expr]];
 	log[ToString@NumberForm[time, {6, 2}], "prefix" -> "", "endl" -> " [seconds]\n"];
-	Return[time];
+	Return[{time, result}];
 ];
 timing[expr_] := timing[HoldForm[expr], expr];
 
@@ -419,15 +417,17 @@ Options[note] = {
   prefix -> "[note]: ",
   endl -> "\n"
 };
-note[expr_, func_, opts:OptionsPattern[]] := With[{result = expr, hf=HoldForm[InputForm[expr]]},
-	If[result =!= Null,
-		With[{hr = func[result]},
-      log[ToString@StringForm["`` = ``", hf, hr], prefix->OptionValue[prefix], endl->OptionValue[endl]]
-    ],
-		log[ToString@hf, prefix->OptionValue[prefix], endl->OptionValue[endl]]
-	];
-	Return[result];
-];
+note[expr_, func_, opts:OptionsPattern[]] := (
+  log[StringForm["``", HoldForm[InputForm[expr]]], prefix->OptionValue[prefix], endl->""];
+  With[{result = expr},
+    If[result =!= Null,
+      log[StringForm[" = ``", func[result]], prefix->"", endl->OptionValue[endl]]
+			,
+		  log["", endl->OptionValue[endl]]
+	  ];
+	  Return[result];
+  ];
+);
 note[expr_, opts:OptionsPattern[]] := note[expr, InputForm, opts];
 
 

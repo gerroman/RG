@@ -22,6 +22,8 @@ remainder::usage = "remainder[series] \[LongDash] return the remainder of the se
 getSeriesData::usage = "getSeriesData[series] return SeriesData without coefficients"
 getSeriesCoefficients::usage = "getSeriesCoefficients[series] return SeriesData without coefficients"
 
+series::usage = "series[series] try to evaluate series faster"
+
 Begin["`Private`"]
 
 (* [TODO] remove Listable attributes to work with matrices *)
@@ -144,6 +146,38 @@ remainder[s_SeriesData] := Module[{var, pole, nmin, nmax, den},
 	{var, pole, nmin, nmax, den} = getSeriesData[s];
 	Return[SeriesData[var, pole, {}, nmax, nmax, den]];
 ];
+
+
+(*[TODO]: process case den != 1*)
+(*[TODO]: block <-> with*)
+series[s_SeriesData, {var_, pole_, n0_}] := With[{data=getSeriesData[s]},
+  With[{
+      varSeries = data[[1]],
+      poleSeries = data[[2]],
+      nmin = data[[3]],
+      nmax = data[[4]],
+      den = data[[5]]
+    },
+		If[(var == varSeries && pole == poleSeries && den == 1),
+      If[(n0 >= nmin),
+        With[{newNMax = Min[n0 + 1, nmax]},
+				  Return[SeriesData @@ {var, pole, getSeriesCoefficients[s][[1;;(newNMax - nmin)]], nmin, newNMax, 1}]
+				],
+				Return[SeriesData @@ {var, pole, {}, nmin, nmin, 1}]
+			]
+    ]
+  ];
+	Return[Hold[Series[s, {var, pole, n0}]]]
+];
+
+(*[TODO]: correct matrix series*)
+(* series[expr_/;FreeQ[expr, SeriesData], {var_, pole_, nmax_}] := Module[ *)
+(*   {s = Series[expr, {var, pole, n0}], nmin, nmax}, *)
+(*   If[Head[s] === List, *)
+(* 	  nmin = Min[leadingTermOrder[s]]; *)
+		
+(*   ] *)
+(* ] *)
 
 
 End[]
