@@ -100,7 +100,7 @@ SetAttributes[leading, Listable];
 leading[s_SeriesData] := Module[
 	{lo = Normal[leadingTerm[s]], var, pole, nmin, nmax, den},
 	{var, pole, nmin, nmax, den} = getSeriesData[s - lo];
-  lo + SeriesData[var, pole, {}, nmin, nmin, den]
+	lo + SeriesData[var, pole, {}, nmin, nmin, den]
 ];
 
 leading[s_SeriesData, n_Integer /; n > 0] := Module[{
@@ -150,22 +150,22 @@ remainder[s_SeriesData] := Module[{var, pole, nmin, nmax, den},
 (*[TODO]: process case den != 1*)
 (*[TODO]: block <-> with*)
 series[s_SeriesData, {var_, pole_, n0_}] := With[{data=getSeriesData[s]},
-  With[{
-      varSeries = data[[1]],
-      poleSeries = data[[2]],
-      nmin = data[[3]],
-      nmax = data[[4]],
-      den = data[[5]]
-    },
+	With[{
+			varSeries = data[[1]],
+			poleSeries = data[[2]],
+			nmin = data[[3]],
+			nmax = data[[4]],
+			den = data[[5]]
+		},
 		If[(var == varSeries && pole == poleSeries && den == 1),
-      If[(n0 >= nmin),
-        With[{newNMax = Min[n0 + 1, nmax]},
+			If[(n0 >= nmin),
+				With[{newNMax = Min[n0 + 1, nmax]},
 				  Return[SeriesData @@ {var, pole, getSeriesCoefficients[s][[1;;(newNMax - nmin)]], nmin, newNMax, 1}]
 				],
 				Return[SeriesData @@ {var, pole, {}, nmin, nmin, 1}]
 			]
-    ]
-  ];
+		]
+	];
 	Return[Hold[Series[s, {var, pole, n0}]]]
 ];
 
@@ -174,7 +174,7 @@ series[s_SeriesData, {var_, pole_, n0_}] := With[{data=getSeriesData[s]},
 (*   {s = Series[expr, {var, pole, n0}], nmin, nmax}, *)
 (*   If[Head[s] === List, *)
 (* 	  nmin = Min[leadingTermOrder[s]]; *)
-		
+
 (*   ] *)
 (* ] *)
 
