@@ -498,14 +498,17 @@ install[fname_String, path_String:"bin"] := With[{
 
 
 checkExists[results_List] := If[
-  And @@ (FileExistsQ /@ results),
+  (And @@ (FileExistsQ /@ results)) === True,
   (
     log[StringForm["'``' exists", #], prefix->"[....]: "]& /@ results;
     log["", prefix->"[RESULT]: ", endl->""];
     Write["stdout", results];
     True
   ),
-  False
+	(
+		log[StringForm["'``' does not exist", #], prefix->"[....]: "]& /@ results;
+		False
+	)
 ];
 checkExists[result_] := checkExists[{result}];
 
