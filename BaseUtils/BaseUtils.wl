@@ -303,7 +303,7 @@ factorIt[pattern_, func_:Plus] := Function[expr,
 ];
 
 
-factorize[expr_, x_] := With[{xn = -x}, Module[
+factorize[expr_, x_] := With[{xn = -x}, With[
 	{
 		split = List @@ expr // changeSign[xn] //
 					(SortBy[#, MatchQ[(x * _.)|(xn * _.)]]&) //
@@ -421,7 +421,7 @@ push[outer_, inner__] := ReplaceRepeated[#, pushRule[outer, inner]]&;
 jacobian[xs_List, ys_List, rules_List:{}] := Inverse[Outer[D, xs /. rules, ys]];
 
 
-changeVars[xs_List, ys_List, rules_List:{}][expr_] := Module[{
+changeVars[xs_List, ys_List, rules_List:{}][expr_] := With[{
 		jacobian = jacobian[xs, ys, rules],
 		n = Length[xs]
 	},
