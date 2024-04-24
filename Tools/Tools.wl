@@ -99,8 +99,11 @@ warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
 llog::usage = "llog[message_, expr_] \[LongDash] prints 'message', call 'expr', print and '[OK]' at the end"
 
 
-checkExists::usage "checkExists[fname] \[LongDash] check if file exists and print messages to log return True/False
+checkExists::usage = "checkExists[fname] \[LongDash] check if file exists and print messages to log return True/False
 checkExists[{fname1,...}] \[LongDash] check if all files in list"
+
+
+argparse::usage = "argparse[] \[LongDash] returns {argc, argv}"
 
 
 (* ::Section:: *)
@@ -511,6 +514,13 @@ checkExists[results_List] := If[
 	)
 ];
 checkExists[result_] := checkExists[{result}];
+
+
+argparse[] := Which[
+  $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
+  Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
+  True, {0, {}}
+];
 
 
 (* ::Section:: *)
