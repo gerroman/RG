@@ -66,6 +66,9 @@ TeXPrint::usage = "
 ";
 
 
+matrixComplexityPlot::usage = "matrixComplexityPlot[m, label] create a plot of matrix element complexity Log[10, 1 + LeafCounts[matrix elements]]";
+
+
 Begin["`Private`"];
 
 
@@ -329,6 +332,30 @@ TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
   TeXForm[expr],
   "\n\\end{equation}\n"
 };);
+
+
+SetAttributes[matrixComplexityPlot, HoldFirst]
+matrixComplexityPlot[m_, label_: Style["Matrix complexity", Italic]] := (
+  Labeled[With[{n = Length[m]},
+     With[{idxs = Range[n], ticks = Range[0, n + 1]},
+      MatrixPlot[
+       MapAt[If[0 === #, 0, Log10[1 + LeafCount[#]]] &, m, {All, All}],
+       Frame -> True,
+       FrameTicks -> {idxs, None, None, idxs},
+       PlotLegends -> BarLegend[Automatic,
+         LegendLabel -> DisplayForm[RowBox[{SubscriptBox["log", 10], "(# terms)"}]]
+       ],
+       Epilog -> {
+         Thin, Gray, Dotted,
+         InfiniteLine[{#, 0}, {0, 1}] & /@ ticks,
+         InfiniteLine[{0, #}, {1, 0}] & /@ ticks
+         }
+       ]
+      ]
+     ], label, Top] // Framed[#, FrameStyle -> Thin, FrameMargins -> 20] &
+) /; MatrixQ[m] && Equal @@ Dimensions[m];
+
+matrixComplexityPlot[m_] := matrixComplexityPlot[m, HoldForm[m]];
 
 
 End[];
