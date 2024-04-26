@@ -271,34 +271,29 @@ groupIt[expr:{(_Hold|_HoldForm)..}] := groupIt[expr, ReleaseHold];
 groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
 
 
-(* NOTE: strightforward matching can be long *)
-factorIt[xs_List, func_:Plus] := With[{
-	rules = Flatten[
-			Map[
-				x \[Function] With[
-					{
-						p = x,
-						pn = -x
-					}
-					,
-					{
-						func[p*(a_.), p*(b_.)] :> p * func[a, b]
-						, func[p*(a_.), pn*(b_.)] :> p * func[a, -b]
-						, func[pn*(a_.), pn*(b_.)] :> pn * func[a, b]
-					}
-				]
-				,
-				xs
-			]
-		]
+factorItRules[x_, head_:Plus, func_:Identity] := With[
+  {p = x, pn = -x}
+  ,
+  {
+    head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]], 
+		head[ p*(a_.), pn*(b_.)] :>  p * func[head[a, -b]],
+		head[pn*(a_.), pn*(b_.)] :> pn * func[head[a,  b]]
+	}
+];
+
+(* [NOTE]: strightforward matching can be long *)
+factorIt[xs_List, head_:Plus, func_:Identity] := With[{
+	  rules = Flatten@Map[x \[Function] factorItRules[x, head, func],	xs]
 	},
 	ReplaceRepeated[#, rules]&
 ];
 
 
-factorIt[pattern_, func_:Plus] := Function[expr,
+factorIt[pattern_, head_:Plus, func_:Identity] := Function[
+	expr
+  ,
 	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-		factorIt[xs, func][expr]
+		factorIt[xs, head, func][expr]
 	]
 ];
 
