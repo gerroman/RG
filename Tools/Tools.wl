@@ -500,20 +500,24 @@ install[fname_String, path_String:"bin"] := With[{
 ];
 
 
-checkExists[results_List] := If[
-  (And @@ (FileExistsQ /@ results)) === True,
-  (
-    log[StringForm["'``' exists", #], prefix->"[....]: "]& /@ results;
-    log["", prefix->"[RESULT]: ", endl->""];
-    Write["stdout", results];
-    True
-  ),
-	(
-		log[StringForm["'``' does not exist", #], prefix->"[....]: "]& /@ results;
-		False
-	)
+
+Options[checkExists] = {verbose -> True};
+checkExists[results_List, opts:OptionsPattern[]] := With[{
+    existance = Map[(# === True)&, FileExistsQ /@ results]
+  },
+	Which[
+    OptionValue[verbose] && (And @@ existance), (
+      log[StringForm["'``' does exist", #], prefix->"[....]: "]& /@ results;
+      log["", prefix->"[RESULT]: ", endl->""];
+      Write["stdout", results];
+    ), 
+    Not[And@@existance], (
+      log[StringForm["'``' does not exist", #], prefix->"[warning]: "]& /@ Pick[results, Not/@existance];
+    )
+  ];
+  Return[(And @@ existance)];
 ];
-checkExists[result_] := checkExists[{result}];
+checkExists[result_, opts:OptionsPattern[]] := checkExists[{result}, opts];
 
 
 argparse[] := Which[
