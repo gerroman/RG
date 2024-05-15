@@ -106,6 +106,12 @@ checkExists[{fname1,...}] \[LongDash] check if all files in list"
 argparse::usage = "argparse[] \[LongDash] returns {argc, argv}"
 
 
+timestamp::usage = "timestamp[] \[LongDash] return timestamp comment";
+
+
+head::usage = "head[fname] \[LongDash] return first line of the text file";
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -372,9 +378,9 @@ log[message_, expr_, OptionsPattern[]] := (
 
 SetAttributes[timing, HoldAll];
 timing[message_, expr_] := Module[{time, result},
-	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... "];
-	time = First@Timing[result = silent[expr]];
-	log[ToString@NumberForm[time, {6, 2}], "prefix" -> "", "endl" -> " [seconds]\n"];
+	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... \n"];
+	time = First@AbsoluteTiming[result = silent[expr]];
+	log[StringPadRight["", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... " <> ToString@NumberForm[time, {6, 2}] <> " [seconds]\n"];
 	Return[{time, result}];
 ];
 timing[expr_] := timing[HoldForm[expr], expr];
@@ -510,7 +516,7 @@ checkExists[results_List, opts:OptionsPattern[]] := With[{
       log[StringForm["'``' does exist", #], prefix->"[....]: "]& /@ results;
       log["", prefix->"[RESULT]: ", endl->""];
       Write["stdout", results];
-    ), 
+    ),
     Not[And@@existance], (
       log[StringForm["'``' does not exist", #], prefix->"[warning]: "]& /@ Pick[results, Not/@existance];
     )
@@ -524,6 +530,24 @@ argparse[] := Which[
   $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
   Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
   True, {0, {}}
+];
+
+
+timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)"}]},
+  If[$Notebooks, (
+	  Print[stamp];
+		Return[];
+	)];
+	WriteString["stderr", "\n" <> stamp <> "\n"];
+];
+
+
+head[fname_String] := With[{f = OpenRead[fname]},
+  With[{line = ReadLine[f]},
+    log[FileNameTake[fname] <> ": " <> line];
+    Close[f];
+		Return[line];
+  ];
 ];
 
 
