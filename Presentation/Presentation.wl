@@ -319,7 +319,7 @@ TeXString = Function[expr, expr // TeXForm // ToString];
 SetOptions[OutputStream["stdout", 1], PageWidth -> Infinity];
 
 TeXPrint[expr_] := (WriteString["stdout", #]& /@ {
-  "\n",
+  (* "\n", *)
   "\\begin{equation}\n",
   TeXForm[expr],
   "\n\\end{equation}\n"
