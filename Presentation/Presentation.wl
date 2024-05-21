@@ -158,7 +158,7 @@ untagged[expr_, func_:Identity, opts:OptionsPattern[]] := With[{tag = ToString[U
 
 colorize[xs_List] := With[{n = Length[xs]},
   With[{styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]},
-    With[{rules = Thread[Inner[(#1 -> Style[#1, #2])&, xs, styles, List]]},
+    With[{rules = Thread[Inner[(#1 -> Style[#1, Darker@Darker[#2], Background->Lighter@Lighter[#2]])&, xs, styles, List]]},
       ReplaceAll[rules]
     ]
   ]
