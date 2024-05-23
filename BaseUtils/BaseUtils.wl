@@ -275,7 +275,7 @@ factorItRules[x_, head_:Plus, func_:Identity] := With[
   {p = x, pn = -x}
   ,
   {
-    head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]], 
+    head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]],
 		head[ p*(a_.), pn*(b_.)] :>  p * func[head[a, -b]],
 		head[pn*(a_.), pn*(b_.)] :> pn * func[head[a,  b]]
 	}
@@ -417,17 +417,16 @@ jacobian[xs_List, ys_List, rules_List:{}] := Inverse[Outer[D, xs /. rules, ys]];
 
 
 changeVars[xs_List, ys_List, rules_List:{}][expr_] := With[{
-		jacobian = jacobian[xs, ys, rules],
+		jcbn = jacobian[xs, ys, rules],
 		n = Length[xs]
 	},
-	expr //	ReplaceAll[{Derivative -> Hold[Derivative]}] //
-	ReplaceRepeated[#, {
+	expr //	ReplaceAll[{Derivative -> Hold[Derivative]}] // ReplaceRepeated[#, {
 			(head:Hold[Derivative][orders__ /; Total[{orders}] == 1])[f_][Sequence @@ xs] :> With[{
 					pos = FirstPosition[head, 1] // First
 				},
 				Sum[(
 						Derivative[Sequence @@ SparseArray[{k -> 1}, {n}]][f][Sequence @@ ys] *
-						jacobian[[k, pos]]
+						jcbn[[k, pos]]
 					),
 					{k, 1, n}
 				]
@@ -438,14 +437,13 @@ changeVars[xs_List, ys_List, rules_List:{}][expr_] := With[{
 				With[{newhead = MapAt[(# - 1)&, head, {pos}]},
 					Sum[(
 							Hold[D][newhead[f][Sequence @@ xs],	ys[[k]]] *
-							jacobian[[k, pos]]
+							jcbn[[k, pos]]
 						),
 						{k, 1, n}
 					]
 				]
 			]
-		}
-	] & // ReplaceAll[f_[Sequence @@ xs] -> f[Sequence @@ ys]] // ReplaceAll[rules] // release // Expand
+		}]& // ReplaceAll[f_[Sequence @@ xs] -> f[Sequence @@ ys]] // ReplaceAll[rules] // release // Expand
 ];
 
 

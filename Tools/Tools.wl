@@ -542,19 +542,12 @@ timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day"
 ];
 
 
-head[fname_String] := If[FileExistsQ[fname],
-  With[{f = OpenRead[fname]}, 
-    With[{line = ReadLine[f]},
-      log[FileNameTake[fname] <> ": " <> line];
-			Close[f];
-			Return[line];
-    ];
-  ];
-	,
-  With[{line = ToString@StringForm["can not find '``'", fname]},
-    error[line];
-  ];
-  Return[""];
+head[fname_String] := If[FileExistsQ[fname], 
+  ReadLine[OpenRead[fname]]
+  , (
+    error[ToString@StringForm["can not find '``'", fname]];
+    ""
+  )
 ];
 
 
