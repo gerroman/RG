@@ -127,7 +127,7 @@ $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 
 reset[exitcode_:0] := (
-  log["closing Wolfram session"];
+	log["closing Wolfram session"];
 	llog["killing processes", KillProcess /@ Processes[]];
 	llog["closing links", LinkClose /@ Links[]];
 	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
@@ -149,9 +149,9 @@ print[expr_, func_, opts:OptionsPattern[]] := With[{
 		verbose=OptionValue["verbose"]
 	},
 	If[$Notebooks,
-    Print[(expr // func)];
-    Return[]
-  ];
+		Print[(expr // func)];
+		Return[]
+	];
 	If[verbose, WriteString[stream, ToString@OptionValue["header"]]];
 	WriteString[stream, (expr // func // ToString)];
 	WriteString[stream, sep];
@@ -229,7 +229,7 @@ show[expr_, func_:Identity, opts:OptionsPattern[]] := With[
 (*Equations*)
 
 
-SetAttributes[present, HoldFirst];
+SetAttributes[present, {HoldFirst, Listable}];
 present[expr_] := HoldForm[expr] == expr;
 
 
@@ -351,8 +351,8 @@ logwrite[message_] := If[$Notebooks,
 
 SetAttributes[log, HoldRest];
 Options[log] = {
-  prefix :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
-  endl :> If[$Notebooks, "", "\n"]
+	prefix :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
+	endl :> If[$Notebooks, "", "\n"]
 };
 log[expr_String, OptionsPattern[]] := With[{
 		message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
@@ -410,12 +410,12 @@ check[expr_] := check[HoldForm[expr], expr];
 
 
 exit[code_Integer] := If[Not[$Notebooks],
-  (
-	  log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"];
-	  log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"];
-  	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
-	  Exit[code];
-  )
+	(
+		log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"];
+		log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"];
+		log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
+		Exit[code];
+	)
 ];
 exit[True] := exit[0];
 exit[False] := exit[1];
@@ -423,19 +423,19 @@ exit[False] := exit[1];
 
 SetAttributes[note, HoldFirst];
 Options[note] = {
-  prefix -> "[note]: ",
-  endl -> "\n"
+	prefix -> "[note]: ",
+	endl -> "\n"
 };
 note[expr_, func_, opts:OptionsPattern[]] := (
-  log[StringForm["``", HoldForm[InputForm[expr]]], prefix->OptionValue[prefix], endl->""];
-  With[{result = expr},
-    If[result =!= Null,
-      log[StringForm[" = ``", func[result]], prefix->"", endl->OptionValue[endl]]
+	log[StringForm["``", HoldForm[InputForm[expr]]], prefix->OptionValue[prefix], endl->""];
+	With[{result = expr},
+		If[result =!= Null,
+			log[StringForm[" = ``", func[result]], prefix->"", endl->OptionValue[endl]]
 			,
-		  log["", endl->OptionValue[endl]]
-	  ];
-	  Return[result];
-  ];
+			log["", endl->OptionValue[endl]]
+		];
+		Return[result];
+	];
 );
 note[expr_, opts:OptionsPattern[]] := note[expr, InputForm, opts];
 
@@ -457,97 +457,97 @@ warning[expr_, opts:OptionsPattern[]] := log[expr, prefix->"[warning]: ", opts];
 
 SetAttributes[llog, HoldRest];
 Options[llog] = {
-  prefix -> "[....]: ",
-  endl -> "\n[info]: complete\n"
+	prefix -> "[....]: ",
+	endl -> "\n[info]: complete\n"
 };
 
 llog[message_String, expr_, opts:OptionsPattern[]] := With[{
-    messageString = StringPadRight[message <> " ", 60, "."]
-  },
-  (
-    log[messageString, prefix->OptionValue[prefix], endl -> " ... "];
-    silent@expr;
-    log["", prefix->"", endl ->OptionValue[endl]];
-  )
+		messageString = StringPadRight[message <> " ", 60, "."]
+	},
+	(
+		log[messageString, prefix->OptionValue[prefix], endl -> " ... "];
+		silent@expr;
+		log["", prefix->"", endl ->OptionValue[endl]];
+	)
 ];
 llog[message_StringForm, expr_, opts:OptionsPattern[]] := (
-  llog[ToString@message, expr, opts];
+	llog[ToString@message, expr, opts];
 )
 llog[message_, expr_, opts:OptionsPattern[]] := With[{
-    messageString = ToString@HoldForm[InputForm[message]]
-  },
-  llog[messageString, expr, opts]
+		messageString = ToString@HoldForm[InputForm[message]]
+	},
+	llog[messageString, expr, opts]
 ];
 
 install[fname_String, path_String:"bin"] := With[{
-    fnameWindows=FileNameJoin[{path, ToString@StringForm["``.exe", fname]}],
-    fnameUnix=FileNameJoin[{path, fname}],
+		fnameWindows=FileNameJoin[{path, ToString@StringForm["``.exe", fname]}],
+		fnameUnix=FileNameJoin[{path, fname}],
 		fnameWSL=FileNameJoin[{path, ToString@StringForm["``.bin", fname]}]
-  },
+	},
 	Which[
 	 ($OperatingSystem === "Unix" && FileExistsQ[fnameUnix]), (* plane Linux installation *)
-   (
-	   log[Evaluate["installing '" <> fnameUnix <>"' ... "]];
-      Install[fnameUnix]
-   ),
-   ($OperatingSystem === "Windows" && FileExistsQ[fnameWindows]), (* plain Windows installation *)
 	 (
-	   log[Evaluate["installing '" <> fnameWindows <>"' ... "]];
+		 log[Evaluate["installing '" <> fnameUnix <>"' ... "]];
+			Install[fnameUnix]
+	 ),
+	 ($OperatingSystem === "Windows" && FileExistsQ[fnameWindows]), (* plain Windows installation *)
+	 (
+		 log[Evaluate["installing '" <> fnameWindows <>"' ... "]];
 		 Install[fnameWindows]
-   ),
-   (FileExistsQ[fnameWSL]), (* WSL on Windows installation *)
+	 ),
+	 (FileExistsQ[fnameWSL]), (* WSL on Windows installation *)
 	 (
-	   Abort[];
-	   log[Evaluate["installing '" <> fnameWSL <>"' ... "]];
+		 Abort[];
+		 log[Evaluate["installing '" <> fnameWSL <>"' ... "]];
 		 log[RunProcess[{fnameWSL, "-linkcreate", "-linkprotocol", "TCPIP"}]];
-   ),
+	 ),
 	 True, error[StringForm["can not find correct file for ``", $OperatingSystem]];
-  ]
+	]
 ];
 
 
 
 Options[checkExists] = {verbose -> True};
 checkExists[results_List, opts:OptionsPattern[]] := With[{
-    existance = Map[(# === True)&, FileExistsQ /@ results]
-  },
+		existance = Map[(# === True)&, FileExistsQ /@ results]
+	},
 	Which[
-    OptionValue[verbose] && (And @@ existance), (
-      log[StringForm["'``' does exist", #], prefix->"[....]: "]& /@ results;
-      log["", prefix->"[RESULT]: ", endl->""];
-      Write["stdout", results];
-    ),
-    Not[And@@existance], (
-      log[StringForm["'``' does not exist", #], prefix->"[warning]: "]& /@ Pick[results, Not/@existance];
-    )
-  ];
-  Return[(And @@ existance)];
+		OptionValue[verbose] && (And @@ existance), (
+			log[StringForm["'``' does exist", #], prefix->"[....]: "]& /@ results;
+			log["", prefix->"[RESULT]: ", endl->""];
+			Write["stdout", results];
+		),
+		Not[And@@existance], (
+			log[StringForm["'``' does not exist", #], prefix->"[warning]: "]& /@ Pick[results, Not/@existance];
+		)
+	];
+	Return[(And @@ existance)];
 ];
 checkExists[result_, opts:OptionsPattern[]] := checkExists[{result}, opts];
 
 
 argparse[] := Which[
-  $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
-  Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
-  True, {0, {}}
+	$ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
+	Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
+	True, {0, {}}
 ];
 
 
 timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)"}]},
-  If[$Notebooks, (
-	  Print[stamp];
+	If[$Notebooks, (
+		Print[stamp];
 		Return[];
 	)];
 	WriteString["stderr", "\n" <> stamp <> "\n"];
 ];
 
 
-head[fname_String] := If[FileExistsQ[fname], 
-  ReadLine[OpenRead[fname]]
-  , (
-    error[ToString@StringForm["can not find '``'", fname]];
-    ""
-  )
+head[fname_String] := If[FileExistsQ[fname],
+	ReadLine[OpenRead[fname]]
+	, (
+		error[ToString@StringForm["can not find '``'", fname]];
+		""
+	)
 ];
 
 
