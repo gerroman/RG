@@ -22,8 +22,11 @@ off::usage = "off[message, expr] evaluate expression with the message temporally
 on::usage = "on[message, expr] evaluate expression with the message temporally on"
 
 
-hold::usage = "hold[pattern] apply HoldForm to matches of pattern
-hold[{x1,...}] apply HoldForm to specific xs"
+hold::usage = "hold[pattern] apply Hold to matches of the `pattern`
+hold[{x1,...}] apply Hold to specific xs"
+
+holdform::usage = "holdform[pattern] apply HoldForm to matches of the `pattern`
+holdform[{x1,...}] apply HoldForm to specific xs"
 
 
 pass::usage = "pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged"
@@ -215,6 +218,23 @@ hold[pattern_] := Function[expr,
 ];
 hold[xs__] := hold[{xs}];
 
+SetAttributes[holdform, HoldAll];
+holdform[xs_List] := With[{
+		rule = Join[
+			Thread[Thread[HoldForm[xs]] -> Thread[HoldForm[xs]]],
+			Thread[-xs -> -Thread[HoldForm[xs]]],
+			Thread[xs -> Thread[HoldForm[xs]]]
+		]
+	},
+	ReplaceRepeated[#, rule]&
+];
+holdform[pattern_] := Function[expr,
+	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
+		holdform[xs][expr]
+	]
+];
+holdform[xs__] := holdform[{xs}];
+
 
 SetAttributes[pass, HoldAll];
 pass[expr_, ___] := (expr;);
@@ -393,9 +413,10 @@ solve[eqs_, vars_, opts:OptionsPattern[]] := Block[{var`solve},
   With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
 	  With[{rule = Thread[vars -> xs]},
 		  With[{sol = Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
-			  If[!OptionValue[All], (
-				    Assert[Length[sol] == 1];
-				    First[sol]
+			  If[!OptionValue[All], 
+					(
+						Assert[Length[sol] == 1];
+						First[sol]
 					),
 					sol
 				]
