@@ -558,7 +558,15 @@ head[fname_String] := If[FileExistsQ[fname],
 End[];
 
 
-log[ToString@StringForm["[``] using ``", DateString[], "RG`Tools`"], prefix->"[init]: "];
+Print[ToString@StringForm["[init]: [``] using ``", DateString[], "RG`Tools`"]];
+Print[DateString[]];
+Print[$MachineName];
+Print[$System];
+Quiet[
+  LaunchKernels[];
+  Print[StringForm["$KernelCount = ``", $KernelCount]];
+];
+
 
 
 EndPackage[];
