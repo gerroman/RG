@@ -564,7 +564,7 @@ Print[$MachineName];
 Print[$System];
 Quiet[
   LaunchKernels[];
-  Print[StringForm["$KernelCount = ``", $KernelCount]];
+  Print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
 ];
 
 
