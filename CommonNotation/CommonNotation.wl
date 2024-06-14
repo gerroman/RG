@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`CommonNotation`"]
 
 
@@ -121,6 +120,11 @@ dots::usage = "
 ";
 
 
+reIndex::usage = "
+  reIndex[expr, pattern, symbol] replace unique symbols with names started with `pattern` to indexed `symbol` in the `expr`
+";
+
+
 Begin["`Private`"]
 
 
@@ -129,7 +133,7 @@ setSubscript[x_Symbol] := (
   x /: Format[x[i_List], TraditionalForm] := Subscript[x, Row[i]];
   x /: Format[x[i_List], TeXForm] := Subscript[x, ToString@Row[i, ","]];
   x /: Format[x[i_], TraditionalForm] := Subscript[x, i];
-	x /: Format[x[i__], TraditionalForm] := Subscript[x, Row[{i}]];
+  x /: Format[x[i__], TraditionalForm] := Subscript[x, Row[{i}]];
   x /: Format[x[], TraditionalForm] := x;
   x
 );
@@ -299,6 +303,16 @@ vector /: Format[vector[expr_], TraditionalForm] := Style[expr, Bold, Italic];
 
 
 dots /: Format[dots, TraditionalForm] := "...";
+
+
+reIndex[expr_, pattern_String, symbol_Symbol] := With[{
+    syms = (expr //
+      Cases[#, (_Symbol)?(StringMatchQ[SymbolName[#], pattern~~__]&), Infinity]& //
+      Union
+    )
+  },
+  expr // ReplaceAll[Thread[syms -> Array[symbol,Length[syms]]]]
+]
 
 
 End[]
