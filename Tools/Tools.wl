@@ -533,16 +533,9 @@ argparse[] := Which[
 ];
 
 
-argparse[arg_String] := With[{argv = Last[argparse[]]}, 
-  With[{value = MemberQ[argv, name]},
-    log[StringForm["using `` = `` (command line argument)", name, value]];
-    value
-  ]
-];
-
 argparse[name_String, False] := With[{argv = Last[argparse[]]}, 
-  With[{value =MemberQ[argv, "--" <> name]},
-    log[StringForm["using `` = `` (command line argument)", name, value]];
+  With[{value = MemberQ[argv, "-" <> name]},
+    log[StringForm["using `` = `` (command line flag)", name, value]];
     value
   ]
 ];
@@ -550,12 +543,12 @@ argparse[name_String, False] := With[{argv = Last[argparse[]]},
 argparse[name_String, default_Integer] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
-  pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+  pos = Position[argv, "-" <> name];
+  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc, 
 	  log[StringForm["using `` = `` (default value)", name, default]];
     Return[default]
   ];
-	value = ToExpression[argv[[pos[[1]] + 1]]];
+	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
   If[Not@IntegerQ[value], 
 	  log[StringForm["using `` = `` (default value)", name, default]];
     Return[default]
@@ -564,32 +557,32 @@ argparse[name_String, default_Integer] := Module[
   Return[value]
 ];
 
-argparse[name_String, defalut_Real] := Module[
+argparse[name_String, default_Real] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
-  pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+  pos = Position[argv, "-" <> name];
+  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc, 
 	  log[StringForm["using `` = `` (default value)", name, default]];
     Return[default]
   ];
-	value = ToExpression[argv[[pos[[1]] + 1]]];
+	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
   If[Not@RealQ[value], 
 	  log[StringForm["using `` = `` (default value)", name, default]];
     Return[default]
   ];
-	log[StringForm["using `` = `` (command line argument)", name, value]];
-  Return[value]
+	log[StringForm["using `` = `` (command line argument)", name, 1.0 * value]];
+  Return[1.0 * value]
 ];
 
 argparse[name_String, default_String] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
-  pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+  pos = Position[argv, "-" <> name];
+  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc, 
 	  log[StringForm["using `` = '``' (default value)", name, default]];
     Return[default]
   ];
-	value = argv[[pos[[1]] + 1]];
+	value = argv[[pos[[1, 1]] + 1]];
 	log[StringForm["using `` = '``' (command line argument)", name, value]];
   Return[value]
 ];
