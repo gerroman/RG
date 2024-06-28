@@ -533,6 +533,44 @@ argparse[] := Which[
 ];
 
 
+argparse[arg_String] := With[{argv = Last[argparse[]]}, 
+  MemberQ[argv, arg]
+];
+
+argparse[name_String, False] := With[{argv = Last[argparse[]]}, 
+  MemberQ[argv, "--" <> name]
+];
+
+argparse[name_String, default_Integer] := Module[
+  {argc, argv, pos, value},
+  {argc, argv} = argparse[];
+  pos = Position[argv, "--" <> name];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+	value = ToExpression[argv[[pos[[1]] + 1]]];
+  If[Not@IntegerQ[value], Return[default]];
+  Return[value]
+];
+
+argparse[name_String, defalut_Real] := Module[
+  {argc, argv, pos, value},
+  {argc, argv} = argparse[];
+  pos = Position[argv, "--" <> name];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+	value = ToExpression[argv[[pos[[1]] + 1]]];
+  If[Not@RealQ[value], Return[default]];
+  Return[value]
+];
+
+argparse[name_String, default_String] := Module[
+  {argc, argv, pos, value},
+  {argc, argv} = argparse[];
+  pos = Position[argv, "--" <> name];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+	value = argv[[pos[[1]] + 1]];
+  Return[value]
+];
+
+
 timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)"}]},
 	If[$Notebooks, (
 		Print[stamp];
