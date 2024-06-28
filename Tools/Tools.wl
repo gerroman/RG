@@ -596,13 +596,13 @@ head[fname_String] := If[FileExistsQ[fname],
 End[];
 
 
-Print[ToString@StringForm["[init]: [``] using ``", DateString[], "RG`Tools`"]];
-Print[DateString[]];
-Print[$MachineName];
-Print[$System];
-Quiet[
-  LaunchKernels[];
-  Print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
+print[ToString@StringForm["[init]: ``", DateString[]]];
+print[ToString@StringForm["[info]: `` (``)", $MachineName, $System]];
+If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
+  Quiet[
+    LaunchKernels[];
+    print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
+  ];
 ];
 
 
