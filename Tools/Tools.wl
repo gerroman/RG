@@ -127,10 +127,11 @@ $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 
 reset[exitcode_:0] := (
-	log["closing Wolfram session"];
-	llog["killing processes", KillProcess /@ Processes[]];
-	llog["closing links", LinkClose /@ Links[]];
-	llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "];
+	(* log["closing Wolfram session"]; *)
+	(* llog["killing processes", KillProcess /@ Processes[]]; *)
+	(* llog["closing links", LinkClose /@ Links[]]; *)
+	(* llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "]; *)
+	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
 	Exit[exitcode];
 );
 
@@ -409,10 +410,9 @@ check[message_, expr_] := Module[{result},
 check[expr_] := check[HoldForm[expr], expr];
 
 
-exit[code_Integer] := If[Not[$Notebooks],
-	(
-		log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"];
-		log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"];
+exit[code_Integer] := If[Not[$Notebooks], (
+		(* log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"]; *)
+		(* log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"]; *)
 		log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
 		Exit[code];
 	)
