@@ -545,9 +545,15 @@ argparse[name_String, default_Integer] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
   pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+	  log[StringForm["using `` = `` (default value)", name, default]];
+    Return[default]
+  ];
 	value = ToExpression[argv[[pos[[1]] + 1]]];
-  If[Not@IntegerQ[value], Return[default]];
+  If[Not@IntegerQ[value], 
+	  log[StringForm["using `` = `` (default value)", name, default]];
+    Return[default]
+  ];
   Return[value]
 ];
 
@@ -555,9 +561,15 @@ argparse[name_String, defalut_Real] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
   pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+	  log[StringForm["using `` = `` (default value)", name, default]];
+    Return[default]
+  ];
 	value = ToExpression[argv[[pos[[1]] + 1]]];
-  If[Not@RealQ[value], Return[default]];
+  If[Not@RealQ[value], 
+	  log[StringForm["using `` = `` (default value)", name, default]];
+    Return[default]
+  ];
   Return[value]
 ];
 
@@ -565,7 +577,10 @@ argparse[name_String, default_String] := Module[
   {argc, argv, pos, value},
   {argc, argv} = argparse[];
   pos = Position[argv, "--" <> name];
-  If[Length[pos] != 1 || pos[[1]] + 1 > argc, Return[default]];
+  If[Length[pos] != 1 || pos[[1]] + 1 > argc, 
+	  log[StringForm["using `` = `` (default value)", name, default]];
+    Return[default]
+  ];
 	value = argv[[pos[[1]] + 1]];
   Return[value]
 ];
