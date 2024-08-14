@@ -413,7 +413,7 @@ solve[eqs_, vars_, opts:OptionsPattern[]] := Block[{var`solve},
   With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
 	  With[{rule = Thread[vars -> xs]},
 		  With[{sol = Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
-			  If[!OptionValue[All], 
+			  If[!OptionValue[All],
 					(
 						Assert[Length[sol] == 1];
 						First[sol]

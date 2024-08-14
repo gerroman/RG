@@ -72,8 +72,8 @@ matrixComplexityPlot::usage = "matrixComplexityPlot[m, label] create a plot of m
 Begin["`Private`"];
 
 
-Options[tagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> False};
-Options[untagged] = {"form" -> TraditionalForm, "colorize" -> True, "final" -> False};
+Options[tagged] = {"form" -> TraditionalForm, "colorize" -> RG`Tools`$Colorize, "final" -> False};
+Options[untagged] = {"form" -> TraditionalForm, "colorize" -> RG`Tools`$Colorize, "final" -> False};
 
 
 SetAttributes[tagged, HoldFirst];
