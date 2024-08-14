@@ -628,6 +628,15 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
   ];
 ];
 
+With[{fname = FindFile["src/init.wl"]},
+  If[fname =!= $Failed,
+    With[{path=ParentDirectory[DirectoryName[fname]]},
+		  llog[ToString@StringForm["working directory = '``'", path],
+        SetDirectory[path]
+      ];
+    ];
+  ];
+];
 
 
 EndPackage[];
