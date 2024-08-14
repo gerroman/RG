@@ -112,6 +112,9 @@ timestamp::usage = "timestamp[] \[LongDash] return timestamp comment";
 head::usage = "head[fname] \[LongDash] return first line of the text file";
 
 
+$MessageLength::usage = "$messageLength (default = 80)"
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -124,6 +127,9 @@ Begin["`Private`"];
 
 
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
+
+
+$MessageLength = 80;
 
 
 reset[exitcode_:0] := (
@@ -379,9 +385,9 @@ log[message_, expr_, OptionsPattern[]] := (
 
 SetAttributes[timing, HoldAll];
 timing[message_, expr_] := Module[{time, result},
-	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... \n"];
+	log[StringPadRight[ToString@message <> " ", $MessageLength, "."], "prefix"-> "[time]: ", "endl" -> " ... \n"];
 	time = First@AbsoluteTiming[result = silent[expr]];
-	log[StringPadRight["", 60, "."], "prefix"-> "[time]: ", "endl" -> " ... " <> ToString@NumberForm[time, {6, 2}] <> " [seconds]\n"];
+	log[StringPadRight["", $MessageLength, "."], "prefix"-> "[time]: ", "endl" -> " ... " <> ToString@NumberForm[time, {6, 2}] <> " [seconds]\n"];
 	Return[{time, result}];
 ];
 timing[expr_] := timing[HoldForm[expr], expr];
@@ -402,7 +408,7 @@ makeDirectory[path_] := (
 
 SetAttributes[check, HoldAll];
 check[message_, expr_] := Module[{result},
-	log[StringPadRight[ToString@message <> " ", 60, "."], "prefix"->"[test]: ", "endl" -> " ... "];
+	log[StringPadRight[ToString@message <> " ", $MessageLength, "."], "prefix"->"[test]: ", "endl" -> " ... "];
 	result = ((expr) === True);
 	log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
 	Return[result];
@@ -462,7 +468,7 @@ Options[llog] = {
 };
 
 llog[message_String, expr_, opts:OptionsPattern[]] := With[{
-		messageString = StringPadRight[message <> " ", 60, "."]
+		messageString = StringPadRight[message <> " ", $MessageLength, "."]
 	},
 	(
 		log[messageString, prefix->OptionValue[prefix], endl -> " ... "];
