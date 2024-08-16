@@ -115,6 +115,9 @@ head::usage = "head[fname] \[LongDash] return first line of the text file";
 $MessageLength::usage = "$messageLength (default = 80)"
 
 
+echo::usage = "echo[expr] \[LongDash] prints and return expr"
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -342,6 +345,7 @@ ruleLogWrite = {
 	"[test]" -> "\033[1;34m[test]\033[0m",
 	"[OK]" -> "\033[1;32m[OK]\033[0m",
 	"[note]" -> "\033[1;33m[note]\033[0m",
+	"[echo]" -> "\033[1;33m[echo]\033[0m",
 	"[running]" -> "\033[1;36m[running]\033[0m",
 	"[exit]" -> "\033[1;36m[exit]\033[0m",
 	"[RESULT]" -> "\033[1;31m[RESULT]\033[0m",
@@ -610,6 +614,9 @@ head[fname_String] := If[FileExistsQ[fname],
 		""
 	)
 ];
+
+
+echo[expr_] := (log[StringForm["``", HoldForm[InputForm[expr]]], prefix->"\n[echo]: "]; expr)
 
 
 (* ::Section:: *)
