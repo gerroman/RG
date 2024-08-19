@@ -544,57 +544,57 @@ argparse[] := Which[
 
 
 argparse[name_String, False] := With[{argv = Last[argparse[]]},
-  With[{value = MemberQ[argv, "-" <> name]},
-    log[StringForm["using `` = `` (command line flag)", name, value]];
-    value
-  ]
+	With[{value = MemberQ[argv, "-" <> name]},
+		log[StringForm["using `` = `` (command line flag)", name, value]];
+		value
+	]
 ];
 
 argparse[name_String, default_Integer] := Module[
-  {argc, argv, pos, value},
-  {argc, argv} = argparse[];
-  pos = Position[argv, "-" <> name];
-  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-	  log[StringForm["using `` = `` (default value)", name, default]];
-    Return[default]
-  ];
+	{argc, argv, pos, value},
+	{argc, argv} = argparse[];
+	pos = Position[argv, "-" <> name];
+	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
+		log[StringForm["using `` = `` (default value)", name, default]];
+		Return[default]
+	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
-  If[Not@IntegerQ[value],
-	  log[StringForm["using `` = `` (default value)", name, default]];
-    Return[default]
-  ];
+	If[Not@IntegerQ[value],
+		log[StringForm["using `` = `` (default value)", name, default]];
+		Return[default]
+	];
 	log[StringForm["using `` = `` (command line argument)", name, value]];
-  Return[value]
+	Return[value]
 ];
 
 argparse[name_String, default_Real] := Module[
-  {argc, argv, pos, value},
-  {argc, argv} = argparse[];
-  pos = Position[argv, "-" <> name];
-  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-	  log[StringForm["using `` = `` (default value)", name, default]];
-    Return[default]
-  ];
+	{argc, argv, pos, value},
+	{argc, argv} = argparse[];
+	pos = Position[argv, "-" <> name];
+	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
+		log[StringForm["using `` = `` (default value)", name, default]];
+		Return[default]
+	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
-  If[Not@RealQ[value],
-	  log[StringForm["using `` = `` (default value)", name, default]];
-    Return[default]
-  ];
+	If[Not@RealQ[value],
+		log[StringForm["using `` = `` (default value)", name, default]];
+		Return[default]
+	];
 	log[StringForm["using `` = `` (command line argument)", name, 1.0 * value]];
-  Return[1.0 * value]
+	Return[1.0 * value]
 ];
 
 argparse[name_String, default_String] := Module[
-  {argc, argv, pos, value},
-  {argc, argv} = argparse[];
-  pos = Position[argv, "-" <> name];
-  If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-	  log[StringForm["using `` = '``' (default value)", name, default]];
-    Return[default]
-  ];
+	{argc, argv, pos, value},
+	{argc, argv} = argparse[];
+	pos = Position[argv, "-" <> name];
+	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
+		log[StringForm["using `` = '``' (default value)", name, default]];
+		Return[default]
+	];
 	value = argv[[pos[[1, 1]] + 1]];
 	log[StringForm["using `` = '``' (command line argument)", name, value]];
-  Return[value]
+	Return[value]
 ];
 
 
@@ -616,7 +616,10 @@ head[fname_String] := If[FileExistsQ[fname],
 ];
 
 
-echo[expr_] := (log[StringForm["``", HoldForm[InputForm[expr]]], prefix->"\n[echo]: "]; expr)
+echo[expr_] := (
+	log[StringForm["``", HoldForm[InputForm[expr]]], prefix->"[echo]: "];
+	expr
+);
 
 
 (* ::Section:: *)
@@ -629,20 +632,20 @@ End[];
 print[ToString@StringForm["[init]: ``", DateString[]]];
 print[ToString@StringForm["[info]: `` (``)", $MachineName, $System]];
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
-  Quiet[
-    LaunchKernels[];
-    print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
-  ];
+	Quiet[
+		LaunchKernels[];
+		print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
+	];
 ];
 
 With[{fname = FindFile["src/init.wl"]},
-  If[fname =!= $Failed,
-    With[{path=ParentDirectory[DirectoryName[fname]]},
-		  llog[ToString@StringForm["working directory = '``'", path],
-        SetDirectory[path]
-      ];
-    ];
-  ];
+	If[fname =!= $Failed,
+		With[{path=ParentDirectory[DirectoryName[fname]]},
+			llog[ToString@StringForm["working directory = '``'", path],
+				SetDirectory[path]
+			];
+		];
+	];
 ];
 
 
