@@ -7,9 +7,6 @@
 BeginPackage["RG`Tools`"];
 
 
-verbose::usage = "verbose -> True \[LongDash] option to make function to be more verbose."
-
-
 reset::usage = "reset[] \[LongDash] terminate session"
 
 
@@ -139,8 +136,8 @@ reset[exitcode_:0] := (
 	(* log["closing Wolfram session"]; *)
 	(* llog["killing processes", KillProcess /@ Processes[]]; *)
 	(* llog["closing links", LinkClose /@ Links[]]; *)
-	(* llog[ToString@StringForm["[``]", DateString[]], prefix->"[exit]: "]; *)
-	log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
+	(* llog[ToString@StringForm["[``]", DateString[]], "prefix"->"[exit]: "]; *)
+	log[ToString@StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
 	Exit[exitcode];
 );
 
@@ -183,15 +180,15 @@ info[expr_Symbol, None] := (
 );
 info[expr_Symbol] := (
 	pprint[Context[expr]];
-	print[expr::usage, verbose->False];
-	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, verbose->False]];
-	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, verbose->False]];
+	print[expr::usage, "verbose"->False];
+	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, "verbose"->False]];
+	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, "verbose"->False]];
 );
 info[expr_Symbol, All] := (
 	info[expr];
-	If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, verbose->False]];
-	If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, verbose->False]];
-	If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, verbose->False]];
+	If[Not[emptyQ[UpValues[expr]]], pprint[UpValues[expr], Column, "verbose"->False]];
+	If[Not[emptyQ[OwnValues[expr]]], pprint[OwnValues[expr], Column, "verbose"->False]];
+	If[Not[emptyQ[DownValues[expr]]], pprint[DownValues[expr], Column, "verbose"->False]];
 );
 info[expr_String] := (
 	print[Names[expr] // partition[#, 4]&, Column];
@@ -248,15 +245,15 @@ processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
 		Module[{prev, pos},
 			pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-			log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], prefix->"[ERROR]: "];
+			log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], "prefix"->"[ERROR]: "];
 		];
 	];
 	result
 ];
 processList[fs__][expr_] := processList[{fs}][expr];
 
-Options[process] = {verbose -> False};
-process[fs_List, opts:OptionsPattern[]][expr_] := If[OptionValue[verbose],
+Options[process] = {"verbose" -> False};
+process[fs_List, opts:OptionsPattern[]][expr_] := If[OptionValue["verbose"],
 	processList[fs][expr][[{1, -1}]],
 	{expr, (RightComposition@@fs)[expr]}
 ];
@@ -301,7 +298,7 @@ ffirst::argx = "List `1` contains contains more than one element"
 
 Options[ffirst] = {"verbose" -> True};
 ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
-	If[OptionValue[verbose] && Length[flat] > 1, Message[ffirst::argx, flat]];
+	If[OptionValue["verbose"] && Length[flat] > 1, Message[ffirst::argx, flat]];
 	First[flat]
 ];
 
@@ -311,7 +308,7 @@ flast::argx = "List `1` contains contains more than one element"
 
 Options[flast] = {"verbose" -> True};
 flast[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
-	If[OptionValue[verbose] && Length[flat] > 1, Message[flast::argx, flat]];
+	If[OptionValue["verbose"] && Length[flat] > 1, Message[flast::argx, flat]];
 	Last[flat]
 ];
 
@@ -362,8 +359,8 @@ logwrite[message_] := If[$Notebooks,
 
 SetAttributes[log, HoldRest];
 Options[log] = {
-	prefix :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
-	endl :> If[$Notebooks, "", "\n"]
+	"prefix" :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
+	"endl" :> If[$Notebooks, "", "\n"]
 };
 log[expr_String, OptionsPattern[]] := With[{
 		message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
@@ -407,6 +404,7 @@ makeDirectory[path_] := (
 		exit[1];
 	];
 	log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
+	AbsoluteFileName[path]
 );
 
 
@@ -421,9 +419,9 @@ check[expr_] := check[HoldForm[expr], expr];
 
 
 exit[code_Integer] := If[Not[$Notebooks], (
-		(* log["killing processes", KillProcess /@ Processes[], prefix->"[exit]: ", endl -> "\n"]; *)
-		(* log["closing links", LinkClose /@ Links[], prefix->"[exit]: ", endl -> "\n"]; *)
-		log[ToString@StringForm["[``]", DateString[]], Null, prefix->"[exit]: ", endl->"\n\n"];
+		(* log["killing processes", KillProcess /@ Processes[], "prefix"->"[exit]: ", "endl" -> "\n"]; *)
+		(* log["closing links", LinkClose /@ Links[], "prefix"->"[exit]: ", "endl" -> "\n"]; *)
+		log[ToString@StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
 		Exit[code];
 	)
 ];
@@ -433,16 +431,16 @@ exit[False] := exit[1];
 
 SetAttributes[note, HoldFirst];
 Options[note] = {
-	prefix -> "[note]: ",
-	endl -> "\n"
+	"prefix" -> "[note]: ",
+	"endl" -> "\n"
 };
 note[expr_, func_, opts:OptionsPattern[]] := (
-	log[StringForm["``", HoldForm[InputForm[expr]]], prefix->OptionValue[prefix], endl->""];
+	log[StringForm["``", HoldForm[InputForm[expr]]], "prefix"->OptionValue["prefix"], "endl"->""];
 	With[{result = expr},
 		If[result =!= Null,
-			log[StringForm[" = ``", func[result]], prefix->"", endl->OptionValue[endl]]
+			log[StringForm[" = ``", func[result]], "prefix"->"", "endl"->OptionValue["endl"]]
 			,
-			log["", endl->OptionValue[endl]]
+			log["", "endl"->OptionValue["endl"]]
 		];
 		Return[result];
 	];
@@ -462,22 +460,22 @@ sizeOf[expr_] := Module[
 ];
 
 
-error[expr_, opts:OptionsPattern[]] := log[expr, prefix->"[ERROR]: ", opts];
-warning[expr_, opts:OptionsPattern[]] := log[expr, prefix->"[warning]: ", opts];
+error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
+warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[warning]: ", opts];
 
 SetAttributes[llog, HoldRest];
 Options[llog] = {
-	prefix -> "[....]: ",
-	endl -> "\n[info]: complete\n"
+	"prefix" -> "[....]: ",
+	"endl" -> "\n[info]: complete\n"
 };
 
 llog[message_String, expr_, opts:OptionsPattern[]] := With[{
 		messageString = StringPadRight[message <> " ", $MessageLength, "."]
 	},
 	(
-		log[messageString, prefix->OptionValue[prefix], endl -> " ... "];
+		log[messageString, "prefix"->OptionValue["prefix"], "endl" -> " ... "];
 		silent@expr;
-		log["", prefix->"", endl ->OptionValue[endl]];
+		log["", "prefix"->"", "endl" ->OptionValue["endl"]];
 	)
 ];
 llog[message_StringForm, expr_, opts:OptionsPattern[]] := (
@@ -517,18 +515,18 @@ install[fname_String, path_String:"bin"] := With[{
 
 
 
-Options[checkExists] = {verbose -> True};
+Options[checkExists] = {"verbose" -> True};
 checkExists[results_List, opts:OptionsPattern[]] := With[{
 		existance = Map[(# === True)&, FileExistsQ /@ results]
 	},
 	Which[
-		OptionValue[verbose] && (And @@ existance), (
-			log[StringForm["'``' does exist", #], prefix->"[....]: "]& /@ results;
-			log["", prefix->"[RESULT]: ", endl->""];
+		OptionValue["verbose"] && (And @@ existance), (
+			log[StringForm["'``' does exist", #], "prefix"->"[....]: "]& /@ results;
+			log["", "prefix"->"[RESULT]: ", "endl"->""];
 			Write["stdout", results];
 		),
 		Not[And@@existance], (
-			log[StringForm["'``' does not exist", #], prefix->"[warning]: "]& /@ Pick[results, Not/@existance];
+			log[StringForm["'``' does not exist", #], "prefix"->"[warning]: "]& /@ Pick[results, Not/@existance];
 		)
 	];
 	Return[(And @@ existance)];
@@ -617,7 +615,7 @@ head[fname_String] := If[FileExistsQ[fname],
 
 
 echo[expr_] := (
-	log[StringForm["``", HoldForm[InputForm[expr]]], prefix->"[echo]: "];
+	log[StringForm["``", HoldForm[InputForm[expr]]], "prefix"->"[echo]: "];
 	expr
 );
 
@@ -638,12 +636,23 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	];
 ];
 
+
+With[{fname = FileNameJoin[{$TemporaryDirectory, $UserName}]},
+  If[Not@FileExistsQ[fname], CreateDirectory[fname]];
+  path`tmp = fname;
+];
+path`run = FileNameJoin[{path`tmp, "run"}];
+path`figs = FileNameJoin[{path`tmp, "figs"}];
+
+
 With[{fname = FindFile["src/init.wl"]},
   If[fname =!= $Failed,
-	  log[SetDirectory[ParentDirectory[DirectoryName[fname]]]],
-		log[Directory[]]
+	  SetDirectory[ParentDirectory[Directory[fname]]]
+		path`run := FileNameJoin[{Directory[], "run"}];
+		path`figs := FileNameJoin[{Directory[], "figs"}];
 	];
 ];
+log[StringForm["working directory = '`1`'", Directory[]]];
 
 
 EndPackage[];
@@ -653,3 +662,5 @@ EndPackage[];
 (* mode: wl *)
 (* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
 (* End: *)
+
+
