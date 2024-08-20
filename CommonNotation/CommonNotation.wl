@@ -229,7 +229,7 @@ integrate /: Format[integrate[expr_, {{l_, dim_}}], TraditionalForm] := DisplayF
   RowBox[
 	{
 	  "\[Integral]",
-    RowBox[{SuperscriptBox["\[DifferentialD]", dim], l}],
+    RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]], l}],
 	  expr
 	}]
 ];
