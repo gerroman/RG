@@ -34,7 +34,7 @@ drawWave::usage = "
   drawWave[{p1, p2}, label] \[LongDash] labeled version
 ";
 
-drawLabel::usave = "drawLabel[{p1, p2}, {expr, pos, offset, dir}] draw text at (1 - pos) * p1 + pos * p2
+drawLabel::usage = "drawLabel[{p1, p2}, {expr, pos, offset, dir}] draw text at (1 - pos) * p1 + pos * p2
   drawLabel[{p1, p2}, expr] draw text with default pos = 0.5, offset = {0, -2}, dir = {1, 0}
 ";
 
