@@ -158,25 +158,6 @@ pullFactors[pattern_, func_, maxIter_:$IterationLimit] := Function[expr,
 ];
 
 
-(* pullFactors[arg_, func_, maxIter_:$IterationLimit] := With[{ *)
-(*		pattern = If[Head[arg] === List, *)
-(*			If[Length[arg] == 1, *)
-(*				First@arg, *)
-(*				Alternatives@@arg *)
-(*			], *)
-(*			arg *)
-(*		] *)
-(*   }, *)
-(*   Function[{expr}, *)
-(*	FixedPoint[ *)
-(*		ReplaceAll[func[a___, (x:pattern) * b_, c___] :> x func[a, b, c]], *)
-(*		expr, *)
-(*		maxIter *)
-(*	] *)
-(*   ] *)
-(* ]; *)
-
-
 fixedPoint[func_, args___] := FixedPoint[func, #, args]&;
 
 

@@ -127,17 +127,11 @@ Begin["`Private`"];
 
 
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
-
-
 $MessageLength = 80;
 
 
 reset[exitcode_:0] := (
-	(* log["closing Wolfram session"]; *)
-	(* llog["killing processes", KillProcess /@ Processes[]]; *)
-	(* llog["closing links", LinkClose /@ Links[]]; *)
-	(* llog[ToString@StringForm["[``]", DateString[]], "prefix"->"[exit]: "]; *)
-	log[ToString@StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
+	log[StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
 	Exit[exitcode];
 );
 
@@ -195,8 +189,8 @@ info[expr_String] := (
 );
 
 
-cases[patt_] := Function[expr, Union@Cases[{expr}, patt, Infinity]];
-cases[expr_, patt_] := Union@Cases[{expr}, patt, Infinity];
+cases[expr_, pattern_] := Union@Cases[{expr}, pattern, Infinity];
+cases[pattern_] := Function[expr, cases[expr, pattern]];
 
 
 
@@ -359,7 +353,7 @@ logwrite[message_] := If[$Notebooks,
 
 SetAttributes[log, HoldRest];
 Options[log] = {
-	"prefix" :> If[$BatchInput || $Notebooks, "[info]: ", "\n[info]: "],
+	"prefix" -> "[info]: ",
 	"endl" :> If[$Notebooks, "", "\n"]
 };
 log[expr_String, OptionsPattern[]] := With[{
@@ -394,18 +388,17 @@ timing[message_, expr_] := Module[{time, result},
 timing[expr_] := timing[HoldForm[expr], expr];
 
 
-makeDirectory[path_] := (
-	If[Not@FileExistsQ[path],
-		log[ToString@StringForm["making directory '``' ... ", path]];
-		CreateDirectory[path];
+makeDirectory[path_] := With[{fname = ToString[path]},
+	If[Not@FileExistsQ[fname],
+		log[StringForm["making directory '``' ... ", fname]];
+		CreateDirectory[fname];
 	];
-	If[Not@DirectoryQ[path],
-		log[ToString@StringForm["failed to make/find directory '``'", path], "prefix" -> "[ERROR]: "];
-		exit[1];
+	If[Not@DirectoryQ[fname],
+		error[StringForm["can not create/find directory '``'", fname]];
+		Return[$Failed];
 	];
-	log[ToString@StringForm["directory '``' does exist", AbsoluteFileName[path]]];
-	AbsoluteFileName[path]
-);
+	Return[AbsoluteFileName[fname]]
+];
 
 
 SetAttributes[check, HoldAll];
@@ -606,10 +599,10 @@ timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day"
 
 
 head[fname_String] := If[FileExistsQ[fname],
-	ReadLine[OpenRead[fname]]
-	, (
-		error[ToString@StringForm["can not find '``'", fname]];
-		""
+	ReadLine[OpenRead[fname]],
+	(
+		error[StringForm["can not find '``'", fname]];
+		Return[""];
 	)
 ];
 
@@ -627,32 +620,25 @@ echo[expr_] := (
 End[];
 
 
-print[ToString@StringForm["[init]: ``", DateString[]]];
-print[ToString@StringForm["[info]: `` (``)", $MachineName, $System]];
-If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
-	Quiet[
-		LaunchKernels[];
-		print[ToString@StringForm["$KernelCount = ``", $KernelCount]];
-	];
-];
+log[StringForm["<``>", DateString[]]];
 
-
-With[{fname = FileNameJoin[{$TemporaryDirectory, $UserName}]},
-  If[Not@FileExistsQ[fname], CreateDirectory[fname]];
-  path`tmp = fname;
-];
+path`tmp = makeDirectory[FileNameJoin[{$TemporaryDirectory, $UserName}]];
 path`run = FileNameJoin[{path`tmp, "run"}];
 path`figs = FileNameJoin[{path`tmp, "figs"}];
-
-
 With[{fname = FindFile["src/init.wl"]},
-  If[fname =!= $Failed,
-	  SetDirectory[ParentDirectory[Directory[fname]]]
+	If[fname =!= $Failed,
+		SetDirectory[ParentDirectory[Directory[fname]]]
 		path`run := FileNameJoin[{Directory[], "run"}];
 		path`figs := FileNameJoin[{Directory[], "figs"}];
 	];
 ];
-log[StringForm["working directory = '`1`'", Directory[]]];
+log[StringForm["``@``:`` (``)", $UserName, $MachineName, Directory[], $System]];
+If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
+	Quiet[
+		LaunchKernels[];
+		log[StringForm["$KernelCount = ``", $KernelCount]];
+	]
+];
 
 
 EndPackage[];
@@ -660,7 +646,5 @@ EndPackage[];
 
 (* Local Variables: *)
 (* mode: wl *)
-(* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
+(* compile-command: "math -script RG/SyntaxChecker/check.wl Tools.wl" *)
 (* End: *)
-
-

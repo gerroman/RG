@@ -8,97 +8,109 @@ loadFigure::usage = "loadFigure[fname, expr] load figure from file if it exists 
 Begin["`Private`"]
 
 
+path`run = makeDirectory[path`run];
+
+Options[load] = {
+  "verbose" -> True,
+  "force" -> False,
+  "path" -> path`run
+};
+
+load::get = "loading '`1`' ...";
+load::save = "saving '`1`' ...";
+load::failed = "can not find '`1`'";
+load::evaluate = "evaluating `1` ... ";
+load::hash = "hash differs '`1`' ...";
+
 SetAttributes[load, HoldRest];
-
-
-Options[load] = {"update" -> False, "verbose" -> False, "force" -> False};
-
-
-load::get = "[info]: loading `1` ...";
-load::save = "[info]: saving `1` ...";
-load::failed = "[error]: failed to load '`1`'";
-
-load[fname_, symbol_Symbol, expr_] := With[{
-		path = FileNameJoin[{Global`temporarydirectory, ToString@fname}]
+load[fname_] := With[{
+		path = FileNameJoin[{OptionValue[load, "path"], ToString@fname}],
+    verbose = OptionValue[load, "verbose"]
 	},
-	If[FileExistsQ[path] && Not[OptionValue["update"]], (
-			If[OptionValue["verbose"],
-				Print[ToString[StringForm[load::get, path]]];
-			];
-			Get[path]
-		), (
-			expr;
-			If[OptionValue["verbose"],
-				Print[ToString[StringForm[load::save, path]]];
-			];
-			DumpSave[path, symbol];
-		)
-	]
+	If[Not@FileExistsQ[path],
+    error[StringForm[load::failed, path]];
+    Return[$Failed];
+  ];
+	If[verbose, log[StringForm[load::get, path], "prefix"->"[load]: "]];
+	Get[path]
+];
+load[fname_, expr_, OptionsPattern[]] := Module[{
+		path = FileNameJoin[{OptionValue[load, "path"], ToString@fname}],
+    hashpath = FileNameJoin[{OptionValue[load, "path"], ToString@fname <> ".hash"}],
+    verbose = OptionValue[load, "verbose"],
+    force = OptionValue[load, "force"],
+    result = Unevaluated[expr],
+    hash = Hash[Unevaluated[expr]]
+	},
+  If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
+		If[verbose, log[StringForm[load::evaluate, HoldForm@@result], "prefix"->"[load]: "]];
+		result = expr;
+		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
+		Put[result, path];
+		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
+    Put[hash, hashpath];
+  ];
+  If[hash =!= Get[hashpath], 
+    error[StringForm[load::hash, hashpath]];
+    Return[$Failed];
+  ];
+	load[fname]
 ];
 
-
-load[fname_String, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`temporarydirectory, fname}]
+path`figs = makeDirectory[path`figs];
+Options[loadFigure] = {
+  "verbose" -> True,
+  "force" -> False,
+  "path" -> path`figs
+};
+SetAttributes[loadFigure, HoldRest];
+loadFigure[fname_] := With[{
+		path = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname}],
+    verbose = OptionValue[loadFigure, "verbose"]
 	},
-	If[FileExistsQ[path],
-		(
-			If[OptionValue["verbose"],
-				Print[ToString[StringForm[load::get, path]]];
-			];
-			Get[path]
-		),
-		(
-			Message[load::failed, path];
-			Null
-		)
-	]
-]
-
-
-SetAttributes[loadFigure, HoldAll];
-Options[loadFigure] = {"update" -> False, "verbose" -> True, "force"->False};
-loadFigure[fname_String, expr_, OptionsPattern[]] := With[{
-		path = FileNameJoin[{Global`figuredirectory, fname}],
-		hash = Hash[Hold[expr]],
-		hashpath = FileNameJoin[{Global`figuredirectory, fname}] <> ".hash",
-		force = OptionValue["force"]
-	},
-	If[(Not@FileExistsQ[path]
-			|| Not@FileExistsQ[hashpath]
-			|| (hash =!= Get[hashpath] && OptionValue["update"])), (
-			If[OptionValue["verbose"],
-				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hashpath]]];
-			];
-			Export[path, expr];
-			Put[hash, hashpath];
-	)];
-	If[hash =!= Get[hashpath],
-		print["[warning]: expression hashs differ, consider force update ..."];
-		If[force,
-			print["[warning]: forcing update ... "];
-			If[OptionValue["verbose"],
-				print[ToString[StringForm[load::save, path]]];
-				print[ToString[StringForm[load::save, hashpath]]];
-			];
-			Export[path, expr];
-			Put[hash, hashpath];
-		]
-	];
-	Import[path];
-	path
+	If[Not@FileExistsQ[path],
+    error[StringForm[load::failed, path]];
+    Return[$Failed];
+  ];
+	If[verbose, log[StringForm[load::get, path], "prefix"->"[load]: "]];
+	If[$Notebooks, Import[path], path]
 ];
-loadFigure[fname_String] := With[{
-		path = FileNameJoin[{Global`figuredirectory, fname}]
+
+loadFigure[fname_, expr_, OptionsPattern[]] := Module[{
+		path = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname}],
+    hashpath = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname <> ".hash"}],
+    verbose = OptionValue[loadFigure, "verbose"],
+    force = OptionValue[loadFigure, "force"],
+    result = Unevaluated[expr],
+    hash = Hash[Unevaluated[expr]]
 	},
-	If[FileExistsQ[path], Import[path],
-		print[StringForm["[error]: '``' not found", path]];
-		path
-	]
+  If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
+		If[verbose, log[StringForm[load::evaluate, HoldForm@@result], "prefix"->"[load]: "]];
+		result = expr;
+		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
+    installFrontEnd[];
+		Export[path, result];
+		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
+    Put[hash, hashpath];
+  ];
+  If[hash =!= Get[hashpath], 
+    error[StringForm[load::hash, hashpath]];
+    Return[$Failed];
+  ];
+	loadFigure[fname]
 ];
 
 
 End[]
 
 
+note[path`run];
+note[path`figs];
+
+
 EndPackage[]
+
+(* Local Variables: *)
+(* mode: wl *)
+(* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
+(* End: *)
