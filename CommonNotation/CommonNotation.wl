@@ -42,11 +42,11 @@ plus::usage = "
   plus for sign plus
 ";
 
-plusminus::usage = "
-  plusminus for both signs
+plusminus::usage = "
+  plusminus for both signs
 ";
-minusplus::usage = "
-  minusplus for both signs
+minusplus::usage = "
+  minusplus for both signs
 ";
 
 min::usage = "
@@ -217,8 +217,8 @@ setHat[x__] := setHat[{x}];
 
 minus /: Format[minus, TraditionalForm] = "-";
 plus /: Format[plus, TraditionalForm] = "+";
-plusminus /: Format[plusminus, TraditionalForm]= DisplayForm["\[PlusMinus]"];
-minusplus /: Format[minusplus, TraditionalForm]= DisplayForm["\[MinusPlus]"];
+plusminus /: Format[plusminus, TraditionalForm]= "\[PlusMinus]";
+minusplus /: Format[minusplus, TraditionalForm]= "\[MinusPlus]";
 zero /: Format[zero, TraditionalForm] = "0";
 
 min /: Format[min, TraditionalForm] = "min";
