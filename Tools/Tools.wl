@@ -645,6 +645,7 @@ $Post = Function[expr,
     WriteString["stderr", StringForm["Out[`1`] = `2`\n", $Line, expr]];
     WriteString["stderr", StringForm["In[`1`] := ", $Line + 1]];
   ];
+  expr
 ];
 
 EndPackage[];
