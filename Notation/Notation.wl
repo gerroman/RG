@@ -157,16 +157,6 @@ bar`\[Mu]::usage = "
   bar`mu symbol for antimuon
 ";
 
-plus::usage = "
-  plus \[LongDash] string for sign +
-";
-minus::usage = "
-  minus \[LongDash] string for sign -
-";
-plusminus::usage = "
-  plusminus \[LongDash] list of strign for signs  {+, -}
-";
-
 \[Eta]::usage = "
   \[Eta] \[LongDash] symbol for fermion antiparticle spinor
 ";
@@ -296,10 +286,6 @@ rule`alpha = Global`e^(p_) :> (4 \[Pi] Global`\[Alpha])^(p / 2);
 
 setBar[u, v];
 setIndexed[u, v, bar`u, bar`v];
-
-plus = "+";
-minus = "-";
-plusminus = {plus, minus};
 
 setIndexed[\[Xi], \[Eta]];
 
