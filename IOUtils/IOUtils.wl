@@ -76,7 +76,7 @@ loadFigure[fname_] := With[{
 	If[$Notebooks, Import[path], path]
 ];
 
-loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics}]] := Module[{
+loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Rasterize}]] := Module[{
 		path = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname}],
     hashpath = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname <> ".hash"}],
     verbose = OptionValue[loadFigure, "verbose"],
@@ -89,7 +89,7 @@ loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics}]] :
 		result = expr;
 		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
     installFrontEnd[];
-		Export[path, result, opts, ImageResolution->150, ImageFormattingWidth->Infinity, Background->None];
+		Export[path, Show[result, opts], opts, ImageFormattingWidth->Infinity, Background->None];
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
     Put[hash, hashpath];
   ];
