@@ -50,7 +50,7 @@ load[fname_, expr_, OptionsPattern[]] := Module[{
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
     Put[hash, hashpath];
   ];
-  If[hash =!= Get[hashpath], 
+  If[hash =!= Get[hashpath],
     error[StringForm[load::hash, hashpath]];
     Return[$Failed];
   ];
@@ -85,15 +85,14 @@ loadFigure[fname_, expr_, OptionsPattern[]] := Module[{
     hash = Hash[Unevaluated[expr]]
 	},
   If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
-		If[verbose, log[StringForm[load::evaluate, HoldForm@@result], "prefix"->"[load]: "]];
+		If[verbose, log[StringForm[load::evaluate, InputForm@result], "prefix"->"[load]: "]];
 		result = expr;
 		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
-    installFrontEnd[];
-		Export[path, result];
+		Export[path, result, ImageResolution->300, ImageFormattingWidth->Infinity, ImageSize->Large];
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
     Put[hash, hashpath];
   ];
-  If[hash =!= Get[hashpath], 
+  If[hash =!= Get[hashpath],
     error[StringForm[load::hash, hashpath]];
     Return[$Failed];
   ];
