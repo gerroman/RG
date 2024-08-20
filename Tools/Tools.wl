@@ -627,9 +627,9 @@ path`run = FileNameJoin[{path`tmp, "run"}];
 path`figs = FileNameJoin[{path`tmp, "figs"}];
 With[{fname = FindFile["src/init.wl"]},
 	If[fname =!= $Failed,
-		SetDirectory[ParentDirectory[Directory[fname]]]
-		path`run := FileNameJoin[{Directory[], "run"}];
-		path`figs := FileNameJoin[{Directory[], "figs"}];
+		SetDirectory[ParentDirectory[DirectoryName[fname]]];
+		path`run = FileNameJoin[{Directory[], "run"}];
+		path`figs = FileNameJoin[{Directory[], "figs"}];
 	];
 ];
 log[StringForm["``@``:`` (``)", $UserName, $MachineName, Directory[], $System]];
