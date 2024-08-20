@@ -215,14 +215,14 @@ setHat[x_Symbol] := With[{
 setHat[x__] := setHat[{x}];
 
 
-minus /: Format[minus] = "-";
-plus /: Format[plus] = "+";
-plusminus /: Format[plusminus]= "\[PlusMinus]";
-minusplus /: Format[minusplus]= "\[MinusPlus]";
-zero /: Format[zero] = "0";
+minus /: Format[minus, TraditionalForm] = "-";
+plus /: Format[plus, TraditionalForm] = "+";
+plusminus /: Format[plusminus, TraditionalForm]= DisplayForm["\[PlusMinus]"];
+minusplus /: Format[minusplus, TraditionalForm]= DisplayForm["\[MinusPlus]"];
+zero /: Format[zero, TraditionalForm] = "0";
 
-min /: Format[min] = "min";
-max /: Format[max] = "max";
+min /: Format[min, TraditionalForm] = "min";
+max /: Format[max, TraditionalForm] = "max";
 
 
 integrate /: Format[integrate[expr_, {{l_, dim_}}], TraditionalForm] := DisplayForm[
