@@ -88,6 +88,7 @@ loadFigure[fname_, expr_, OptionsPattern[]] := Module[{
 		If[verbose, log[StringForm[load::evaluate, InputForm@result], "prefix"->"[load]: "]];
 		result = expr;
 		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
+    installFrontEnd[];
 		Export[path, result, ImageResolution->300, ImageFormattingWidth->Infinity, ImageSize->Large];
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
     Put[hash, hashpath];
