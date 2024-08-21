@@ -8,12 +8,10 @@ loadFigure::usage = "loadFigure[fname, expr] load figure from file if it exists 
 Begin["`Private`"]
 
 
-path`run = makeDirectory[path`run];
-
 Options[load] = {
   "verbose" -> True,
   "force" -> False,
-  "path" -> path`run
+  "path" :> path`run
 };
 
 load::get = "loading '`1`' ...";
@@ -57,11 +55,12 @@ load[fname_, expr_, OptionsPattern[]] := Module[{
 	load[fname]
 ];
 
-path`figs = makeDirectory[path`figs];
+
+
 Options[loadFigure] = {
   "verbose" -> True,
   "force" -> False,
-  "path" -> path`figs
+  "path" :> path`figs
 };
 SetAttributes[loadFigure, HoldRest];
 loadFigure[fname_] := With[{
@@ -108,6 +107,8 @@ loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Ras
 End[]
 
 
+path`run = makeDirectory[path`run];
+path`figs = makeDirectory[path`figs];
 note[path`run];
 note[path`figs];
 
