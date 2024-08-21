@@ -90,7 +90,7 @@ drawLine[ps:{{_,_}..}, labels_List, opts:OptionsPattern[]] := (
 
 Options[drawArrow] = {lineDirectives -> {}};
 drawArrow[ps:{{_,_}, {_,_}}, OptionsPattern[]] := Append[
-  Flatten[{Arrowheads[{{Automatic, 0.5}}], OptionValue[lineDirectives]}],
+  Flatten[{Arrowheads[{{Medium, 0.5}}], OptionValue[lineDirectives]}],
   Arrow[ps]
 ];
 
