@@ -647,9 +647,3 @@ $Post = Function[expr,
 ];
 
 EndPackage[];
-
-
-(* Local Variables: *)
-(* mode: wl *)
-(* compile-command: "math -script RG/SyntaxChecker/check.wl Tools.wl" *)
-(* End: *)
