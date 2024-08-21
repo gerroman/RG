@@ -91,7 +91,7 @@ loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Plo
 		result = expr;
 		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
 		installFrontEnd[];
-		Export[path, Show[result, Sequence@@graphicsOpts], Sequence@@exportOpts, ImageFormattingWidth->Infinity, Background->None];
+		Export[path, If[Head[result] === Graphics, Show[result, Sequence@@graphicsOpts], result], Sequence@@exportOpts, ImageFormattingWidth->Infinity, Background->None];
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
 		Put[hash, hashpath];
 	];
