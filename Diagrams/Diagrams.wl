@@ -52,6 +52,8 @@ drawFrame::usage = "
   drawFrame[d:1] draw square frame with d as side length
 "
 
+makeLegend::usage = "makeLegend[expr, {Right, Top}, opts] \[LongDash] create a line legend from expr to use as a value PlotLegends";
+
 
 Begin["`Private`"]
 
@@ -197,8 +199,10 @@ drawWave[ps:{{_,_}..}, labels_List, opts:OptionsPattern[]] := (
 ) /; Length[ps] == Length[labels] + 1;
 
 
-drawFrame[p1 : {xmin_, ymin_}, p2 : {xmax_, ymax_}] := Graphics[
-  {Opacity[.0], Rectangle[p1, p2]},
+drawFrame[p1 : {xmin_, ymin_}, p2 : {xmax_, ymax_}] := Graphics[{
+    Opacity[.0],
+    Rectangle[p1, p2]
+  },
   Frame -> True,
   FrameTicks -> {Range[xmin, xmax], Range[ymin, ymax]},
   GridLines -> {Range[xmin, xmax], Range[ymin, ymax]},
@@ -206,6 +210,11 @@ drawFrame[p1 : {xmin_, ymin_}, p2 : {xmax_, ymax_}] := Graphics[
 ];
 
 drawFrame[d_: 1] := drawFrame[{-d, -d}, {d, d}];
+
+
+makeLegend[expr_, pos_:{Right, Top}, opts:OptionsPattern[{LegendFunction}]] := (
+	Placed[LineLegend[expr, opts, LegendFunction -> (Framed[#,FrameMargins->0,FrameStyle->None]&)], pos]
+);
 
 
 End[]

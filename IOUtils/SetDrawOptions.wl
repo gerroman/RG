@@ -1,8 +1,5 @@
 Needs["RG`Tools`"];
-Needs["RG`IOUtils`"];
-
 log["setting default graph options ..."];
-
 Block[{
 		(* [pt] = (1/72) [in] = 0.0352 [cm] *)
 		aspectRatio = 3/4,
@@ -24,10 +21,3 @@ Block[{
 		}
 	]
 ];
-
-RG`IOUtils`makeLegend::usage = "makeLegend[expr, {Right, Top}, opts] \[LongDash] create a line legend from expr to use as a value PlotLegends";
-RG`IOUtils`makeLegend[expr_, pos_:{Right, Top}, opts:OptionsPattern[{LegendFunction}]] := (
-	Placed[LineLegend[expr, opts, LegendFunction -> (Framed[#,FrameMargins->0,FrameStyle->None]&)], pos]
-);
-
-info[RG`IOUtils`makeLegend];
