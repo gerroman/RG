@@ -82,14 +82,18 @@ loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Ras
     verbose = OptionValue[loadFigure, "verbose"],
     force = OptionValue[loadFigure, "force"],
     result = Unevaluated[expr],
-    hash = Hash[Unevaluated[expr]]
+    hash = Hash[Unevaluated[expr]],
+		loadOpts = FilterRules[{opts}, loadFigure],
+		exportOpts = FilterRules[{opts}, OptionsPattern[{Export,Rasterize}]],
+		graphicsOpts
 	},
+	graphicsOpts = Complement[{opts}, loadOpts, exportOpts];
   If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
 		If[verbose, log[StringForm[load::evaluate, InputForm@result], "prefix"->"[load]: "]];
 		result = expr;
 		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
     installFrontEnd[];
-		Export[path, Show[result, opts], opts, ImageFormattingWidth->Infinity, Background->None];
+		Export[path, Show[result, Sequence@@graphicsOpts], Sequence@@exportOpts, ImageFormattingWidth->Infinity, Background->None];
 		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
     Put[hash, hashpath];
   ];

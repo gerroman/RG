@@ -641,11 +641,9 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 ];
 
 $Post = Function[expr,
-  If[expr =!= Null,
-    WriteString["stderr", StringForm["Out[`1`] = `2`\n", $Line, expr]];
-    WriteString["stderr", StringForm["In[`1`] := ", $Line + 1]];
-  ];
-  expr
+  If[expr =!= Null, WriteString["stderr", StringForm["\rOut[`1`] = `2`\n", $Line,	StringTrim[StringPadRight[ToString@InputForm[expr], $MessageLength]]]]];
+	WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
+  If[$Notebooks, expr, Null]
 ];
 
 EndPackage[];
