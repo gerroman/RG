@@ -55,17 +55,6 @@ getRunner::usage = "
 ";
 
 
-TeXString::usage = "
-  TeXString[expr] format ``expr'' as TeX-string
-";
-
-
-TeXPrint::usage = "
-  TeXPrint[expr] print ``expr'' surrounded by \\begin{equation}, \\end{equation}
-  TeXPrint[expr, tag] print ``expr'' surrounded by \\begin{equation}\\label{tag}, \\end{equation}
-";
-
-
 matrixComplexityPlot::usage = "matrixComplexityPlot[m, label] create a plot of matrix element complexity Log[10, 1 + LeafCounts[matrix elements]]";
 
 
@@ -312,26 +301,6 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
   ]
 ];
 shorten[expr_, OptionsPattern[]] := expr;
-
-
-TeXString = Function[expr, expr // TeXForm // ToString];
-
-SetOptions[OutputStream["stdout", 1], PageWidth -> Infinity];
-
-TeXPrint[expr_] := (WriteString["stdout", #]& /@ {
-  (* "\n", *)
-  "\\begin{equation}\n",
-  TeXForm[expr],
-  "\n\\end{equation}\n"
-};);
-
-TeXPrint[expr_, tag_] := (WriteString["stdout", #]& /@ {
-  "\n",
-  "\\begin{equation}\n",
-  StringForm["\\label{``}\n", tag],
-  TeXForm[expr],
-  "\n\\end{equation}\n"
-};);
 
 
 SetAttributes[matrixComplexityPlot, HoldFirst]

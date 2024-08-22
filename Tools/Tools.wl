@@ -109,10 +109,19 @@ timestamp::usage = "timestamp[] \[LongDash] return timestamp comment";
 head::usage = "head[fname] \[LongDash] return first line of the text file";
 
 
-$MessageLength::usage = "$messageLength (default = 80)"
-
+$MessageLength::usage = "$messageLength (default = 80)";
+$LongMessageFactor::usage = "$LongMessageFactor (default = 10)";
 
 echo::usage = "echo[expr] \[LongDash] prints and return expr"
+
+TeXString::usage = "TeXString[expr] format ``expr'' as TeX-string
+";
+
+
+TeXPrint::usage = "TeXPrint[expr] print ``expr'' surrounded by \\begin{equation}, \\end{equation}
+	TeXPrint[expr, tag] print ``expr'' surrounded by \\begin{equation}\\label{tag}, \\end{equation}
+";
+
 
 
 (* ::Section:: *)
@@ -127,7 +136,10 @@ Begin["`Private`"];
 
 
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
+
+
 $MessageLength = 80;
+$LongMessageFactor = 10;
 
 
 reset[exitcode_:0] := (
@@ -613,6 +625,57 @@ echo[expr_] := (
 );
 
 
+TeXString = Function[expr, expr // TeXForm // ToString];
+
+SetAttributes[TeXPrintStream, HoldFirst];
+TeXPrintStream[expr_, stream_] := (
+	WriteString[stream, #]& /@ {
+		"\\begin{equation}\n",
+		TeXForm[expr],
+		"\n\\end{equation}\n"
+	}
+);
+TeXPrintStream[expr_, tag_String, stream_] := (
+	WriteString[stream, #]& /@ {
+		"\\begin{equation}\n",
+		StringForm["\\label{``}\n", tag],
+		TeXForm[expr],
+		"\n\\end{equation}\n"
+	}
+);
+
+SetAttributes[TeXPrint, HoldFirst];
+Options[TeXPrint] = {
+	"stream"->"stdout"
+};
+
+TeXPrint[expr_, opts:OptionsPattern[]] := With[{stream=OptionValue["stream"]},
+	If[stream === "stdout" || stream === "stderr",
+		TeXPrintStream[expr, stream],
+		(
+			log[StringForm["TeXPrint[] to '``'", stream]];
+			With[{f = OpenWrite[stream]},
+				TeXPrintStream[expr, f];
+				Close[f];
+			];
+		)
+	];
+];
+
+TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["stream"]},
+	If[stream === "stdout" || stream === "stderr",
+		TeXPrintStream[expr, tag, stream],
+		(
+			log[StringForm["TeXPrint[] to '``'", stream]];
+			With[{f = OpenWrite[stream]},
+				TeXPrintStream[expr, tag, f];
+				Close[f];
+			];
+		)
+	];
+];
+
+
 (* ::Section:: *)
 (*End*)
 
@@ -641,9 +704,14 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 ];
 
 $Post = Function[expr,
-  If[expr =!= Null, WriteString["stderr", StringForm["\rOut[`1`] = `2`\n", $Line,	StringTrim[StringPadRight[ToString@InputForm[expr], 10 * $MessageLength]] <> " ... "]]];
+	If[expr =!= Null,
+		WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
+			$Line,
+			StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
+		]
+	];
 	WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
-  If[$Notebooks, expr, Null]
+	If[$Notebooks, expr, Null]
 ];
 
 EndPackage[];
