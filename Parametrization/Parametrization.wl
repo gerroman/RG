@@ -26,9 +26,17 @@ integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions contai
 
 substitute::usage="substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
 
-getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials. [note]: (1) it does not contain \[Delta]-function which must be inserted to proceed calculation, (2) \[Delta]-function must have the form \[Delta](1 - \[CapitalSigma]x), where sum is taken over sum subset of parameters {x_i}, (3) integration w.r.t. x_i goes from 0 to \[Infinity]";
+getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.
+  [note]:
+    (1) it contains \[Delta]-function
+	  (2) \[Delta]-function have the form \[Delta](1 - \[CapitalSigma]x), where sum can be taken over subset of parameters {x_i},
+	  (3) integration w.r.t. x_i goes from 0 to \[Infinity]
+";
 
-getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] form integral w.r.t. parameters using G polynomial. [note]: (1) integration w.r.t. x_i goes from 0 to \[Infinity]";
+getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] make an integral w.r.t. parameters using G polynomial.
+  [note]:
+	  (1) integration w.r.t. x_i goes from 0 to \[Infinity]
+";
 
 getPsXsPowers::usage="getPsXsPowers[expr_integrate] \[LongDash] get polynomials, xs, and powers of polynomials from the integral parameterization. [note]: (1) `expr` must be in the form of indetermine integral w.r.t. parameters x_i, (2) integration w.r.t. x_i (in the determine form of the integral) must goes from 0 to \[Infinity]";
 
