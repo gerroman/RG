@@ -1,12 +1,4 @@
-(* ::Package:: *)
-
-BeginPackage["RG`Parametrization`", {
-	"RG`Tools`",
-	"RG`BaseUtils`",
-	"RG`CommonNotation`",
-	"RG`Calculation`",
-	"LiteRed`"
-}];
+BeginPackage["RG`Parametrization`", {"RG`Tools`",	"RG`BaseUtils`","RG`CommonNotation`",	"RG`Calculation`","LiteRed`"}]
 
 
 flattenIntegrate::usage="flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
@@ -18,7 +10,7 @@ indetermineIntegrate::usage="indetermineIntegrate[expr] \[LongDash] remove all i
 determineIntegrate::usage="determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
 
 pushIntegrateFactors::usage="pushIntegrateFactors[x][expr] push common factors inside the integrals w.r.t. x
-  pushIntegrateFactors[expr] push common factors inside the integrals w.r.t. any variables
+	pushIntegrateFactors[expr] push common factors inside the integrals w.r.t. any variables
 ";
 
 integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
@@ -27,15 +19,15 @@ integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions contai
 substitute::usage="substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
 
 getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.
-  [note]:
-    (1) it contains \[Delta]-function
-	  (2) \[Delta]-function have the form \[Delta](1 - \[CapitalSigma]x), where sum can be taken over subset of parameters {x_i},
-	  (3) integration w.r.t. x_i goes from 0 to \[Infinity]
+	[note]:
+		(1) it contains \[Delta]-function
+		(2) \[Delta]-function have the form \[Delta](1 - \[CapitalSigma]x), where sum can be taken over subset of parameters {x_i},
+		(3) integration w.r.t. x_i goes from 0 to \[Infinity]
 ";
 
 getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] make an integral w.r.t. parameters using G polynomial.
-  [note]:
-	  (1) integration w.r.t. x_i goes from 0 to \[Infinity]
+	[note]:
+		(1) integration w.r.t. x_i goes from 0 to \[Infinity]
 ";
 
 getPsXsPowers::usage="getPsXsPowers[expr_integrate] \[LongDash] get polynomials, xs, and powers of polynomials from the integral parameterization. [note]: (1) `expr` must be in the form of indetermine integral w.r.t. parameters x_i, (2) integration w.r.t. x_i (in the determine form of the integral) must goes from 0 to \[Infinity]";
@@ -120,7 +112,7 @@ integrateDelta[iexpr_, z_] := With[{delta = DiracDelta}, ReplaceAll[
 
 
 SetAttributes[getParametrizationFU, Listable];
-getParametrizationFU[expr:LiteRed`j[tag_, idxs__], dim_] := Module[
+getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 	{
 			ns = Select[{idxs}, (# =!= 0)&], (* non-zero powers of denominators *)
 			n, U, F, xs, cf,
@@ -145,7 +137,7 @@ getParametrizationFU[expr:LiteRed`j[tag_, idxs__], dim_] := Module[
 
 
 SetAttributes[getParametrizationG, Listable];
-getParametrizationG[expr:LiteRed`j[tag_, idxs__], dim_] := Module[{
+getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
 		ns = Select[{idxs}, (# =!= 0)&],
 		n, U, F, G, xs, cf,
 		result
@@ -175,32 +167,32 @@ getPsXsPowers[integrate[integrand_, vars__]] := Module[{
 	},
 	If[Not@MatchQ[integrand, _Symbol| _Power | Times[(_Symbol|_Power), (_Symbol|_Power)..]],
 		error["integrand does not match Times[(_Symbol|_Power), (_Symbol|_Power)..]"]
-		Return[{}, {}, {}];
+		Return[{{}, {}, {}}];
 	];
 	mults = integrand // Replace[{expr_Times :> List@@expr, expr_ :> {expr}}];
 	ps = mults // Map[Replace[{expr_Symbol :> expr, expr_Power :> expr[[1]]}]];
 	powers = mults // Map[Replace[{expr_Symbol :> 1, expr_Power :> expr[[2]]}]];
 	If[Times@@(ps^powers) != integrand,
 		error["integrand separation fails"]
-		Return[{}, {}, {}];
+		Return[{{}, {}, {}}];
 	];
 	Return[{ps, xs, powers}];
 ];
 
 
 getRegionContribution[powers_,var_][region_] := With[{
-    polyScales=region[[1]],
-    varScales=region[[2]]
-  },
-  (
-    Times@@(var^(polyScales*powers)) *
-    Times@@(var^varScales)
-   ) // PowerExpand // ExpandAll
+		polyScales=region[[1]],
+		varScales=region[[2]]
+	},
+	(
+		Times@@(var^(polyScales*powers)) *
+		Times@@(var^varScales)
+	 ) // PowerExpand // ExpandAll
 ];
 
 
 pushIntegrateFactors[s_Symbol] := Function[expr,
-  expr // ReplaceAll[a_ * integrate[b_, vars : ({s, from_, to_} | s)] :> integrate[a b, vars]]
+	expr // ReplaceAll[a_ * integrate[b_, vars : ({s, from_, to_} | s)] :> integrate[a b, vars]]
 ];
 pushIntegrateFactors[expr_] := ReplaceRepeated[expr, a_ *integrate[b_, vars__] :> integrate[a b, vars]]
 
