@@ -33,7 +33,7 @@ leadingTermOrder[s_SeriesData] := Part[s, 4];
 
 
 SetAttributes[seriesOrder, Listable];
-seriesOrder[s_SeriesData] := Part[s, 5];
+seriesOrder[s_SeriesData] := Part[s, 5] - 1;
 
 
 SetAttributes[leadingTerm, Listable];
