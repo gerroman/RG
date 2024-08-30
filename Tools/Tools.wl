@@ -106,7 +106,10 @@ checkExists[{fname1,...}] \[LongDash] check if all files in list"
 argparse::usage = "argparse[] \[LongDash] returns {argc, argv}"
 
 
-timestamp::usage = "timestamp[] \[LongDash] return timestamp comment";
+timeString::usage = "timeString[] form a time string";
+timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]";
+systemString::usage = "timeString[] form a system string";
+systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]";
 
 
 head::usage = "head[fname] \[LongDash] return first line of the text file";
@@ -140,7 +143,7 @@ Begin["`Private`"];
 
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
-setPostProcessing[bool:(True|False)] := If[bool, 
+setPostProcessing[bool:(True|False)] := If[bool,
   (
     $Post = Function[expr,
     	If[expr =!= Null,
@@ -621,20 +624,44 @@ argparse[name_String, default_String] := Module[
 ];
 
 
-timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)"}]},
+timeString[] := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
+timeStamp[] := With[{stamp = timeString[]},
 	If[$Notebooks, Print[stamp]];
-	WriteString["stderr", "\r" <> stamp <> "\n"];
+  log[stamp];
+];
+
+systemString[] := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
+systemStamp[] := With[{stamp = systemString[]},
+	If[$Notebooks, Print[stamp]];
+  log[stamp];
 ];
 
 
-head[fname_String] := If[FileExistsQ[fname],
-	ReadLine[OpenRead[fname]],
-	(
-		error[StringForm["can not find '``'", fname]];
-		Return[""];
-	)
+head[fname_String] := Module[{stream, result = $Failed}, 
+  If[FileExistsQ[fname], 
+    (
+      stream = OpenRead[fname];
+	    result = ReadLine[stream];
+      Close[stream];
+    ),
+    error[StringForm["can not find '``'", fname]];
+  ];
+  Return[result];
 ];
-
+head[fname_String, n_Integer] := Module[{stream, result = $Failed}, 
+  If[FileExistsQ[fname],
+    (
+      stream = OpenRead[fname];
+      result = StringRiffle[
+        Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
+        {"", "\n", ""}
+      ];
+			Close[stream];
+    ),
+    error[StringForm["can not find '``'", fname]];
+	];
+  Return[result];
+];
 
 echo[expr_] := (
 	log[StringForm["``", HoldForm[InputForm[expr]]], "prefix"->"[echo]: "];
@@ -705,7 +732,9 @@ EndPackage[];
 
 (* ::Section:: *)
 (*Session setup*)
-log[StringForm["<``>", DateString[]]];
+
+systemStamp[];
+timeStamp[];
 
 path`tmp = makeDirectory[FileNameJoin[{$TemporaryDirectory, $UserName}]];
 path`run = FileNameJoin[{path`tmp, "run"}];
@@ -714,13 +743,15 @@ path`figs = FileNameJoin[{path`tmp, "figs"}];
 With[{fname = FindFile["src/init.wl"]},
 	If[fname =!= $Failed,
 		SetDirectory[ParentDirectory[DirectoryName[fname]]];
-		note[Directory[]];
 		path`run = FileNameJoin[{Directory[], "run"}];
 		path`figs = FileNameJoin[{Directory[], "figs"}];
 	];
 ];
+path`cwd = Directory[];
 
-log[StringForm["``@``:`` (``)", $UserName, $MachineName, Directory[], $System]];
+note[path`cwd];
+note[path`run];
+note[path`figs];
 
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	Quiet[
@@ -729,6 +760,6 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	]
 ];
 
-If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed, 
+If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
   setPostProcessing[True]
 ];
