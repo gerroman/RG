@@ -714,6 +714,7 @@ path`figs = FileNameJoin[{path`tmp, "figs"}];
 With[{fname = FindFile["src/init.wl"]},
 	If[fname =!= $Failed,
 		SetDirectory[ParentDirectory[DirectoryName[fname]]];
+		note[Directory[]];
 		path`run = FileNameJoin[{Directory[], "run"}];
 		path`figs = FileNameJoin[{Directory[], "figs"}];
 	];
