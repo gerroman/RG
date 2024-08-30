@@ -75,7 +75,8 @@ timing::usage = "timing[expr] \[LongDash] timing 'expr' and write an info messag
 
 check::usage = "check[expr] \[LongDash] check 'expr' to be True, write an info message to 'stderr'"
 
-exit::usage = "exit[code] \[LongDash] exit with code from script"
+exit::usage = "exit[code] \[LongDash] exit with code from script
+exit[] \[LongDash] call exit[0]"
 
 note::usage = "note[expr] \[LongDash] converts 'expr' (HoldForm input and InputForm output) to strings and write an info message to 'stderr'"
 
@@ -84,6 +85,8 @@ sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in 
 
 $Colorize::usage = "$Colorize = True to colorize output (default: 'False' for Windows, 'True' for Linux)"
 
+setPostProcessing::usage = "setPostProcessing[True] to duplicate In[]/Out[] to stderr
+setPostProcessing[False] to disable feature";
 
 install::usage = "install[fname] \[LongDash] install 'fname.ext' adding correct extension from 'bin' directory
 install[fname, path] \[LongDash] install 'fname.ext' adding correct extension using 'path' as directory
@@ -137,13 +140,30 @@ Begin["`Private`"];
 
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
+setPostProcessing[bool:(True|False)] := If[bool, 
+  (
+    $Post = Function[expr,
+    	If[expr =!= Null,
+    		WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
+    			$Line,
+    			StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
+    		];
+    	];
+    	WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
+    	If[$Notebooks, expr, Null]
+    ];
+  ),
+  Clear[$Post];
+];
+setPostProcessing[] := setPostProcessing[True];
+
 
 $MessageLength = 80;
 $LongMessageFactor = 10;
 
 
 reset[exitcode_:0] := (
-	log[StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
+	log[StringForm["<``>", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
 	Exit[exitcode];
 );
 
@@ -426,12 +446,12 @@ check[expr_] := check[HoldForm[expr], expr];
 exit[code_Integer] := If[Not[$Notebooks], (
 		(* log["killing processes", KillProcess /@ Processes[], "prefix"->"[exit]: ", "endl" -> "\n"]; *)
 		(* log["closing links", LinkClose /@ Links[], "prefix"->"[exit]: ", "endl" -> "\n"]; *)
-		log[ToString@StringForm["[``]", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
+		log[ToString@StringForm["<``>", DateString[]], Null, "prefix"->"[exit]: ", "endl"->"\n\n"];
 		Exit[code];
 	)
 ];
-exit[True] := exit[0];
-exit[False] := exit[1];
+exit[bool:(True|False)] := exit[If[bool, 0, 1]];
+exit[] := exit[0];
 
 
 SetAttributes[note, HoldFirst];
@@ -602,11 +622,8 @@ argparse[name_String, default_String] := Module[
 
 
 timestamp[] := With[{stamp = DateString[{"(* ", "Year", "/", "Month", "/", "Day", " : ", "Hour",":", "Minute", ":", "Second", " *)"}]},
-	If[$Notebooks, (
-		Print[stamp];
-		Return[];
-	)];
-	WriteString["stderr", "\n" <> stamp <> "\n"];
+	If[$Notebooks, Print[stamp]];
+	WriteString["stderr", "\r" <> stamp <> "\n"];
 ];
 
 
@@ -683,11 +700,17 @@ TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["
 End[];
 
 
+EndPackage[];
+
+
+(* ::Section:: *)
+(*Session setup*)
 log[StringForm["<``>", DateString[]]];
 
 path`tmp = makeDirectory[FileNameJoin[{$TemporaryDirectory, $UserName}]];
 path`run = FileNameJoin[{path`tmp, "run"}];
 path`figs = FileNameJoin[{path`tmp, "figs"}];
+
 With[{fname = FindFile["src/init.wl"]},
 	If[fname =!= $Failed,
 		SetDirectory[ParentDirectory[DirectoryName[fname]]];
@@ -695,7 +718,9 @@ With[{fname = FindFile["src/init.wl"]},
 		path`figs = FileNameJoin[{Directory[], "figs"}];
 	];
 ];
+
 log[StringForm["``@``:`` (``)", $UserName, $MachineName, Directory[], $System]];
+
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	Quiet[
 		LaunchKernels[];
@@ -703,15 +728,6 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	]
 ];
 
-$Post = Function[expr,
-	If[expr =!= Null,
-		WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
-			$Line,
-			StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
-		]
-	];
-	WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
-	If[$Notebooks, expr, Null]
+If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed, 
+  setPostProcessing[True]
 ];
-
-EndPackage[];
