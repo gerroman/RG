@@ -1,102 +1,117 @@
 BeginPackage["RG`IOUtils`", {"RG`Tools`"}];
 
 
-load::usage = "load[file, symbol, definitions] load from file (if it exists) or execute symbol's definitions and save it to file"
-loadFigure::usage = "loadFigure[fname, expr] load figure from file if it exists or execute expr and save figure to the file"
+load::usage = "load[fname] \[LongDash] load expression from file 'fname'";
+export::usage = "export[file, expr, opts] export from file (if it exists) or execute symbol's definitions and save it to file"
+
+loadFigure::usage = "loadFigure[fname] \[LongDash] load figure from file 'fname'";
+exportFigure::usage = "exportFigure[fname, expr] export figure from file if it exists or execute expr and save figure to the file"
 
 
 Begin["`Private`"]
 
 
+load::load = "loading '`1`' ...";
+load::failed = "can not find '`1`'";
+
 Options[load] = {
-	"verbose" -> True,
-	"force" -> False,
-	"path" :> path`run
+	"verbose" -> True
 };
 
-load::get = "loading '`1`' ...";
-load::save = "saving '`1`' ...";
-load::failed = "can not find '`1`'";
-load::evaluate = "evaluating `1` ... ";
-load::hash = "hash differs '`1`' ...";
-
-SetAttributes[load, HoldRest];
 load[fname_] := With[{
-		path = FileNameJoin[{OptionValue[load, "path"], ToString@fname}],
-		verbose = OptionValue[load, "verbose"]
+		fnameFull = ToString@fname,
+		verbose = OptionValue[export, "verbose"]
 	},
-	If[Not@FileExistsQ[path],
-		error[StringForm[load::failed, path]];
+	If[Not@FileExistsQ[fnameFull],
+		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
-	If[verbose, log[StringForm[load::get, path], "prefix"->"[load]: "]];
-	Get[path]
+	If[verbose, log[StringForm[load::load, fnameFull], "prefix"->"[load]: "]];
+	Get[fnameFull]
 ];
-load[fname_, expr_, OptionsPattern[]] := Module[{
-		path = FileNameJoin[{OptionValue[load, "path"], ToString@fname}],
-		hashpath = FileNameJoin[{OptionValue[load, "path"], ToString@fname <> ".hash"}],
-		verbose = OptionValue[load, "verbose"],
-		force = OptionValue[load, "force"],
-		result = Unevaluated[expr],
-		hash = Hash[Unevaluated[expr]]
+
+Options[loadFigure] = {
+	"verbose" -> True
+};
+loadFigure[fname_] := With[{
+		fnameFull = ToString@fname,
+		verbose = OptionValue[loadFigure, "verbose"]
 	},
-	If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
-		If[verbose, log[StringForm[load::evaluate, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[load]: "]];
-		result = expr;
-		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
-		Put[result, path];
-		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
-		Put[hash, hashpath];
+	If[Not@FileExistsQ[fnameFull],
+		error[StringForm[load::failed, fnameFull]];
+		Return[$Failed];
 	];
-	If[hash =!= Get[hashpath],
-		error[StringForm[load::hash, hashpath]];
+	If[verbose, log[StringForm[load::load, fnameFull], "prefix"->"[load]: "]];
+	If[$Notebooks, Import[fnameFull], fnameFull]
+];
+
+
+export::load = "loading '`1`' ...";
+export::save = "saving '`1`' ...";
+export::failed = "can not find '`1`'";
+export::evaluate = "evaluating `1` ... ";
+export::hash = "hash differs '`1`' ...";
+
+Options[export] = {
+	"verbose" -> True,
+	"force" -> False,
+  "comments" :> DateString[]
+};
+SetAttributes[export, HoldRest];
+export[fname_, expr_, OptionsPattern[]] := Module[{
+		fnameFull = ToString@fname,
+		fnameHash = ToString@fname <> ".hash",
+		verbose = OptionValue[export, "verbose"],
+		force = OptionValue[export, "force"],
+		result = Unevaluated[expr],
+		hash = Hash[Unevaluated[expr]],
+    comments = OptionValue[export, "comments"]
+	},
+	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
+		If[verbose, log[StringForm[export::evaluate,
+      StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "
+    ]];
+		result = expr;
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[save]: "]];
+		Export[fnameFull, result, "Comments" -> comments];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[save]: "]];
+		Put[hash, fnameHash];
+	];
+	If[hash =!= Get[fnameHash],
+		error[StringForm[export::hash, fnameHash]];
 		Return[$Failed];
 	];
 	load[fname]
 ];
 
 
-
-Options[loadFigure] = {
+Options[exportFigure] = {
 	"verbose" -> True,
-	"force" -> False,
-	"path" :> path`figs
+	"force" -> False
 };
-SetAttributes[loadFigure, HoldRest];
-loadFigure[fname_] := With[{
-		path = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname}],
-		verbose = OptionValue[loadFigure, "verbose"]
-	},
-	If[Not@FileExistsQ[path],
-		error[StringForm[load::failed, path]];
-		Return[$Failed];
-	];
-	If[verbose, log[StringForm[load::get, path], "prefix"->"[load]: "]];
-	If[$Notebooks, Import[path], path]
-];
-
-loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Plot, Rasterize}]] := Module[{
-		path = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname}],
-		hashpath = FileNameJoin[{OptionValue[loadFigure, "path"], ToString@fname <> ".hash"}],
-		verbose = OptionValue[loadFigure, "verbose"],
-		force = OptionValue[loadFigure, "force"],
+SetAttributes[exportFigure, HoldRest];
+exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics, Plot, Rasterize}]] := Module[{
+		fnameFull = ToString@fname,
+		fnameHash =ToString@fname <> ".hash",
+		verbose = OptionValue[exportFigure, "verbose"],
+		force = OptionValue[exportFigure, "force"],
 		result = Unevaluated[expr],
 		hash = Hash[Unevaluated[expr]],
-		loadOpts = FilterRules[{opts}, Options[loadFigure]],
+		exportOpts = FilterRules[{opts}, Options[exportFigure]],
 		exportOpts = FilterRules[{opts}, Join[Options[Export], Options[Rasterize]]],
 		graphicsOpts = FilterRules[{opts}, Join[Options[Graphics], Options[Plot]]]
 	},
-	If[force || Not@FileExistsQ[path] || Not@FileExistsQ[hashpath],
-		If[verbose, log[StringForm[load::evaluate, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[load]: "]];
+	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
+		If[verbose, log[StringForm[export::evaluate, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "]];
 		result = expr;
-		If[verbose, log[StringForm[load::save, path], "prefix"->"[save]: "]];
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[save]: "]];
 		installFrontEnd[];
-		Export[path, If[Head[result] === Graphics, Show[result, Sequence@@graphicsOpts], result], Sequence@@exportOpts, ImageFormattingWidth->Infinity, Background->None];
-		If[verbose, log[StringForm[load::save, hashpath], "prefix"->"[save]: "]];
-		Put[hash, hashpath];
+		Export[fnameFull, If[Head[result] === Graphics, Show[result, Sequence@@graphicsOpts], result], Sequence@@exportOpts, ImageFormattingWidth->Infinity, Background->None];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[save]: "]];
+		Put[hash, fnameHash];
 	];
-	If[hash =!= Get[hashpath],
-    error[StringForm[load::hash, hashpath]];
+	If[hash =!= Get[fnameHash],
+    error[StringForm[export::hash, fnameHash]];
 	  Return[$Failed];
   ];
 	loadFigure[fname]
@@ -104,12 +119,6 @@ loadFigure[fname_, expr_, opts:OptionsPattern[{loadFigure, Export, Graphics, Plo
 
 
 End[]
-
-
-path`run = makeDirectory[path`run];
-path`figs = makeDirectory[path`figs];
-note[path`run];
-note[path`figs];
 
 
 EndPackage[]
