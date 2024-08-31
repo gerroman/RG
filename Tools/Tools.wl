@@ -144,19 +144,19 @@ Begin["`Private`"];
 $Colorize = ($OperatingSystem === "Unix" && Not[$Notebooks]);
 
 setPostProcessing[bool:(True|False)] := If[bool,
-  (
-    $Post = Function[expr,
-    	If[expr =!= Null,
-    		WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
-    			$Line,
-    			StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
-    		];
-    	];
-    	WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
-    	If[$Notebooks, expr, Null]
-    ];
-  ),
-  Clear[$Post];
+	(
+		$Post = Function[expr,
+			If[expr =!= Null,
+				WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
+					$Line,
+					StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
+				];
+			];
+			WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
+			If[$Notebooks, expr, Null]
+		];
+	),
+	Clear[$Post];
 ];
 setPostProcessing[] := setPostProcessing[True];
 
@@ -627,40 +627,40 @@ argparse[name_String, default_String] := Module[
 timeString[] := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
 timeStamp[] := With[{stamp = timeString[]},
 	If[$Notebooks, Print[stamp]];
-  log[stamp];
+	log[stamp];
 ];
 
 systemString[] := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
 systemStamp[] := With[{stamp = systemString[]},
 	If[$Notebooks, Print[stamp]];
-  log[stamp];
+	log[stamp];
 ];
 
 
-head[fname_String] := Module[{stream, result = $Failed}, 
-  If[FileExistsQ[fname], 
-    (
-      stream = OpenRead[fname];
-	    result = ReadLine[stream];
-      Close[stream];
-    ),
-    error[StringForm["can not find '``'", fname]];
-  ];
-  Return[result];
-];
-head[fname_String, n_Integer] := Module[{stream, result = $Failed}, 
-  If[FileExistsQ[fname],
-    (
-      stream = OpenRead[fname];
-      result = StringRiffle[
-        Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
-        {"", "\n", ""}
-      ];
+head[fname_String] := Module[{stream, result = $Failed},
+	If[FileExistsQ[fname],
+		(
+			stream = OpenRead[fname];
+			result = ReadLine[stream];
 			Close[stream];
-    ),
-    error[StringForm["can not find '``'", fname]];
+		),
+		error[StringForm["can not find '``'", fname]];
 	];
-  Return[result];
+	Return[result];
+];
+head[fname_String, n_Integer] := Module[{stream, result = $Failed},
+	If[FileExistsQ[fname],
+		(
+			stream = OpenRead[fname];
+			result = StringRiffle[
+				Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
+				{"", "\n", ""}
+			];
+			Close[stream];
+		),
+		error[StringForm["can not find '``'", fname]];
+	];
+	Return[result];
 ];
 
 echo[expr_] := (
@@ -761,5 +761,5 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 ];
 
 If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
-  setPostProcessing[True]
+	setPostProcessing[True]
 ];

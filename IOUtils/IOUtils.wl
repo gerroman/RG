@@ -56,7 +56,7 @@ export::hashCorrect = "hash is the same as in '`1`' ...";
 Options[export] = {
 	"verbose" -> True,
 	"force" -> False,
-  "comments" :> ""
+	"comments" :> ""
 };
 export[fname_, expr_, OptionsPattern[]] := Module[{
 		fnameFull = ToString@fname,
@@ -64,29 +64,29 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 		verbose = OptionValue[export, "verbose"],
 		force = OptionValue[export, "force"],
 		hash = Hash[expr],
-    comments = StringRiffle[{
-        "[comments]: " <> ToString@OptionValue[export, "comments"],
-        "[author]: " <> systemString[],
-        "[date]: " <> timeString[]
-      }, {"", " *)\n(* ", ""}
-    ]
+		comments = StringRiffle[{
+				"[comments]: " <> ToString@OptionValue[export, "comments"],
+				"[author]: " <> systemString[],
+				"[date]: " <> timeString[]
+			}, {"", " *)\n(* ", ""}
+		]
 	},
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
 		If[verbose, log[StringForm[export::export,
-      StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"[export]: "
-    ]];
+			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"[export]: "
+		]];
 		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
 		Export[fnameFull, expr, "Comments" -> comments];
 		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-	  If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
-    (
-		  error[StringForm[export::hash, fnameHash]];
-		  Return[$Failed];
-	  ) 
-  ];
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
+		(
+			error[StringForm[export::hash, fnameHash]];
+			Return[$Failed];
+		)
+	];
 	fname
 ];
 
@@ -100,13 +100,13 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 		fnameHash =ToString@fname <> ".hash",
 		verbose = OptionValue[exportFigure, "verbose"],
 		force = OptionValue[exportFigure, "force"],
-    result,	hash,
+		result,	hash,
 		exportFigureOpts = FilterRules[{opts}, Options[exportFigure]],
 		exportOpts = FilterRules[{opts}, Join[Options[Export], Options[Rasterize]]],
 		graphicsOpts = FilterRules[{opts}, Join[Options[Graphics], Options[Plot]]]
 	},
-  result = If[Head[expr] === Graphics, Show[expr, Sequence@@graphicsOpts], expr];
-  hash = Hash[result]; 
+	result = If[Head[expr] === Graphics, Show[expr, Sequence@@graphicsOpts], expr];
+	hash = Hash[result];
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
 		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "]];
 		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
@@ -116,13 +116,13 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-	  If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
-    (
-		  error[StringForm[export::hash, fnameHash]];
-		  Return[$Failed];
-	  ) 
-  ];
-  fname
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
+		(
+			error[StringForm[export::hash, fnameHash]];
+			Return[$Failed];
+		)
+	];
+	fname
 ];
 
 
