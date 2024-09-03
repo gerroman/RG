@@ -386,7 +386,7 @@ ruleLogWrite = {
 
 
 logwrite[message_] := If[$Notebooks,
-	PrintTemporary[message],
+	Print[ToString@message],
 	WriteString["stderr", If[$Colorize, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
 ];
 
