@@ -365,8 +365,11 @@ silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
 	"[info]" -> "\033[1;37m[info]\033[0m",
+	"[load]" -> "\033[1;37m[load]\033[0m",
+	"[export]" -> "\033[1;37m[export]\033[0m",
 	"[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
 	"[time]" -> "\033[1;35m[time]\033[0m",
+	"[date]" -> "\033[1;35m[date]\033[0m",
 	"[seconds]" -> "\033[1;35m[seconds]\033[0m",
 	"[test]" -> "\033[1;34m[test]\033[0m",
 	"[OK]" -> "\033[1;32m[OK]\033[0m",
@@ -376,7 +379,8 @@ ruleLogWrite = {
 	"[exit]" -> "\033[1;36m[exit]\033[0m",
 	"[RESULT]" -> "\033[1;31m[RESULT]\033[0m",
 	"[init]" -> "\033[1;36m[init]\033[0m",
-	"[warning]" -> "\033[0;33m[warning]\033[0m"
+	"[warning]" -> "\033[0;33m[warning]\033[0m",
+	"[args]" -> "\033[1;34m[args]\033[0m"
 };
 
 
@@ -571,7 +575,10 @@ argparse[] := Which[
 
 argparse[name_String, False] := With[{argv = Last[argparse[]]},
 	With[{value = MemberQ[argv, "-" <> name]},
-		log[StringForm["using `` = `` (command line flag)", name, value]];
+    If[value, 
+		  log[StringForm["using `` = `` (command line flag)", name, value], "prefix"->"[args]: "],
+ 		  log[StringForm["using `` = `` (absent command line flag)", name, value], "prefix"->"[args]: "]
+    ];
 		value
 	]
 ];
@@ -581,15 +588,15 @@ argparse[name_String, default_Integer] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = `` (default value)", name, default]];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
 	If[Not@IntegerQ[value],
-		log[StringForm["using `` = `` (default value)", name, default]];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
-	log[StringForm["using `` = `` (command line argument)", name, value]];
+	log[StringForm["using `` = `` (command line argument, default = ``)", name, value, default], "prefix"->"[args]: "];
 	Return[value]
 ];
 
@@ -598,15 +605,15 @@ argparse[name_String, default_Real] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = `` (default value)", name, default]];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
 	If[Not@RealQ[value],
-		log[StringForm["using `` = `` (default value)", name, default]];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
-	log[StringForm["using `` = `` (command line argument)", name, 1.0 * value]];
+	log[StringForm["using `` = `` (command line argument, default value = ``)", name, 1.0 * value, default], "prefix"->"[args]: "];
 	Return[1.0 * value]
 ];
 
@@ -615,11 +622,11 @@ argparse[name_String, default_String] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = '``' (default value)", name, default]];
+		log[StringForm["using `` = '``' (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = argv[[pos[[1, 1]] + 1]];
-	log[StringForm["using `` = '``' (command line argument)", name, value]];
+	log[StringForm["using `` = '``' (command line argument, default='``')", name, value, default], "prefix"->"[args]: "];
 	Return[value]
 ];
 
@@ -627,7 +634,7 @@ argparse[name_String, default_String] := Module[
 timeString[] := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
 timeStamp[] := With[{stamp = timeString[]},
 	If[$Notebooks, Print[stamp]];
-	log[stamp];
+	log[stamp, prefix-> "[date]: "];
 ];
 
 systemString[] := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
