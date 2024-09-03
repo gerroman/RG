@@ -56,7 +56,7 @@ export::hashCorrect = "hash is the same as in '`1`' ...";
 Options[export] = {
 	"verbose" -> True,
 	"force" -> False,
-	"comments" :> ""
+	"Comments" :> ""
 };
 export[fname_, expr_, OptionsPattern[]] := Module[{
 		fnameFull = ToString@fname,
@@ -65,7 +65,7 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 		force = OptionValue[export, "force"],
 		hash = Hash[expr],
 		comments = StringRiffle[{
-				"[comments]: " <> ToString@OptionValue[export, "comments"],
+				"[comments]: " <> ToString@OptionValue[export, "Comments"],
 				"[author]: " <> systemString[],
 				"[date]: " <> timeString[]
 			}, {"", " *)\n(* ", ""}
