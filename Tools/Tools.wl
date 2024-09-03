@@ -96,7 +96,8 @@ error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix"
 
 warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
 
-llog::usage = "llog[message_, expr_] \[LongDash] prints 'message', call 'expr', print and '[OK]' at the end"
+llog::usage = "llog[message_, expr_] \[LongDash] prints 'message', call 'expr', print '[OK]' at the end, return expr"
+llog::usage = "llog[expr_] \[LongDash] prints 'expr', call 'expr', print '[OK]' at the end, return expr"
 
 
 checkExists::usage = "checkExists[fname] \[LongDash] check if file exists and print messages to log return True/False
@@ -360,7 +361,7 @@ partition[expr_List, n_Integer] := With[{
 (*Script utilities*)
 
 
-SetAttributes[silent, HoldFirst];
+SetAttributes[silent, HoldAll];
 silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
@@ -495,27 +496,24 @@ sizeOf[expr_] := Module[
 error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
 warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[warning]: ", opts];
 
-SetAttributes[llog, HoldRest];
+SetAttributes[llog, HoldAll];
 Options[llog] = {
 	"prefix" -> "[....]: ",
 	"endl" -> "\n[info]: complete\n"
 };
-
-llog[message_String, expr_, opts:OptionsPattern[]] := With[{
-		messageString = StringPadRight[message <> " ", $MessageLength, "."]
+llog[message_String, expr_, opts:OptionsPattern[]] := Module[{
+		messageString = StringPadRight[message <> " ", $MessageLength, "."],
+    prefix = OptionValue["prefix"],
+    endl = OptionValue["endl"],
+    result
 	},
-	(
-		log[messageString, "prefix"->OptionValue["prefix"], "endl" -> " ... "];
-		silent@expr;
-		log["", "prefix"->"", "endl" ->OptionValue["endl"]];
-	)
+  log[messageString, "prefix"->prefix, "endl" -> " ... "];
+	result = silent@expr;
+	log["", "prefix"->"", "endl" ->endl];
+  Return[result];
 ];
-llog[message_StringForm, expr_, opts:OptionsPattern[]] := (
-	llog[ToString@message, expr, opts];
-)
-llog[message_, expr_, opts:OptionsPattern[]] := With[{
-		messageString = ToString@HoldForm[InputForm[message]]
-	},
+llog[message_StringForm, expr_, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
+llog[expr_, opts:OptionsPattern[]] := With[{messageString = ToString @ HoldForm[expr]},
 	llog[messageString, expr, opts]
 ];
 

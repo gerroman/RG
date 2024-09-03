@@ -11,42 +11,28 @@ exportFigure::usage = "exportFigure[fname, expr] export figure from file if it e
 Begin["`Private`"]
 
 
-load::load = "loading '`1`' ...";
 load::failed = "can not find '`1`'";
 
-Options[load] = {
-	"verbose" -> True
-};
-
 load[fname_, OptionsPattern[]] := With[{
-		fnameFull = ToString@fname,
-		verbose = OptionValue[load, "verbose"]
+		fnameFull = ToString@fname
 	},
 	If[Not@FileExistsQ[fnameFull],
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
-	If[verbose, log[StringForm[load::load, fnameFull], "prefix"->"[load]: "]];
-	Get[fnameFull]
+	Get[fnameFull] // llog
 ];
 
-Options[loadFigure] = {
-	"verbose" -> True
-};
 loadFigure[fname_, OptionsPattern[]] := With[{
-		fnameFull = ToString@fname,
-		verbose = OptionValue[loadFigure, "verbose"]
+		fnameFull = ToString@fname
 	},
 	If[Not@FileExistsQ[fnameFull],
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
-	If[verbose, log[StringForm[load::load, fnameFull], "prefix"->"[load]: "]];
-	If[$Notebooks, Import[fnameFull], fnameFull]
+	If[$Notebooks, Import[fnameFull] // llog, fnameFull]
 ];
 
-
-export::load = "loading '`1`' ...";
 export::save = "saving '`1`' ...";
 export::failed = "can not find '`1`'";
 export::export = "exporting `1` ... ";
