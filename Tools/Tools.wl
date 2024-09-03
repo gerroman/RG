@@ -448,7 +448,7 @@ check[message_, expr_] := Module[{result},
 	log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
 	Return[result];
 ];
-check[expr_] := check[HoldForm[expr], expr];
+check[expr_] := check[HoldForm[InputForm[expr]], expr];
 
 
 exit[code_Integer] := If[Not[$Notebooks], (
@@ -513,7 +513,7 @@ llog[message_String, expr_, opts:OptionsPattern[]] := Module[{
   Return[result];
 ];
 llog[message_StringForm, expr_, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
-llog[expr_, opts:OptionsPattern[]] := With[{messageString = ToString @ HoldForm[expr]},
+llog[expr_, opts:OptionsPattern[]] := With[{messageString = ToString @ HoldForm[InputForm[[expr]]]},
 	llog[messageString, expr, opts]
 ];
 
