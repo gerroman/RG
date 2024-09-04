@@ -162,7 +162,7 @@ setPostProcessing[bool:(True|False)] := If[bool,
 setPostProcessing[] := setPostProcessing[True];
 
 
-$MessageLength = 80;
+$MessageLength = 60;
 $LongMessageFactor = 10;
 
 
@@ -729,15 +729,6 @@ TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["
 (*End*)
 
 
-End[];
-
-
-EndPackage[];
-
-
-(* ::Section:: *)
-(*Session setup*)
-
 systemStamp[];
 timeStamp[];
 
@@ -772,3 +763,10 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
 	setPostProcessing[True]
 ];
+
+
+End[];
+
+
+EndPackage[];
+
