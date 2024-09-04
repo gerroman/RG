@@ -7,80 +7,80 @@
 BeginPackage["RG`BaseUtils`", {"RG`Tools`"}];
 
 
-off::usage = "off[message, expr] evaluate expression with the message temporally off"
-on::usage = "on[message, expr] evaluate expression with the message temporally on"
+off::usage = "off[message, expr] evaluate expression with the message temporally off";
+on::usage = "on[message, expr] evaluate expression with the message temporally on";
 
 
 hold::usage = "hold[pattern] apply Hold to matches of the `pattern`
-hold[{x1,...}] apply Hold to specific xs"
+hold[{x1,...}] apply Hold to specific xs";
 
 holdform::usage = "holdform[pattern] apply HoldForm to matches of the `pattern`
-holdform[{x1,...}] apply HoldForm to specific xs"
+holdform[{x1,...}] apply HoldForm to specific xs";
 
 
-pass::usage = "pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged"
+pass::usage = "pass[expr, other] evaluate first expr, returns nothing; use for mute tagged/untagged";
 
 
 pullFactors::usage = "pullFactors[pattern, func] pull factors x from func which match func[___, (x:pattern) * ___, ___]
-pullFactors[{x1,...}, func] pull concrete xs"
+pullFactors[{x1,...}, func] pull concrete xs";
 
 
-groupIt::usage = "groupIt[expr, func] find and group expr modified by functions func"
+groupIt::usage = "groupIt[expr, func] find and group expr modified by functions func";
 
 
-fixedPoint::usage = "fixedPoint[func] is shortcut for FixedPoint[#, func] &"
+fixedPoint::usage = "fixedPoint[func] is shortcut for FixedPoint[#, func] &";
 
 
-release::usage = "release[expr] apply ReleaseHold repeatedly"
+release::usage = "release[expr] apply ReleaseHold repeatedly";
 
 
 factorIt::usage = "factorIt[pattern, func] factor out factors matches pattern from func
-factorIt[{x1, ...}, func] factor out concrete xs"
+factorIt[{x1, ...}, func] factor out concrete xs";
 
 
-factorItFast::usage = "factorItFast[x, func] faster version of factorIt"
+factorItFast::usage = "factorItFast[x, func] faster version of factorIt";
 
 
 pullIt::usage = "pullIt[pattern] pull out factors matches pattern
-pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments"
+pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments";
 
 
-powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs"
+powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
 
-changeSign::usage = "changeSign[x] change sign of x"
+changeSign::usage = "changeSign[x] change sign of x";
 
 
-toRules::usage = "toRules shortcut for replacing equations to rules"
+toRules::usage = "toRules shortcut for replacing equations to rules";
 
 
-toEquals::usage = "toEquals shortcut for replacing rules to equations"
+toEquals::usage = "toEquals shortcut for replacing rules to equations";
 
 
-powerExpand::usage = "powerExpand shortcut for PowerExpand, but it leaves Logs unchanged"
+powerExpand::usage = "powerExpand shortcut for PowerExpand, but it leaves Logs unchanged";
 
 
-collectLogs::usage = "collectLogs reduce sums of logarithms assuming real positive arguments"
+collectLogs::usage = "collectLogs reduce sums of logarithms assuming real positive arguments";
 
 
-changeLogPower::usage = "changeLogPower[power] change arguments of logarithms exponenting them to the power, assuming real positive arguments"
+changeLogPower::usage = "changeLogPower[power] change arguments of logarithms exponenting them to the power, assuming real positive arguments";
 
 
-complexToAbs::usage = "complexToAbs replace products expr * Conjugate[expr] to Abs[expr]"
+complexToAbs::usage = "complexToAbs replace products expr * Conjugate[expr] to Abs[expr]";
 
 
-solve::usage = "solve[eqs_, vars_] solve equations eqs w.r.t. vars"
+solve::usage = "solve[eqs_, vars_] solve equations eqs w.r.t. vars";
 
 
 jacobian::usage = "jacobian[xs, ys, rules] return jacobian matrix, J,in terms of new variables, ys, for variable transitions xs -> ys, with transitions rules of type x[i] -> f[i][ys],
-J[[i, j]] = D[y[i], x[j]] in terms of ys"
+J[[i, j]] = D[y[i], x[j]] in terms of ys";
 
 
-changeVars::usage = "changeVars[xs, ys, rules][expr] changes variables in expr, including in differential operators"
+changeVars::usage = "changeVars[xs, ys, rules][expr] changes variables in expr, including in differential operators";
 
 
-push::usage = "push[outer, inner][expr] pushes the outer function through the inner function"
-pushRule::usage = "pushRule[outer, inner] creates a rule to push outer function into the inner function"
+push::usage = "push[outer, inner][expr] pushes the outer function through the inner function";
+pushRule::usage = "pushRule[outer, inner] creates a rule to push outer function into the inner function";
 
 
 Begin["`Private`"];
@@ -177,10 +177,10 @@ groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
 
 
 factorItRules[x_, head_:Plus, func_:Identity] := With[
-  {p = x, pn = -x}
-  ,
-  {
-    head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]],
+	{p = x, pn = -x}
+	,
+	{
+		head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]],
 		head[ p*(a_.), pn*(b_.)] :>  p * func[head[a, -b]],
 		head[pn*(a_.), pn*(b_.)] :> pn * func[head[a,  b]]
 	}
@@ -188,7 +188,7 @@ factorItRules[x_, head_:Plus, func_:Identity] := With[
 
 (* [NOTE]: strightforward matching can be long *)
 factorIt[xs_List, head_:Plus, func_:Identity] := With[{
-	  rules = Flatten@Map[x \[Function] factorItRules[x, head, func],	xs]
+		rules = Flatten@Map[x \[Function] factorItRules[x, head, func],	xs]
 	},
 	ReplaceRepeated[#, rules]&
 ];
@@ -196,7 +196,7 @@ factorIt[xs_List, head_:Plus, func_:Identity] := With[{
 
 factorIt[pattern_, head_:Plus, func_:Identity] := Function[
 	expr
-  ,
+	,
 	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
 		factorIt[xs, head, func][expr]
 	]
@@ -295,10 +295,10 @@ complexToAbs[pattern_] = (ReplaceAll[#,
 
 Options[solve] = {All -> False};
 solve[eqs_, vars_, opts:OptionsPattern[]] := Block[{var`solve},
-  With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
-	  With[{rule = Thread[vars -> xs]},
-		  With[{sol = Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
-			  If[!OptionValue[All],
+	With[{xs = Array[var`solve, Length[Flatten[{vars}]]]},
+		With[{rule = Thread[vars -> xs]},
+			With[{sol = Solve[eqs /. rule, xs] // ReplaceAll[Reverse /@ rule]},
+				If[!OptionValue[All],
 					(
 						Assert[Length[sol] == 1];
 						First[sol]

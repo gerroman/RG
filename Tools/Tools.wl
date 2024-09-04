@@ -475,8 +475,8 @@ note[expr_, func_, opts:OptionsPattern[]] := (
 			,
 			log["", "endl"->OptionValue["endl"]]
 		];
-		Return[result];
-	];
+		result
+	]
 );
 note[expr_, opts:OptionsPattern[]] := note[expr, InputForm, opts];
 
@@ -503,14 +503,14 @@ Options[llog] = {
 };
 llog[message_String, expr_, opts:OptionsPattern[]] := Module[{
 		messageString = StringPadRight[message <> " ", $MessageLength, "."],
-    prefix = OptionValue["prefix"],
-    endl = OptionValue["endl"],
-    result
+		prefix = OptionValue["prefix"],
+		endl = OptionValue["endl"],
+		result
 	},
-  log[messageString, "prefix"->prefix, "endl" -> " ... "];
+	log[messageString, "prefix"->prefix, "endl" -> " ... "];
 	result = silent@expr;
 	log["", "prefix"->"", "endl" ->endl];
-  Return[result];
+	Return[result];
 ];
 llog[message_StringForm, expr_, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
 llog[expr_, opts:OptionsPattern[]] := With[{messageString = ToString @ HoldForm[InputForm[[expr]]]},
@@ -573,10 +573,10 @@ argparse[] := Which[
 
 argparse[name_String, False] := With[{argv = Last[argparse[]]},
 	With[{value = MemberQ[argv, "-" <> name]},
-    If[value, 
-		  log[StringForm["using `` = `` (command line flag)", name, value], "prefix"->"[args]: "],
- 		  log[StringForm["using `` = `` (absent command line flag)", name, value], "prefix"->"[args]: "]
-    ];
+		If[value,
+			log[StringForm["using `` = `` (command line flag)", name, value], "prefix"->"[args]: "],
+			log[StringForm["using `` = `` (absent command line flag)", name, value], "prefix"->"[args]: "]
+		];
 		value
 	]
 ];
@@ -754,15 +754,19 @@ With[{fname = FindFile["src/init.wl"]},
 ];
 path`cwd = Directory[];
 
+
 note[path`cwd];
+
 note[path`run];
+
 note[path`figs];
+
 
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	Quiet[
 		LaunchKernels[];
 		log[StringForm["$KernelCount = ``", $KernelCount]];
-	]
+	];
 ];
 
 If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
