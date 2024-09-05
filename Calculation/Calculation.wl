@@ -140,9 +140,3 @@ End[];
 
 
 EndPackage[];
-
-
-(* Local Variables: *)
-(* mode: wl *)
-(* compile-command: "math -script RG/SyntaxChecker/check.wl *.wl" *)
-(* End: *)
