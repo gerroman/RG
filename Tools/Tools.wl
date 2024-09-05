@@ -130,6 +130,8 @@ TeXPrint::usage = "TeXPrint[expr] print ``expr'' surrounded by \\begin{equation}
 ";
 
 
+stringForm::usage = "stringForm[expr] formats string from ``expr''";
+stringTrim::usage = "stringTrim[string] trim long ``string'' to $MessageLength";
 
 (* ::Section:: *)
 (*Private*)
@@ -150,7 +152,7 @@ setPostProcessing[bool:(True|False)] := If[bool,
 			If[expr =!= Null,
 				WriteString["stderr", StringForm["\rOut[`1`] = `2`\n",
 					$Line,
-					StringTrim[StringPadRight[ToString@InputForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
+					StringTrim[StringPadRight[stringForm[expr], $LongMessageFactor * $MessageLength]] <> " ... "]
 				];
 			];
 			WriteString["stderr", StringForm["\rIn[`1`] := ", $Line + 1]];
@@ -275,7 +277,7 @@ processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
 		Module[{prev, pos},
 			pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-			log[ToString@StringForm[processList::unused, InputForm[fs[[pos]]]], "prefix"->"[ERROR]: "];
+			log[ToString@StringForm[processList::unused, stringForm[fs[[pos]]]], "prefix"->"[ERROR]: "];
 		];
 	];
 	result
@@ -367,6 +369,7 @@ silent[expr_] := Block[{Print}, expr];
 ruleLogWrite = {
 	"[info]" -> "\033[1;37m[info]\033[0m",
 	"[load]" -> "\033[1;37m[load]\033[0m",
+	"[file]" -> "\033[1;37m[load]\033[0m",
 	"[export]" -> "\033[1;37m[export]\033[0m",
 	"[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
 	"[time]" -> "\033[1;35m[time]\033[0m",
@@ -402,12 +405,12 @@ log[expr_String, OptionsPattern[]] := With[{
 	logwrite[message];
 ];
 log[expr_StringForm, OptionsPattern[]] := With[{
-		message = StringJoin[OptionValue["prefix"], ToString@expr, OptionValue["endl"]]
+		message = StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
 	},
 	logwrite[message];
 ];
 log[expr_, OptionsPattern[]] := With[{
-		message = StringJoin[OptionValue["prefix"], ToString@InputForm[expr], OptionValue["endl"]]
+		message = StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
 	},
 	logwrite[message];
 ];
@@ -441,14 +444,17 @@ makeDirectory[path_] := With[{fname = ToString[path]},
 ];
 
 
-SetAttributes[check, HoldAll];
-check[message_, expr_] := Module[{result},
-	log[StringPadRight[ToString@message <> " ", $MessageLength, "."], "prefix"->"[test]: ", "endl" -> " ... "];
-	result = ((expr) === True);
+SetAttributes[check, HoldFirst];
+Options[check] = {Simplify->Identity};
+check[expr_, message_String, opts:OptionsPattern[]] := Module[{result, func=OptionValue[Simplify]},
+	log[message, "prefix"->"[test]: ", "endl" -> " ... "];
+	result = (func[expr] === True);
 	log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
 	Return[result];
 ];
-check[expr_] := check[HoldForm[InputForm[expr]], expr];
+check[expr_, message_StringForm, opts:OptionsPattern[]] := check[ToString@messag
+e, expr, opts];
+check[expr_, opts:OptionsPattern[]] := check[expr, stringTrim[stringForm[expr]], opts];
 
 
 exit[code_Integer] := If[Not[$Notebooks], (
@@ -468,17 +474,17 @@ Options[note] = {
 	"endl" -> "\n"
 };
 note[expr_, func_, opts:OptionsPattern[]] := (
-	log[StringForm["``", HoldForm[InputForm[expr]]], "prefix"->OptionValue["prefix"], "endl"->""];
+	log[stringForm[expr], "prefix"->OptionValue["prefix"], "endl"->""];
 	With[{result = expr},
-		If[result =!= Null,
-			log[StringForm[" = ``", func[result]], "prefix"->"", "endl"->OptionValue["endl"]]
-			,
-			log["", "endl"->OptionValue["endl"]]
+		If[result =!= Null, With[{string=func[result]},
+			  log[stringForm[result], "prefix"->" = ", "endl"->OptionValue["endl"]]
+      ],
+			log["Null", "prefix"->" = ", "endl"->OptionValue["endl"]]
 		];
 		result
 	]
 );
-note[expr_, opts:OptionsPattern[]] := note[expr, InputForm, opts];
+note[expr_, opts:OptionsPattern[]] := note[expr, Identity, opts];
 
 
 sizeOf[expr_] := Module[
@@ -513,7 +519,7 @@ llog[message_String, expr_, opts:OptionsPattern[]] := Module[{
 	Return[result];
 ];
 llog[message_StringForm, expr_, opts:OptionsPattern[]] := llog[ToString@message, expr, opts];
-llog[expr_, opts:OptionsPattern[]] := With[{messageString = ToString @ HoldForm[InputForm[[expr]]]},
+llog[expr_, opts:OptionsPattern[]] := With[{messageString = stringForm[expr]},
 	llog[messageString, expr, opts]
 ];
 
@@ -645,6 +651,7 @@ systemStamp[] := With[{stamp = systemString[]},
 head[fname_String] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
+      log[StringForm["\"``\" (`` kB)", fname, 1.`3*10^(-3) * FileByteCount[fname]], "prefix"->"[file]: "];
 			stream = OpenRead[fname];
 			result = ReadLine[stream];
 			Close[stream];
@@ -656,6 +663,7 @@ head[fname_String] := Module[{stream, result = $Failed},
 head[fname_String, n_Integer] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
+      log[StringForm["\"``\" (`` kB)", fname, 1.`3*10^(-3) * FileByteCount[fname]], "prefix"->"[file]: "];
 			stream = OpenRead[fname];
 			result = StringRiffle[
 				Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
@@ -669,7 +677,7 @@ head[fname_String, n_Integer] := Module[{stream, result = $Failed},
 ];
 
 echo[expr_] := (
-	log[StringForm["``", HoldForm[InputForm[expr]]], "prefix"->"[echo]: "];
+	log[stringForm[expr], "prefix"->"[echo]: "];
 	expr
 );
 
@@ -725,6 +733,12 @@ TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["
 ];
 
 
+SetAttributes[stringForm, HoldAll]
+stringForm[expr_] := StringTake[ToString[InputForm[Unevaluated[expr]]], {13, -2}];
+
+stringTrim[expr_String] := StringTrim[StringPadRight[expr, $MessageLength, "."]];
+
+
 (* ::Section:: *)
 (*End*)
 
@@ -769,4 +783,3 @@ End[];
 
 
 EndPackage[];
-

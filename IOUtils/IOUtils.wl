@@ -12,7 +12,7 @@ Begin["`Private`"]
 
 
 load::failed = "can not find '`1`'";
-
+Options[load] = {"verbose" -> False}; 
 load[fname_, OptionsPattern[]] := With[{
 		fnameFull = ToString@fname
 	},
@@ -20,9 +20,11 @@ load[fname_, OptionsPattern[]] := With[{
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
+	If[OptionValue["verbose"], head[fnameFull, 3] // print, head[fnameFull, 0]];
 	Get[fnameFull] // llog
 ];
 
+Options[loadFigure] = {"verbose" -> False}; 
 loadFigure[fname_, OptionsPattern[]] := With[{
 		fnameFull = ToString@fname
 	},
@@ -30,6 +32,7 @@ loadFigure[fname_, OptionsPattern[]] := With[{
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
+	If[OptionValue["verbose"], head[fnameFull, 3] // print, head[fnameFull, 0]];
 	If[$Notebooks, Import[fnameFull] // llog, fnameFull]
 ];
 
