@@ -39,8 +39,8 @@ loadFigure[fname_, OptionsPattern[]] := With[{
 export::save = "saving '`1`' ...";
 export::failed = "can not find '`1`'";
 export::export = "exporting `1` ... ";
-export::hash = "hash differs '`1`' ...";
-export::hashCorrect = "hash is the same as in '`1`' ...";
+export::hashError = "hash differs from the file '`1`' ... ";
+export::hashCorrect = "hash is the same as in the file '`1`' ... [OK]";
 
 Options[export] = {
 	"verbose" -> True,
@@ -70,9 +70,9 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
-			error[StringForm[export::hash, fnameHash]];
+			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];
 		)
 	];
@@ -105,9 +105,9 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[export]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
-			error[StringForm[export::hash, fnameHash]];
+			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];
 		)
 	];

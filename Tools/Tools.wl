@@ -212,7 +212,7 @@ info[expr_Symbol, None] := (
 );
 info[expr_Symbol] := (
 	pprint[Context[expr]];
-	print[expr::usage, "verbose"->False];
+  If[ValueQ[expr::usage], print[expr::usage, "verbose"->True, "header"->"[usage]: "]];
 	If[Not[emptyQ[Attributes[expr]]], pprint[Attributes[expr], Column, "verbose"->False]];
 	If[Not[emptyQ[Options[expr]]], pprint[Options[expr], Column, "verbose"->False]];
 );
@@ -368,8 +368,10 @@ silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
 	"[info]" -> "\033[1;37m[info]\033[0m",
+	"[usage]" -> "\033[1;37m[usage]\033[0m",
 	"[load]" -> "\033[1;37m[load]\033[0m",
-	"[file]" -> "\033[1;37m[load]\033[0m",
+	"[file]" -> "\033[1;35m[file]\033[0m",
+	"[hash]" -> "\033[1;35m[hash]\033[0m",
 	"[export]" -> "\033[1;37m[export]\033[0m",
 	"[ERROR]" -> "\033[1;31m[ERROR]\033[0m",
 	"[time]" -> "\033[1;35m[time]\033[0m",
@@ -446,10 +448,11 @@ makeDirectory[path_] := With[{fname = ToString[path]},
 
 SetAttributes[check, HoldFirst];
 Options[check] = {Simplify->Identity};
-check[expr_, message_String, opts:OptionsPattern[]] := Module[{result, func=OptionValue[Simplify]},
+check[expr_, message_String, opts:OptionsPattern[]] := Module[{flag, result, func=OptionValue[Simplify]},
 	log[message, "prefix"->"[test]: ", "endl" -> " ... "];
-	result = (func[expr] === True);
-	log[If[result, "[OK]", "[ERROR]"], "prefix"->""];
+	result = func[expr];
+  flag = result === True;
+	log[If[flag, "[OK]", "[ERROR]"], "prefix"->""];
 	Return[result];
 ];
 check[expr_, message_StringForm, opts:OptionsPattern[]] := check[ToString@messag
