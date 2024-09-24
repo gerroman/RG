@@ -58,6 +58,7 @@ ffirst[list, verbose -> False] suppress warnings"
 flast::usage = "flast[list] return last element of flattened list
 flast[list, verbose -> False] suppress warnings"
 
+funion::usage = "funion[expr] return union of elements in the flattened sublists of"
 
 emptyQ::usage = "emptyQ[list] returns True for empty list {}"
 
@@ -329,7 +330,7 @@ ffirst::argx = "List `1` contains contains more than one element"
 
 
 Options[ffirst] = {"verbose" -> True};
-ffirst[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
+ffirst[expr_List, OptionsPattern[]] := With[{flat = Flatten[expr]},
 	If[OptionValue["verbose"] && Length[flat] > 1, Message[ffirst::argx, flat]];
 	First[flat]
 ];
@@ -339,10 +340,13 @@ flast::argx = "List `1` contains contains more than one element"
 
 
 Options[flast] = {"verbose" -> True};
-flast[expr_List, OptionsPattern[]] := Block[{flat = Flatten[expr]},
+flast[expr_List, OptionsPattern[]] := With[{flat = Flatten[expr]},
 	If[OptionValue["verbose"] && Length[flat] > 1, Message[flast::argx, flat]];
 	Last[flat]
 ];
+
+
+funion[expr_List] := Union[Flatten[expr]];
 
 
 emptyQ[l_List] := Length[l] == 0;
