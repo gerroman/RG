@@ -58,6 +58,9 @@ getRunner::usage = "
 matrixComplexityPlot::usage = "matrixComplexityPlot[m, label] create a plot of matrix element complexity Log[10, 1 + LeafCounts[matrix elements]]";
 
 
+matrixPlot::usage = "matrixPlot[m] \[LongDash] print matrix structure, indicating zero/nonzero elements"
+
+
 Begin["`Private`"];
 
 
@@ -324,7 +327,18 @@ matrixComplexityPlot[m_, label_: Style["Matrix complexity", Italic]] := (
      ], label, Top] // Framed[#, FrameStyle -> Thin, FrameMargins -> 20] &
 ) /; MatrixQ[m] && Equal @@ Dimensions[m];
 
+
 matrixComplexityPlot[m_] := matrixComplexityPlot[m, HoldForm[m]];
+
+
+matrixPlot[expr_] := (expr // 
+  MapAt[If[# === 0, ".", "#"]&, #, {All, All}]& // 
+  Map[StringJoin] // 
+  Riffle[#, "\n"]& // 
+  Prepend["\n"] // 
+  StringJoin // 
+  print
+);
 
 
 End[];
