@@ -452,6 +452,17 @@ makeDirectory[path_] := With[{fname = ToString[path]},
 
 SetAttributes[check, HoldFirst];
 Options[check] = {Simplify->Identity};
+check[expr:Equal[lhs_, rhs_], message_String, opts:OptionsPattern[]] := Module[{flag, result, func=OptionValue[Simplify]},
+	log[message, "prefix"->"[test]: ", "endl" -> " ... "];
+	result = func[expr];
+  flag = result === True;
+	log[If[flag, "[OK]", "[ERROR]"], "prefix"->""];
+  If[Not[flag], 
+    log[lhs, "prefix"->"[....]: lhs = "];
+    log[rhs, "prefix"->"[....]: rhs = "];
+  ];
+	Return[result];
+];
 check[expr_, message_String, opts:OptionsPattern[]] := Module[{flag, result, func=OptionValue[Simplify]},
 	log[message, "prefix"->"[test]: ", "endl" -> " ... "];
 	result = func[expr];
