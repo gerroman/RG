@@ -773,6 +773,8 @@ note[path`run];
 
 note[path`figs];
 
+note[path`tmp];
+
 
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	Quiet[
