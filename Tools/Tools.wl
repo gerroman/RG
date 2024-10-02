@@ -288,7 +288,7 @@ processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
 		Module[{prev, pos},
 			pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-			log[ToString@StringForm[processList::unused, stringForm[fs[[pos]]]], "prefix"->"[ERROR]: "];
+			log[ToString@StringForm[processList::unused, stringForm[fs[[pos]]]], "prefix"->"\r[ERROR]: "];
 		];
 	];
 	result
@@ -381,7 +381,8 @@ SetAttributes[silent, HoldAll];
 silent[expr_] := Block[{Print}, expr];
 
 ruleLogWrite = {
-	"[info]" -> "\033[1;37m[info]\033[0m",
+	"[info]" -> "\033[1;35m[info]\033[0m",
+	"[....]" -> "\033[1;35m[....]\033[0m",
 	"[usage]" -> "\033[1;37m[usage]\033[0m",
 	"[load]" -> "\033[1;37m[load]\033[0m",
 	"[file]" -> "\033[1;35m[file]\033[0m",
@@ -818,15 +819,15 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 	},
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
 		If[verbose, log[StringForm[export::export,
-			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"[export]: "
+			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"\r[export]: "
 		]];
-		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"\r[export]: "]];
 		Export[fnameFull, expr, "Comments" -> comments];
-		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"\r[export]: "]];
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"\r[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];
@@ -853,15 +854,15 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 	result = If[Head[expr] === Graphics, Show[expr, Sequence@@graphicsOpts], expr];
 	hash = Hash[result];
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
-		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "]];
-		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
+		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"\r[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"\r[export]: "]];
 		installFrontEnd[];
 		Export[fnameFull, result, Sequence@@exportOpts, ImageFormattingWidth->Infinity];
-		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"\r[export]: "]];
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"\r[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];
@@ -876,29 +877,7 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 
 systemStamp[];
 timeStamp[];
-
-path`tmp = makeDirectory[FileNameJoin[{$TemporaryDirectory, $UserName}]];
-path`run = FileNameJoin[{path`tmp, "run"}];
-path`figs = FileNameJoin[{path`tmp, "figs"}];
-
-With[{fname = FindFile["src/init.wl"]},
-	If[fname =!= $Failed,
-		SetDirectory[ParentDirectory[DirectoryName[fname]]];
-		path`run = FileNameJoin[{Directory[], "run"}];
-		path`figs = FileNameJoin[{Directory[], "figs"}];
-	];
-];
-path`cwd = Directory[];
-
-
-note[path`cwd];
-
-note[path`run];
-
-note[path`figs];
-
-note[path`tmp];
-
+note[Directory[]];
 
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 	Quiet[
@@ -906,7 +885,6 @@ If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
 		log[StringForm["$KernelCount = ``", $KernelCount]];
 	];
 ];
-
 If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
 	setPostProcessing[True]
 ];

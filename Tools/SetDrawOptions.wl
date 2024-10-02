@@ -1,6 +1,3 @@
-Needs["RG`Tools`"];
-log["setting default graph options ..."];
-
 $resolution = 72; (* dpi *)
 $fontsize = 14;		(* default font size *)
 
