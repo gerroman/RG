@@ -12,14 +12,17 @@ Get["RG/Tools/SetDrawOptions.wl"];
 
 
 forceFlag = argparse["force", False];
-SetOptions[export, "force"->forceFlag];
-SetOptions[exportFigure, "force"->forceFlag];
+SetOptions[export, "force":>forceFlag];
+SetOptions[exportFigure, "force":>forceFlag];
 
 
-verboseFlag = Not[argparse["quiet", False]];
-verboseFlag = argparse["verbose", verboseFlag];
-SetOptions[load, "verbose"-> verboseFlag];
-SetOptions[loadFigure, "verbose"->verboseFlag];
+quietFlag = argparse["quiet", False];
+verboseFlag = argparse["verbose", False];
+If[quietFlag, verboseFlag = False];
+
+
+SetOptions[load, "verbose" :> verboseFlag];
+SetOptions[loadFigure, "verbose" :> verboseFlag];
 
 
 If[Not[$BatchInput], setPostProcessing[True]];

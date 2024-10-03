@@ -117,7 +117,7 @@ systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]";
 head::usage = "head[fname] \[LongDash] return first line of the text file";
 
 
-$MessageLength::usage = "$messageLength (default = 80)";
+$MessageLength::usage = "$MessageLength (default = 80)";
 $LongMessageFactor::usage = "$LongMessageFactor (default = 10)";
 
 echo::usage = "echo[expr] \[LongDash] prints and return expr"
@@ -771,7 +771,7 @@ stringTrim[expr_String] := StringTrim[StringPadRight[expr, $MessageLength, "."]]
 load::failed = "can not find '`1`'";
 Options[load] = {"verbose" -> False};
 load[fname_, OptionsPattern[]] := With[{
-		fnameFull = ToString@fname
+		fnameFull = FindFile[ToString@fname]
 	},
 	If[Not@FileExistsQ[fnameFull],
 		error[StringForm[load::failed, fnameFull]];
@@ -783,7 +783,7 @@ load[fname_, OptionsPattern[]] := With[{
 
 Options[loadFigure] = {"verbose" -> False};
 loadFigure[fname_, OptionsPattern[]] := With[{
-		fnameFull = ToString@fname
+		fnameFull = FindFile[ToString@fname]
 	},
 	If[Not@FileExistsQ[fnameFull],
 		error[StringForm[load::failed, fnameFull]];
@@ -871,6 +871,7 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 	fname
 ];
 
+
 (* ::Section:: *)
 (*End*)
 
@@ -879,15 +880,9 @@ systemStamp[];
 timeStamp[];
 note[Directory[]];
 
-If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed,
-	Quiet[
-		LaunchKernels[];
-		log[StringForm["$KernelCount = ``", $KernelCount]];
-	];
-];
-If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,
-	setPostProcessing[True]
-];
+
+If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed, Quiet[LaunchKernels[];	log[StringForm["$KernelCount = ``", $KernelCount]];];];
+If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,	setPostProcessing[True]];
 
 
 End[];
