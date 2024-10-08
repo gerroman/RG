@@ -175,7 +175,7 @@ setPostProcessing[bool:(True|False)] := If[bool,
 setPostProcessing[] := setPostProcessing[True];
 
 
-$MessageLength = 60;
+$MessageLength = 70;
 $LongMessageFactor = 10;
 
 
@@ -487,9 +487,7 @@ check[expr_, opts:OptionsPattern[]] := check[expr, stringTrim[stringForm[expr]],
 
 
 exit[code_Integer] := If[Not[$Notebooks], (
-		(* log["killing processes", KillProcess /@ Processes[], "prefix"->"\r[exit]: ", "endl" -> "\n"]; *)
-		(* log["closing links", LinkClose /@ Links[], "prefix"->"\r[exit]: ", "endl" -> "\n"]; *)
-		log[ToString@StringForm["<``>", DateString[]], Null, "prefix"->"\r[exit]: ", "endl"->"\n\n"];
+		log[ToString@StringForm["<``>", DateString[]], Null, "prefix"->"\r[exit]: "];
 		Exit[code];
 	)
 ];
@@ -577,7 +575,6 @@ install[fname_String, path_String:"bin"] := With[{
 	 True, error[StringForm["can not find correct file for ``", $OperatingSystem]];
 	]
 ];
-
 
 
 Options[checkExists] = {"verbose" -> True};
@@ -680,7 +677,7 @@ systemStamp[] := With[{stamp = systemString[]},
 head[fname_String] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
-      log[StringForm["\"``\" (`` kB)", fname, 1.`3*10^(-3) * FileByteCount[fname]], "prefix"->"\r[file]: "];
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"\r[file]: "];
 			stream = OpenRead[fname];
 			result = ReadLine[stream];
 			Close[stream];
@@ -692,7 +689,7 @@ head[fname_String] := Module[{stream, result = $Failed},
 head[fname_String, n_Integer] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
-      log[StringForm["\"``\" (`` kB)", fname, 1.`3*10^(-3) * FileByteCount[fname]], "prefix"->"\r[file]: "];
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"\r[file]: "];
 			stream = OpenRead[fname];
 			result = StringRiffle[
 				Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
@@ -777,9 +774,10 @@ load[fname_, OptionsPattern[]] := With[{
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
-	If[OptionValue["verbose"], head[fnameFull, 3] // print, head[fnameFull, 0]];
+	If[OptionValue["verbose"], logwrite[head[fnameFull, 3]], head[fnameFull, 0]];
 	Get[fnameFull] // llog
 ];
+
 
 Options[loadFigure] = {"verbose" -> False};
 loadFigure[fname_, OptionsPattern[]] := With[{
@@ -876,13 +874,10 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 (*End*)
 
 
-systemStamp[];
-timeStamp[];
-note[Directory[]];
-
-
 If[Environment["$MATHEMATICA_LAUNCH_KERNELS"] =!= $Failed, Quiet[LaunchKernels[];	log[StringForm["$KernelCount = ``", $KernelCount]];];];
 If[Environment["$MATHEMATICA_POST_PROCESSING"] =!= $Failed,	setPostProcessing[True]];
+
+If[Not[$BatchInput], setPostProcessing[True]];
 
 
 End[];

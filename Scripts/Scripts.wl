@@ -8,6 +8,11 @@ Off[FrontEndObject::notavail];
 On[Assert];
 
 
+systemStamp[];
+timeStamp[];
+note[Directory[]];
+
+
 Get["RG/Tools/SetDrawOptions.wl"];
 
 
@@ -23,9 +28,6 @@ If[quietFlag, verboseFlag = False];
 
 SetOptions[load, "verbose" :> verboseFlag];
 SetOptions[loadFigure, "verbose" :> verboseFlag];
-
-
-If[Not[$BatchInput], setPostProcessing[True]];
 
 
 Unprotect[Print];
