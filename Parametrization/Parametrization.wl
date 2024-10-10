@@ -165,13 +165,13 @@ getPsXsPowers[integrate[integrand_, vars__]] := Module[{
 		xs = {vars},
 		mults, powers, ps
 	},
-	If[Not@MatchQ[integrand, _Symbol| _Power | Times[(_Symbol|_Power), (_Symbol|_Power)..]],
-		error["integrand does not match Times[(_Symbol|_Power), (_Symbol|_Power)..]"]
+	If[Not@MatchQ[integrand, _Symbol| _Power |_Plus | Times[(_Symbol|_Power|_Plus), (_Symbol|_Power|_Plus)..]],
+		error["integrand has unexpected form"];
 		Return[{{}, {}, {}}];
 	];
 	mults = integrand // Replace[{expr_Times :> List@@expr, expr_ :> {expr}}];
-	ps = mults // Map[Replace[{expr_Symbol :> expr, expr_Power :> expr[[1]]}]];
-	powers = mults // Map[Replace[{expr_Symbol :> 1, expr_Power :> expr[[2]]}]];
+	ps = mults // Map[Replace[{expr_Symbol :> expr, expr_Plus :> expr, expr_Power :> expr[[1]]}]];
+	powers = mults // Map[Replace[{expr_Symbol :> 1, expr_Plus :> 1, expr_Power :> expr[[2]]}]];
 	If[Times@@(ps^powers) != integrand,
 		error["integrand separation fails"]
 		Return[{{}, {}, {}}];
