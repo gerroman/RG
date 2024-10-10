@@ -58,7 +58,7 @@ changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_), opts:OptionsPattern[
 	},
 	ReplaceAll[
 		{
-			integrate[expr_, va] :> integrate[(expr /. rulea) * If[OptionValue[hold], Hold[det], det], vb],
+			integrate[expr_, va] :> integrate[(expr /. rulea) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], vb],
 			integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. {va -> vaMin}, fa /. {va -> vaMax}}]
 		}
 	]
@@ -70,7 +70,7 @@ changeIntegrateVars[rulex_List, ruley_List, opts:OptionsPattern[]] := With[{
 	},
 	With[{det = Det[Outer[D, fs, ys]]},
 		ReplaceAll[
-			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[hold], Hold[det], det], Sequence@@ys]
+			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], Sequence@@ys]
 		]
 	]
 ];
