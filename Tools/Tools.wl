@@ -3,6 +3,7 @@
 (* ::Section:: *)
 (*Tools*)
 
+Off[General::shdw];
 
 BeginPackage["RG`Tools`"];
 
@@ -144,6 +145,11 @@ loadFigure::usage = "loadFigure[fname] \[LongDash] load figure from file 'fname'
 exportFigure::usage = "exportFigure[fname, expr] export figure from file if it exists or execute expr and save figure to the file"
 
 
+Get::usage="Get[fname] reads in a file, evaluating each expression in it and returning the last one\nGet[stream] reads from a stream, evaluating each expression in it and returning the last one";
+Print::usage="Print[expr] prints expr as output";
+Export::usage="Export[\"file.ext\", expr] exports data to a file, exports data to a file, converting it to the format corresponding to the file extension ext.\nExport[file, expr, \"format\"] exports data in the specified format\nExport[file, exprs, elems] exports data by treating exprs as elements specified by elems";
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -199,7 +205,7 @@ print[expr_, func_, opts:OptionsPattern[]] := With[{
 		verbose=OptionValue["verbose"]
 	},
 	If[$Notebooks,
-		Print[(expr // func)];
+		System`Print[(expr // func)];
 		Return[]
 	];
 	If[verbose, WriteString[stream, ToString@OptionValue["header"]]];
@@ -378,7 +384,7 @@ partition[expr_List, n_Integer] := With[{
 
 
 SetAttributes[silent, HoldAll];
-silent[expr_] := Block[{Print}, expr];
+silent[expr_] := Block[{System`Print}, expr];
 
 ruleLogWrite = {
 	"[info]" -> "\033[1;35m[info]\033[0m",
@@ -406,7 +412,7 @@ ruleLogWrite = {
 
 
 logwrite[message_] := If[$Notebooks,
-	Print[ToString@message],
+	System`Print[ToString@message],
 	WriteString["stderr", If[$Colorize, StringReplace[ToString@message, ruleLogWrite], ToString@message]]
 ];
 
@@ -668,13 +674,13 @@ argparse[name_String, default_String] := Module[
 
 timeString[] := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
 timeStamp[] := With[{stamp = timeString[]},
-	If[$Notebooks, Print[stamp]];
+	If[$Notebooks, System`Print[stamp]];
 	log[stamp, prefix-> "[date]: "];
 ];
 
 systemString[] := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
 systemStamp[] := With[{stamp = systemString[]},
-	If[$Notebooks, Print[stamp]];
+	If[$Notebooks, System`Print[stamp]];
 	log[stamp];
 ];
 
@@ -771,16 +777,18 @@ stringTrim[expr_String] := StringTrim[StringPadRight[expr, $MessageLength, "."]]
 
 
 load::failed = "can not find '`1`'";
-Options[load] = {"verbose" -> False};
-load[fname_, OptionsPattern[]] := With[{
-		fnameFull = FindFile[ToString@fname]
+Options[load] = Append[Options[System`Get], "verbose"->False]
+
+load[fname_, opts:OptionsPattern[]] := With[{
+		fnameFull = FindFile[ToString@fname],
+    getOpts=FilterRules[{opts}, Options[System`Get]]
 	},
 	If[Not@FileExistsQ[fnameFull],
 		error[StringForm[load::failed, fnameFull]];
 		Return[$Failed];
 	];
 	If[OptionValue["verbose"], logwrite[head[fnameFull, 3]], head[fnameFull, 0]];
-	Get[fnameFull] // llog
+	System`Get[fnameFull, Sequence@@getOpts] // llog
 ];
 
 
@@ -825,11 +833,11 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"[export]: "
 		]];
 		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
-		Export[fnameFull, expr, "Comments" -> comments];
+		System`Export[fnameFull, expr, "Comments" -> comments];
 		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
 		Put[hash, fnameHash];
 	];
-	If[hash === Get[fnameHash],
+	If[hash === System`Get[fnameHash],
 		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
@@ -844,14 +852,14 @@ Options[exportFigure] = {
 	"verbose" -> True,
 	"force" -> False
 };
-exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics, Plot, Rasterize}]] := Module[{
+exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, System`Export, Graphics, Plot, Rasterize}]] := Module[{
 		fnameFull = ToString@fname,
 		fnameHash =ToString@fname <> ".hash",
 		verbose = OptionValue[exportFigure, "verbose"],
 		force = OptionValue[exportFigure, "force"],
 		result,	hash,
 		exportFigureOpts = FilterRules[{opts}, Options[exportFigure]],
-		exportOpts = FilterRules[{opts}, Join[Options[Export], Options[Rasterize]]],
+		exportOpts = FilterRules[{opts}, Join[Options[System`Export], Options[Rasterize]]],
 		graphicsOpts = FilterRules[{opts}, Join[Options[Graphics], Options[Plot]]]
 	},
 	result = If[Head[expr] === Graphics, Show[expr, Sequence@@graphicsOpts], expr];
@@ -860,11 +868,11 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "]];
 		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
 		installFrontEnd[];
-		Export[fnameFull, result, Sequence@@exportOpts, ImageFormattingWidth->Infinity];
+		System`Export[fnameFull, result, Sequence@@exportOpts, ImageFormattingWidth->Infinity];
 		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
 		Put[hash, fnameHash];
 	];
-	If[hash === Get[fnameHash],
+	If[hash === System`Get[fnameHash],
 		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
@@ -873,6 +881,11 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 	];
 	fname
 ];
+
+
+RG`Tools`Get=load;
+RG`Tools`Print=log;
+RG`Tools`Export=export;
 
 
 (* ::Section:: *)
@@ -889,3 +902,5 @@ End[];
 
 
 EndPackage[];
+
+On[General::shdw];
