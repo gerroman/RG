@@ -1,4 +1,4 @@
-BeginPackage["RG`Parametrization`", {"RG`Tools`",	"RG`BaseUtils`","RG`CommonNotation`",	"RG`Calculation`","LiteRed`"}]
+BeginPackage["RG`Parametrization`", {"RG`Tools`",	"RG`BaseUtils`","RG`CommonNotation`",	"RG`Calculation`","LiteRed`","GetRegions`"}]
 
 
 flattenIntegrate::usage="flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
@@ -33,6 +33,9 @@ getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] ma
 getPsXsPowers::usage="getPsXsPowers[expr_integrate] \[LongDash] get polynomials, xs, and powers of polynomials from the integral parameterization. [note]: (1) `expr` must be in the form of indetermine integral w.r.t. parameters x_i, (2) integration w.r.t. x_i (in the determine form of the integral) must goes from 0 to \[Infinity]";
 
 getRegionContribution::usage="getRegionContribution[powers, va_][region] \[LongDash] evaluate resulting `var` power, which `region` yields";
+
+
+getRegions::usage="getRegions[integral, delta] \[LongDash] get region contribution"
 
 
 Begin["Private`"];
@@ -76,9 +79,10 @@ substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
 		error["non-unique substitutions, returning all possible solutions"];
 		Return[{ruleTo, ruleFrom}];
 	];
-
+  echo[Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]];
 	Return[First /@ {ruleTo, ruleFrom}]
 ];
+substitute[eqs_Equal, xs_Symbol, ys_Symbol] := substitute[{eqs}, {xs}, {ys}];
 
 
 integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
@@ -187,7 +191,7 @@ getRegionContribution[powers_,var_][region_] := With[{
 	(
 		Times@@(var^(polyScales*powers)) *
 		Times@@(var^varScales)
-	 ) // PowerExpand // ExpandAll
+	) // PowerExpand // ExpandAll
 ];
 
 
@@ -195,6 +199,33 @@ pushIntegrateFactors[s_Symbol] := Function[expr,
 	expr // ReplaceAll[a_ * integrate[b_, vars : ({s, from_, to_} | s)] :> integrate[a b, vars]]
 ];
 pushIntegrateFactors[expr_] := ReplaceRepeated[expr, a_ *integrate[b_, vars__] :> integrate[a b, vars]]
+
+
+getRegions[integral_, delta_] := Module[{ps, xs, powers, regions, contrib, vars, subs, func, pos, v},
+  {ps, xs, powers} = getPsXsPowers[integral];
+  echo[{ps, xs, powers}];
+  regions = GetRegions[ps, xs, delta];
+	echo[regions];
+  contrib = getRegionContribution[powers, delta] /@ regions;
+	echo[contrib];
+  vars = Array[v, Length[xs]];
+  func = Function[{pos},
+    With[{
+      subs = substitute[Thread[xs == vars*delta^regions[[pos, 2]]], xs, vars]
+    },
+    With[{
+      psSubs = Thread[ps^powers -> delta^Expand[(regions[[pos, 1]] * powers)] * (Factor[ps/.subs[[1]]] / (delta^regions[[pos, 1]]) /. {delta->0})^powers]
+    },
+    {
+      contrib[[pos]],
+      integrate[(First[integral] /. psSubs), Sequence@@xs] //
+        changeIntegrateVars[Sequence@@subs] //
+        ReplaceAll[Thread[vars->xs]] //
+        ReplaceAll[contrib[[pos]] -> 1]
+    }
+  ]]];
+  Array[func, Length[regions]]
+];
 
 
 End[];

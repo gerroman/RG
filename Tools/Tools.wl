@@ -180,7 +180,7 @@ $LongMessageFactor = 10;
 
 
 reset[exitcode_:0] := (
-	log[StringForm["<``>", DateString[]], Null, "prefix"->"\r[exit]: ", "endl"->"\n\n"];
+	log[StringForm["<``>", DateString[]], Null, "prefix"->"\r[exit]: "];
 	Exit[exitcode];
 );
 
@@ -288,7 +288,7 @@ processList[fs_List][expr_] := With[{result = FoldList[#2[#1]&, expr, fs]},
 	If[Not @ DuplicateFreeQ[result],
 		Module[{prev, pos},
 			pos = LengthWhile[result, With[{test = (# =!= prev)}, (prev=#;test)]&];
-			log[ToString@StringForm[processList::unused, stringForm[fs[[pos]]]], "prefix"->"\r[ERROR]: "];
+			log[ToString@StringForm[processList::unused, stringForm[fs[[pos]]]], "prefix"->"[ERROR]: "];
 		];
 	];
 	result
@@ -413,7 +413,7 @@ logwrite[message_] := If[$Notebooks,
 
 SetAttributes[log, HoldRest];
 Options[log] = {
-	"prefix" -> "\r[info]: ",
+	"prefix" -> "[info]: ",
 	"endl" :> If[$Notebooks, "", "\n"]
 };
 log[expr_String, OptionsPattern[]] := With[{
@@ -440,12 +440,12 @@ log[message_, expr_, OptionsPattern[]] := (
 
 SetAttributes[timing, HoldAll];
 timing[message_, expr_] := Module[{time, result},
-	log[StringPadRight[ToString@message <> " ", $MessageLength, "."], "prefix"-> "\r[time]: ", "endl" -> " ... \n"];
+	log[StringPadRight[ToString@message <> " ", $MessageLength, "."], "prefix"-> "\r[time]: ", "endl" -> " ... " <> OptionValue[log, "endl"]];
 	time = First@AbsoluteTiming[result = silent[expr]];
-	log[StringPadRight["", $MessageLength, "."], "prefix"-> "\r[time]: ", "endl" -> " ... " <> ToString@NumberForm[time, {6, 2}] <> " [seconds]\n"];
+	log[StringPadRight["", $MessageLength, "."], "prefix"-> "\r[time]: ", "endl" -> " ... " <> ToString@NumberForm[time, {6, 2}] <> " [seconds]" <> OptionValue[log, "endl"]];
 	Return[{time, result}];
 ];
-timing[expr_] := timing[HoldForm[expr], expr];
+timing[expr_] := timing[stringForm[expr], expr];
 
 
 makeDirectory[path_] := With[{fname = ToString[path]},
@@ -464,21 +464,24 @@ makeDirectory[path_] := With[{fname = ToString[path]},
 SetAttributes[check, HoldFirst];
 Options[check] = {Simplify->Identity};
 check[expr:Equal[lhs_, rhs_], message_String, opts:OptionsPattern[]] := Module[{flag, result, func=OptionValue[Simplify]},
-	log[message, "prefix"->"\r[test]: ", "endl" -> " ... "];
+	log[message, "prefix"->"\r[test]: ", "endl" -> " ... " <> OptionValue[log, "endl"]];
 	result = func[expr];
   flag = result === True;
-	log[If[flag, "[OK]", "[ERROR]"], "prefix"->""];
   If[Not[flag],
     log[lhs, "prefix"->"\r[....]: lhs = "];
     log[rhs, "prefix"->"\r[....]: rhs = "];
   ];
+	log[StringPadRight["", $MessageLength, "."], "prefix"-> "\r[test]: ", "endl" -> " ... " <> If[flag, "[OK]", "[ERROR]"] <> OptionValue[log, "endl"]];
 	Return[result];
 ];
 check[expr_, message_String, opts:OptionsPattern[]] := Module[{flag, result, func=OptionValue[Simplify]},
-	log[message, "prefix"->"\r[test]: ", "endl" -> " ... "];
+	log[message, "prefix"->"\r[test]: ", "endl" -> " ... " <> OptionValue[log, "endl"]];
 	result = func[expr];
   flag = result === True;
-	log[If[flag, "[OK]", "[ERROR]"], "prefix"->""];
+  If[Not[flag],
+    log[result, "prefix"->"\r[....]: lhs = "];
+  ];
+	log[StringPadRight["", $MessageLength, "."], "prefix"-> "\r[test]: ", "endl" -> " ... " <> If[flag, "[OK]", "[ERROR]"] <> OptionValue[log, "endl"]];
 	Return[result];
 ];
 check[expr_, message_StringForm, opts:OptionsPattern[]] := check[ToString@messag
@@ -487,7 +490,7 @@ check[expr_, opts:OptionsPattern[]] := check[expr, stringTrim[stringForm[expr]],
 
 
 exit[code_Integer] := If[Not[$Notebooks], (
-		log[ToString@StringForm["<``>", DateString[]], Null, "prefix"->"\r[exit]: "];
+		log[ToString@StringForm["<``>", DateString[]], Null, "prefix"->"[exit]: "];
 		Exit[code];
 	)
 ];
@@ -497,8 +500,8 @@ exit[] := exit[0];
 
 SetAttributes[note, HoldFirst];
 Options[note] = {
-	"prefix" -> "\r[note]: ",
-	"endl" -> "\n"
+	"prefix" -> "[note]: ",
+	"endl" -> If[$Notebooks, "", "\n"]
 };
 note[expr_, func_, opts:OptionsPattern[]] := (
 	log[stringForm[expr], "prefix"->OptionValue["prefix"], "endl"->""];
@@ -526,22 +529,24 @@ sizeOf[expr_] := Module[
 ];
 
 
-error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"\r[ERROR]: ", opts];
-warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"\r[warning]: ", opts];
+error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
+warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[warning]: ", opts];
 
 SetAttributes[llog, HoldAll];
 Options[llog] = {
-	"prefix" -> "\r[....]: ",
-	"endl" -> "\n[info]: complete\n"
+	"prefix" -> "[....]: ",
+	"endl" -> "\n[info]: complete" <> If[$Notebooks, "", "\n"],
+  "silent" -> False
 };
 llog[message_String, expr_, opts:OptionsPattern[]] := Module[{
 		messageString = StringPadRight[message <> " ", $MessageLength, "."],
 		prefix = OptionValue["prefix"],
 		endl = OptionValue["endl"],
+    silentFlag = OptionValue["silent"],
 		result
 	},
 	log[messageString, "prefix"->prefix, "endl" -> " ... "];
-	result = silent@expr;
+	result = If[silentFlag, silent[expr], expr];
 	log["", "prefix"->"", "endl" ->endl];
 	Return[result];
 ];
@@ -583,12 +588,12 @@ checkExists[results_List, opts:OptionsPattern[]] := With[{
 	},
 	Which[
 		OptionValue["verbose"] && (And @@ existance), (
-			log[StringForm["'``' does exist", #], "prefix"->"\r[....]: "]& /@ results;
-			log["", "prefix"->"\r[RESULT]: ", "endl"->""];
+			log[StringForm["'``' does exist", #], "prefix"->"[....]: "]& /@ results;
+			log["", "prefix"->"[RESULT]: ", "endl"->""];
 			Write["stdout", results];
 		),
 		Not[And@@existance], (
-			log[StringForm["'``' does not exist", #], "prefix"->"\r[warning]: "]& /@ Pick[results, Not/@existance];
+			log[StringForm["'``' does not exist", #], "prefix"->"[warning]: "]& /@ Pick[results, Not/@existance];
 		)
 	];
 	Return[(And @@ existance)];
@@ -606,8 +611,8 @@ argparse[] := Which[
 argparse[name_String, False] := With[{argv = Last[argparse[]]},
 	With[{value = MemberQ[argv, "-" <> name]},
 		If[value,
-			log[StringForm["using `` = `` (command line flag)", name, value], "prefix"->"\r[args]: "],
-			log[StringForm["using `` = `` (absent command line flag)", name, value], "prefix"->"\r[args]: "]
+			log[StringForm["using `` = `` (command line flag)", name, value], "prefix"->"[args]: "],
+			log[StringForm["using `` = `` (absent command line flag)", name, value], "prefix"->"[args]: "]
 		];
 		value
 	]
@@ -618,15 +623,15 @@ argparse[name_String, default_Integer] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"\r[args]: "];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
 	If[Not@IntegerQ[value],
-		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"\r[args]: "];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
-	log[StringForm["using `` = `` (command line argument, default = ``)", name, value, default], "prefix"->"\r[args]: "];
+	log[StringForm["using `` = `` (command line argument, default = ``)", name, value, default], "prefix"->"[args]: "];
 	Return[value]
 ];
 
@@ -635,15 +640,15 @@ argparse[name_String, default_Real] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"\r[args]: "];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = ToExpression[argv[[pos[[1, 1]] + 1]]];
 	If[Not@RealQ[value],
-		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"\r[args]: "];
+		log[StringForm["using `` = `` (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
-	log[StringForm["using `` = `` (command line argument, default value = ``)", name, 1.0 * value, default], "prefix"->"\r[args]: "];
+	log[StringForm["using `` = `` (command line argument, default value = ``)", name, 1.0 * value, default], "prefix"->"[args]: "];
 	Return[1.0 * value]
 ];
 
@@ -652,11 +657,11 @@ argparse[name_String, default_String] := Module[
 	{argc, argv} = argparse[];
 	pos = Position[argv, "-" <> name];
 	If[Length[pos] != 1 || pos[[1, 1]] + 1 > argc,
-		log[StringForm["using `` = '``' (default value)", name, default], "prefix"->"\r[args]: "];
+		log[StringForm["using `` = '``' (default value)", name, default], "prefix"->"[args]: "];
 		Return[default]
 	];
 	value = argv[[pos[[1, 1]] + 1]];
-	log[StringForm["using `` = '``' (command line argument, default='``')", name, value, default], "prefix"->"\r[args]: "];
+	log[StringForm["using `` = '``' (command line argument, default='``')", name, value, default], "prefix"->"[args]: "];
 	Return[value]
 ];
 
@@ -664,7 +669,7 @@ argparse[name_String, default_String] := Module[
 timeString[] := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
 timeStamp[] := With[{stamp = timeString[]},
 	If[$Notebooks, Print[stamp]];
-	log[stamp, prefix-> "\r[date]: "];
+	log[stamp, prefix-> "[date]: "];
 ];
 
 systemString[] := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
@@ -677,7 +682,7 @@ systemStamp[] := With[{stamp = systemString[]},
 head[fname_String] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
-      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"\r[file]: "];
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
 			stream = OpenRead[fname];
 			result = ReadLine[stream];
 			Close[stream];
@@ -689,7 +694,7 @@ head[fname_String] := Module[{stream, result = $Failed},
 head[fname_String, n_Integer] := Module[{stream, result = $Failed},
 	If[FileExistsQ[fname],
 		(
-      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"\r[file]: "];
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
 			stream = OpenRead[fname];
 			result = StringRiffle[
 				Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
@@ -703,7 +708,7 @@ head[fname_String, n_Integer] := Module[{stream, result = $Failed},
 ];
 
 echo[expr_] := (
-	log[stringForm[expr], "prefix"->"\r[echo]: "];
+	log[stringForm[expr], "prefix"->"[echo]: "];
 	expr
 );
 
@@ -817,15 +822,15 @@ export[fname_, expr_, OptionsPattern[]] := Module[{
 	},
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
 		If[verbose, log[StringForm[export::export,
-			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"\r[export]: "
+			StringTrim[StringPadRight[ToString[InputForm@expr], $MessageLength]]], "prefix"->"[export]: "
 		]];
-		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"\r[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
 		Export[fnameFull, expr, "Comments" -> comments];
-		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"\r[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"\r[hash]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];
@@ -852,15 +857,15 @@ exportFigure[fname_, expr_, opts:OptionsPattern[{exportFigure, Export, Graphics,
 	result = If[Head[expr] === Graphics, Show[expr, Sequence@@graphicsOpts], expr];
 	hash = Hash[result];
 	If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
-		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"\r[export]: "]];
-		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"\r[export]: "]];
+		If[verbose, log[StringForm[export::export, StringTrim[StringPadRight[ToString[InputForm@result], $MessageLength]]], "prefix"->"[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameFull], "prefix"->"[export]: "]];
 		installFrontEnd[];
 		Export[fnameFull, result, Sequence@@exportOpts, ImageFormattingWidth->Infinity];
-		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"\r[export]: "]];
+		If[verbose, log[StringForm[export::save, fnameHash], "prefix"->"[export]: "]];
 		Put[hash, fnameHash];
 	];
 	If[hash === Get[fnameHash],
-		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"\r[hash]: "]],
+		If[verbose, log[StringForm[export::hashCorrect, fnameHash], "prefix"->"[hash]: "]],
 		(
 			error[StringForm[export::hashError, fnameHash]];
 			Return[$Failed];

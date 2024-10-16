@@ -96,6 +96,17 @@ pullIntegrateFactors[va_] := ReplaceAll[
 	}
 ];
 
+pullIntegrateFactors[] = Function[expr, With[{
+  vars = expr //
+    Cases[{#}, _integrate, Infinity]& //
+    Map[Rest[List@@#]&] //
+    ReplaceAll[{var_, a_, b_} :> var] //
+    Flatten
+  },
+  Fold[pullIntegrateFactors[#2][#1]&, expr, vars]
+]];
+
+
 pullSumFactors[va_] := ReplaceAll[
 	{
 	 sum[expr_. * factor_, vs:{va, __}] :> factor * sum[expr, vs] /; FreeQ[factor, va],
