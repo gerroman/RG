@@ -31,3 +31,6 @@ Block[{
     }
   ];
 ];
+
+
+WriteString["stderr",  StringForm["[info]: '``' loaded\n", $InputFileName]];
