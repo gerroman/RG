@@ -28,6 +28,15 @@ TeXPrint::usage = "TeXPrint[expr] print ``expr'' surrounded by \\begin{equation}
 	TeXPrint[expr, tag] print ``expr'' surrounded by \\begin{equation}\\label{tag}, \\end{equation}";
 
 
+factorIt::usage = "factorIt[pattern, func] factor out factors matches pattern from func
+factorIt[{x1, ...}, func] factor out concrete xs";
+
+pullIt::usage = "pullIt[pattern] pull out factors matches pattern
+pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments";
+
+changeSign::usage = "changeSign[x] change sign of x";
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -194,6 +203,61 @@ TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["
 			];
 		)
 	];
+];
+
+
+changeSign[xs_List] := With[{
+		rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
+	},
+	ReplaceAll[rules]
+];
+changeSign[pattern_] := Function[{expr},
+	With[{xs = Union@Cases[{expr}, pattern, Infinity] // Flatten},
+		changeSign[xs][expr]
+	]
+];
+changeSign[xs__] := changeSign[{xs}];
+
+
+factorItRules[x_, head_:Plus, func_:Identity] := With[
+	{p = x, pn = -x}
+	,
+	{
+		head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]],
+		head[ p*(a_.), pn*(b_.)] :>  p * func[head[a, -b]],
+		head[pn*(a_.), pn*(b_.)] :> pn * func[head[a,  b]]
+	}
+];
+
+(* [NOTE]: strightforward matching can be long *)
+factorIt[xs_List, head_:Plus, func_:Identity] := With[{
+		rules = Flatten@Map[x \[Function] factorItRules[x, head, func],	xs]
+	},
+	ReplaceRepeated[#, rules]&
+];
+
+
+factorIt[pattern_, head_:Plus, func_:Identity] := Function[
+	expr
+	,
+	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
+		factorIt[xs, head, func][expr]
+	]
+];
+
+
+pullIt[xs_List, func_:Plus] := With[{
+	rules = (x \[Function] With[{p = x},
+				(func[p * b_., a_] :> p Map[(# / p) &, func[p b, a]])
+			]) /@ xs
+	},
+	ReplaceAll[#, rules]&
+];
+
+pullIt[pattern_, func_:Plus][expr_] := With[{
+		xs = Union@Cases[{expr}, pattern, Infinity]
+	},
+	pullIt[xs, func][expr]
 ];
 
 

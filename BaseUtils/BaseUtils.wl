@@ -34,21 +34,12 @@ fixedPoint::usage = "fixedPoint[func] is shortcut for FixedPoint[#, func] &";
 release::usage = "release[expr] apply ReleaseHold repeatedly";
 
 
-factorIt::usage = "factorIt[pattern, func] factor out factors matches pattern from func
-factorIt[{x1, ...}, func] factor out concrete xs";
-
-
 factorItFast::usage = "factorItFast[x, func] faster version of factorIt";
-
-
-pullIt::usage = "pullIt[pattern] pull out factors matches pattern
-pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments";
 
 
 powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
 
-changeSign::usage = "changeSign[x] change sign of x";
 
 
 toRules::usage = "toRules shortcut for replacing equations to rules";
@@ -176,31 +167,6 @@ groupIt[expr:{(_Hold|_HoldForm)..}] := groupIt[expr, ReleaseHold];
 groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
 
 
-factorItRules[x_, head_:Plus, func_:Identity] := With[
-	{p = x, pn = -x}
-	,
-	{
-		head[ p*(a_.),  p*(b_.)] :>  p * func[head[a,  b]],
-		head[ p*(a_.), pn*(b_.)] :>  p * func[head[a, -b]],
-		head[pn*(a_.), pn*(b_.)] :> pn * func[head[a,  b]]
-	}
-];
-
-(* [NOTE]: strightforward matching can be long *)
-factorIt[xs_List, head_:Plus, func_:Identity] := With[{
-		rules = Flatten@Map[x \[Function] factorItRules[x, head, func],	xs]
-	},
-	ReplaceRepeated[#, rules]&
-];
-
-
-factorIt[pattern_, head_:Plus, func_:Identity] := Function[
-	expr
-	,
-	With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-		factorIt[xs, head, func][expr]
-	]
-];
 
 
 factorize[expr_, x_] := With[{xn = -x}, With[
@@ -234,41 +200,11 @@ factorItFast[x_, levelspec_:{0}, func_:Plus] := With[{
 ];
 
 
-pullIt[xs_List, func_:Plus] := With[{
-	rules = (x \[Function] With[{p = x},
-				(func[p * b_., a_] :> p Map[(# / p) &, func[p b, a]])
-			]) /@ xs
-	},
-	ReplaceAll[#, rules]&
-];
-
-pullIt[pattern_, func_:Plus][expr_] := With[{
-		xs = Union@Cases[{expr}, pattern, Infinity]
-	},
-	pullIt[xs, func][expr]
-];
-
-
 powersPattern[xs_List] := (Subsets[xs] // Reverse //
 	Map[#^_. &, #, {2}] & //
 	Apply[Times, #, {1}] & //
 	PowerExpand // ReplaceAll[x_ y_Optional :> y]
 );
-
-
-
-changeSign[xs_List] := With[{
-		rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
-	},
-	ReplaceAll[rules]
-];
-changeSign[pattern_] := Function[{expr},
-	With[{xs = Union@Cases[{expr}, pattern, Infinity] // Flatten},
-		changeSign[xs][expr]
-	]
-];
-changeSign[xs__] := changeSign[{xs}];
-
 
 
 toRules = ReplaceAll[#, Equal -> Rule] &;

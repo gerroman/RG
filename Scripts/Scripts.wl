@@ -5,24 +5,25 @@ BeginPackage["RG`Scripts`"];
 
 
 log::usage = "log[expr] \[LongDash] converts 'expr' to string and call Write[] or Print[] depending on batch or notebooks working mode";
-error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix"
-warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix"
-echo::usage = "echo[expr] \[LongDash] prints and return expr"
+error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix";
+warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix";
+echo::usage = "echo[expr] \[LongDash] prints and return expr";
 
 timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]";
 systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]";
 
 Export::usage=System`Export::usage;
 Timing::usage=System`Timing::usage;
+Print::usage=System`Print::usage;
 
-argparse::usage = "argparse[] \[LongDash] returns {argc, argv}"
+argparse::usage = "argparse[] \[LongDash] returns {argc, argv}";
 
 info::usage = "info[func] \[LongDash] get information about func: context, usage, attributes, options
-info[func, All] \[LongDash] get full information about func including up/down values"
+info[func, All] \[LongDash] get full information about func including up/down values";
 
 
 head::usage = "head[fname] \[LongDash] return first line of the text file";
-sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'"
+sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
 
 
 Begin["`Private`"];
@@ -30,7 +31,9 @@ Begin["`Private`"];
 
 (* ::Section:: *)
 (* Logging *)
-Options[logwrite] = {
+
+
+Options[RG`Scripts`Print] = {
   "stream" -> "stderr",
   "colorize" -> {
   	"[info]" -> "\033[1;35m[info]\033[0m",
@@ -55,30 +58,68 @@ Options[logwrite] = {
   	"[init]" -> "\033[1;36m[init]\033[0m",
   	"[warning]" -> "\033[0;33m[warning]\033[0m",
   	"[args]" -> "\033[1;34m[args]\033[0m"
-  }
+  },
+  "width" :> 1000
 };
-logwrite[message_String, opts:OptionsPattern[]] := If[$Notebooks,
-	Print[message],
-	WriteString["stderr", StringJoin["\r", StringReplace[message, OptionValue["colorize"]]]]
+RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks,
+	System`Print[message],
+	WriteString[
+    OptionValue["stream"], 
+    StringJoin[
+      "\r",
+      StringReplace[message, OptionValue["colorize"]],
+      "\n"
+    ]
+  ]
 ];
+RG`Scripts`Print[expr_, opts:OptionsPattern[]] := If[$Notebooks,
+	System`Print[expr],
+  WriteString[
+    OptionValue["stream"],
+    StringJoin[
+      "\r",
+      ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
+      "\n"
+    ]
+  ]
+];
+RG`Scripts`Print[expr__, opts:OptionsPattern[]] := Scan[RG`Scripts`Print[#, opts]&, {expr}];
 
 
 Options[log] = {
 	"prefix" -> "[info]: ",
-	"endl" :> If[$Notebooks, "", "\n"],
-  "width" -> 700
+	"endl" -> "",
+  "width" -> 70,
+  "column" -> False
 };
-log[expr_String, OptionsPattern[]] := With[{
-    message = StringJoin[OptionValue["prefix"], ToString[expr, TotalWidth->OptionValue["width"]], OptionValue["endl"]]
+log[expr_String, opts:OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
 	},
-	logwrite[message];
+	RG`Scripts`Print[message];
 ];
-log[expr_, opts:OptionsPattern[]] := log[ToString[expr], opts];
+log[expr_StringForm, opts:OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
+	},
+	RG`Scripts`Print[message];
+];
+log[expr_List, opts:OptionsPattern[]] := If[OptionValue["column"],
+Scan[log[#, opts]&, expr],
+log[
+  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], 
+  opts
+]
+];
+
+log[expr_, opts:OptionsPattern[]] := log[
+  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], 
+  opts
+];
+log[expr__, opts:OptionsPattern[]] := Scan[log[#, opts]&, {expr}];
 
 
 error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
 warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[warning]: ", opts];
-echo[expr_] := (log[stringForm[expr], "prefix"->"[echo]: "]; expr);
+echo[expr_] := (logwrite[expr, "width"->Infinity]; expr);
 
 
 (* ::Section:: *)
@@ -185,7 +226,7 @@ RG`Scripts`Export[fname_, expr_, opts:OptionsPattern[]] := Module[{
 Options[RG`Scripts`Timing] = {"verbose"->False};
 SetAttributes[RG`Scripts`Timing, HoldFirst];
 RG`Scripts`Timing[expr_] := Module[{time, result},
-  log[ToString[Unevaluated[expr]], "prefix"->"[time]: ", "endl"->" ... \n"];
+  log[ToString[Unevaluated[expr]], "prefix"->"[time]: ", "endl"->" ... "];
   {time, result} = If[OptionValue[RG`Scripts`Timing, "verbose"], AbsoluteTiming[expr], Block[{Print}, AbsoluteTiming[expr]]];
   log[ToString@NumberForm[time, {6, 2}] <> " [seconds]", "prefix"->"[time]: "];
   Return[{time, result}];
@@ -195,6 +236,8 @@ RG`Scripts`Timing[expr_] := Module[{time, result},
 
 (* ::Section:: *)
 (* Information *)
+
+emptyQ[expr_] := Length[expr] == 0;
 
 SetAttributes[info, {HoldAll, Listable}];
 info[expr_Symbol, None] := (
@@ -206,9 +249,9 @@ info[expr_Symbol, None] := (
 );
 info[expr_Symbol] := (
 	log[Context[expr]];
-  If[ValueQ[expr::usage], log[expr::usage, "prefix"->"[usage]: "]];
-	If[Not[emptyQ[Attributes[expr]]], log[Attributes[expr]]];
-	If[Not[emptyQ[Options[expr]]], log[Options[expr]]];
+  If[ValueQ[expr::usage], log[expr::usage, "prefix"->"[usage]: ", "width"->Infinity]];
+	If[Not[emptyQ[Attributes[expr]]], log[Attributes[expr], "width"->Infinity]];
+	If[Not[emptyQ[Options[expr]]], log[Options[expr], "column"->True, "prefix"->"[option]: "]];
 );
 info[expr_Symbol, All] := (
 	info[expr];
@@ -261,6 +304,8 @@ sizeOf[expr_] := Module[
 ];
 
 
+
+
 End[];
 
 
@@ -288,4 +333,4 @@ SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
 Get["RG/Tools/SetDrawOptions.wl"];
 
 
-WriteString["stderr",  StringForm["[info]: '``' loaded\n", $InputFileName]];
+WriteString["stderr",  StringForm["[package]: '``' loaded\n", $InputFileName]];
