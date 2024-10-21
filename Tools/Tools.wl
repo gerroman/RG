@@ -34,6 +34,8 @@ factorIt[{x1, ...}, func] factor out concrete xs";
 pullIt::usage = "pullIt[pattern] pull out factors matches pattern
 pullIt[{x1, ...}, func] pull out concrete xs factors from all func arguments";
 
+groupIt::usage = "groupIt[expr, func] find and group expr modified by functions func";
+
 changeSign::usage = "changeSign[x] change sign of x";
 
 
@@ -142,14 +144,8 @@ cases[pattern_] := Function[expr, cases[expr, pattern]];
 emptyQ[l_List] := Length[l] == 0;
 
 
-partition[expr_List, n_Integer] := With[{
-		l = Length[expr],
-		m = Partition[expr, n]
-	},
-	If[Mod[l, n] == 0,
-		m,
-		m~Join~{expr[[l - Mod[l, n] + 1;;]]}
-	]
+partition[expr_List, n_Integer] := With[{l = Length[expr], m = Partition[expr, n]},
+	If[Mod[l, n] == 0, m,	m~Join~{expr[[l - Mod[l, n] + 1;;]]}]
 ];
 
 
@@ -261,6 +257,20 @@ pullIt[pattern_, func_:Plus][expr_] := With[{
 ];
 
 
+groupIt[xs_List, func_:Expand] := With[
+	{rules = Map[(func[#] -> #)&, xs]},
+	ReplaceRepeated[#, rules] &
+];
+groupIt[x_, func_:Expand] := groupIt[{x}, func];
+
+groupIt[expr:(_Hold|_HoldForm)] := groupIt[{expr}, ReleaseHold];
+groupIt[expr:(_Hold|_HoldForm), func] := groupIt[{expr}, ReleaseHold/*func];
+groupIt[expr:{(_Hold|_HoldForm)..}] := groupIt[expr, ReleaseHold];
+groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
+
+
+
+
 (* ::Section:: *)
 (*End*)
 
@@ -269,3 +279,6 @@ End[];
 
 
 EndPackage[];
+
+
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];

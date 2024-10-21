@@ -33,4 +33,4 @@ Block[{
 ];
 
 
-WriteString["stderr",  StringForm["[info]: '``' loaded\n", $InputFileName]];
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];

@@ -25,9 +25,6 @@ pullFactors::usage = "pullFactors[pattern, func] pull factors x from func which 
 pullFactors[{x1,...}, func] pull concrete xs";
 
 
-groupIt::usage = "groupIt[expr, func] find and group expr modified by functions func";
-
-
 fixedPoint::usage = "fixedPoint[func] is shortcut for FixedPoint[#, func] &";
 
 
@@ -155,20 +152,6 @@ fixedPoint[func_, args___] := FixedPoint[func, #, args]&;
 release = fixedPoint[ReleaseHold];
 
 
-groupIt[xs_List, func_:Expand] := With[
-	{rules = Map[(func[#] -> #)&, xs]},
-	ReplaceRepeated[#, rules] &
-];
-groupIt[x_, func_:Expand] := groupIt[{x}, func];
-
-groupIt[expr:(_Hold|_HoldForm)] := groupIt[{expr}, ReleaseHold];
-groupIt[expr:(_Hold|_HoldForm), func] := groupIt[{expr}, ReleaseHold/*func];
-groupIt[expr:{(_Hold|_HoldForm)..}] := groupIt[expr, ReleaseHold];
-groupIt[expr:{(_Hold|_HoldForm)..}, func] := groupIt[expr, ReleaseHold /* func];
-
-
-
-
 factorize[expr_, x_] := With[{xn = -x}, With[
 	{
 		split = List @@ expr // changeSign[xn] //
@@ -293,3 +276,6 @@ End[];
 
 
 EndPackage[];
+
+
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];

@@ -46,34 +46,35 @@ Begin["`Private`"];
 
 
 Options[changeIntegrateVars] = {hold->False};
+(* changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[ *)
+(* 	{ *)
+(* 		integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb], *)
+(* 		integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}] *)
+(* 	} *)
+(* ]; *)
+(* changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_), opts:OptionsPattern[]] := With[{ *)
+(* 		det = D[fb, vb] *)
+(* 	}, *)
+(* 	ReplaceAll[ *)
+(* 		{ *)
+(* 			integrate[expr_, va] :> integrate[(expr /. rulea) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], vb], *)
+(* 			integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. {va -> vaMin}, fa /. {va -> vaMax}}] *)
+(* 		} *)
+(* 	] *)
+(* ]; *)
 
-changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
-	{
-		integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb],
-		integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}]
-	}
-];
-changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_), opts:OptionsPattern[]] := With[{
-		det = D[fb, vb]
-	},
-	ReplaceAll[
-		{
-			integrate[expr_, va] :> integrate[(expr /. rulea) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], vb],
-			integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. {va -> vaMin}, fa /. {va -> vaMax}}]
-		}
-	]
-];
 changeIntegrateVars[rulex_List, ruley_List, opts:OptionsPattern[]] := With[{
 		xs = First /@ rulex,
 		ys = First /@ ruley,
 		fs = Last /@ rulex
 	},
-	With[{det = Det[Outer[D, fs, ys]]},
+	With[{det = Factor[Det[Outer[D, fs, ys]]]},
 		ReplaceAll[
-			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], Sequence@@ys]
+			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[hold], Hold[det], det], Sequence@@ys]
 		]
 	]
 ];
+
 
 setIntegrateLimits[vx:{x_, xMin_, xMax_}] := ReplaceAll[
 	integrate[expr_, y___, x, z___] :> integrate[expr, y, vx, z]
@@ -151,3 +152,6 @@ End[];
 
 
 EndPackage[];
+
+
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
