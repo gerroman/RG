@@ -74,12 +74,13 @@ substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
 		n = Length[xs]
 	},
 	Assert[Length[xs] === Length[ys] === Length[eqs]];
-
 	If[(Length /@ ruleTo != {n} || Length /@ ruleFrom != {n}),
 		error["non-unique substitutions, returning all possible solutions"];
 		Return[{ruleTo, ruleFrom}];
 	];
-  echo[Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]];
+	With[{det = Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]},
+	  Print["[jacobian]: ", Hold[det]]
+	];
 	Return[First /@ {ruleTo, ruleFrom}]
 ];
 substitute[eqs_Equal, xs_Symbol, ys_Symbol] := substitute[{eqs}, {xs}, {ys}];
