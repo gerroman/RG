@@ -202,6 +202,9 @@ TeXPrint[expr_, tag_String, opts:OptionsPattern[]] := With[{stream=OptionValue["
 ];
 
 
+changeSign[xs_List] := ReplaceRepeated[#, {f_. (expr:Alternatives@@xs)^p_. :> (-1)^p f (-expr)^p}]&
+changeSign[pattern_] := ReplaceRepeated[#, {f_. (expr:pattern)^p_. :> (-1)^p f (-expr)^p}]&
+(*
 changeSign[xs_List] := With[{
 		rules = Map[x \[Function] (x^(p_.) expr_. :> (-x)^p (-1)^p expr), xs]
 	},
@@ -213,7 +216,7 @@ changeSign[pattern_] := Function[{expr},
 	]
 ];
 changeSign[xs__] := changeSign[{xs}];
-
+*)
 
 factorItRules[x_, head_:Plus, func_:Identity] := With[
 	{p = x, pn = -x}
