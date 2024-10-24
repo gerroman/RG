@@ -38,7 +38,17 @@ getRegionContribution::usage="getRegionContribution[powers, va_][region] \[LongD
 getRegions::usage="getRegions[integral, delta] \[LongDash] get region contribution"
 
 
+mi0::usage="mi0"
+
+
 Begin["Private`"];
+
+
+Format[mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
+Unprotect[Plus]
+Format[Plus[mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
+Format[Plus[(-1)*mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
+Protect[Plus]
 
 
 flattenIntegrate[expr_] := ReplaceRepeated[
@@ -133,7 +143,7 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 			With[{integrand = #1, xi = #2[[1]],	ni = #2[[2]]},
 				integrate[integrand * xi^(ni - 1), xi]
 			]&,
-			F^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
+			(F + mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
 			Transpose[{xs, ns}]
 		]
 	);
@@ -202,27 +212,47 @@ pushIntegrateFactors[s_Symbol] := Function[expr,
 pushIntegrateFactors[expr_] := ReplaceRepeated[expr, a_ *integrate[b_, vars__] :> integrate[a b, vars]]
 
 
-getRegions[integral_, delta_] := Module[{ps, xs, powers, regions, contrib, vars, subs, func, pos, v},
-  {ps, xs, powers} = getPsXsPowers[integral];
-  echo[{ps, xs, powers}];
-  regions = GetRegions[ps, xs, delta];
-	echo[regions];
+Options[getRegions]={
+  "verbose"->True
+}
+
+getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
+  {int, ps, xs, powers, regions, contrib, vars, subs, func, pos, v, mis, verbose=OptionValue["verbose"]},
+	int = integral //
+	  indetermineIntegrate //
+	  modify[_Power, Map[Expand]]//
+		modify[_Plus, Expand];
+	If[verbose, Print[int]];
+  {ps, xs, powers} = getPsXsPowers[int];
+  If[verbose, Print[{ps, xs, powers}]];
+	mis = (ps // Replace[#, {(f_.)mi0 + a_. :> f mi0, _:>0}, {1}]&);
+	If[verbose, Print[mis]];
+  regions = GetRegions[ps/.{mi0->0}, xs, delta];
+	If[verbose, Print[regions]];
   contrib = getRegionContribution[powers, delta] /@ regions;
-	echo[contrib];
+	If[verbose, Print[contrib]];
   vars = Array[v, Length[xs]];
   func = Function[{pos},
     With[{
       subs = substitute[Thread[xs == vars*delta^regions[[pos, 2]]], xs, vars]
     },
     With[{
-      psSubs = Thread[ps^powers -> delta^Expand[(regions[[pos, 1]] * powers)] * (Factor[ps/.subs[[1]]] / (delta^regions[[pos, 1]]) /. {delta->0})^powers]
+      psSubs = Thread[
+			  ps^powers -> delta^Expand[(regions[[pos, 1]] * powers)] * ((
+				  Factor[ps/.{mi0->0}/.subs[[1]]] / delta^regions[[pos, 1]] //
+					ReplaceAll[delta->0] // Expand)
+					+ mis
+				)^powers
+			]
     },
     {
       contrib[[pos]],
-      integrate[(First[integral] /. psSubs), Sequence@@xs] //
+      integrate[(First[int] /. psSubs), Sequence@@xs] //
         changeIntegrateVars[Sequence@@subs] //
         ReplaceAll[Thread[vars->xs]] //
-        ReplaceAll[contrib[[pos]] -> 1]
+        ReplaceAll[contrib[[pos]] -> 1] //
+				RightComposition@@(determineIntegrate[{#,0,Infinity}]&/@xs) //
+				flattenIntegrate
     }
   ]]];
   Array[func, Length[regions]]
@@ -236,4 +266,3 @@ EndPackage[];
 
 
 Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
-
