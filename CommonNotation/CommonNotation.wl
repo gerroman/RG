@@ -34,13 +34,13 @@ zero::usage = "
   zero for zero
 ";
 
-minus::usage = "
-  minus for sign minus
-";
+(* minus::usage = " *)
+(*   minus for sign minus *)
+(* "; *)
 
-plus::usage = "
-  plus for sign plus
-";
+(* plus::usage = " *)
+(*   plus for sign plus *)
+(* "; *)
 
 plusminus::usage = "
   plusminus for both signs
@@ -209,8 +209,8 @@ setHat[x_Symbol] := With[{
 setHat[x__] := setHat[{x}];
 
 
-minus /: Format[minus, TraditionalForm] = "-";
-plus /: Format[plus, TraditionalForm] = "+";
+(* minus /: Format[minus, TraditionalForm] = "-"; *)
+(* plus /: Format[plus, TraditionalForm] = "+"; *)
 plusminus /: Format[plusminus, TraditionalForm] = "\[PlusMinus]";
 minusplus /: Format[minusplus, TraditionalForm] = "\[MinusPlus]";
 zero /: Format[zero, TraditionalForm] = "0";
