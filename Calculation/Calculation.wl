@@ -75,6 +75,8 @@ changeIntegrateVars[rulex_List, ruley_List, opts:OptionsPattern[]] := With[{
 	]
 ];
 
+changeIntegrateVars[rules_List] := changeIntegrateVars[rules[[1]], rules[[2]]]
+
 
 setIntegrateLimits[vx:{x_, xMin_, xMax_}] := ReplaceAll[
 	integrate[expr_, y___, x, z___] :> integrate[expr, y, vx, z]
