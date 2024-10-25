@@ -64,7 +64,7 @@ Options[RG`Scripts`Print] = {
 RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks,
 	System`Print[message],
 	WriteString[
-    OptionValue["stream"], 
+    OptionValue["stream"],
     StringJoin[
       "\r",
       StringReplace[message, OptionValue["colorize"]],
@@ -105,13 +105,13 @@ log[expr_StringForm, opts:OptionsPattern[]] := With[{
 log[expr_List, opts:OptionsPattern[]] := If[OptionValue["column"],
 Scan[log[#, opts]&, expr],
 log[
-  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], 
+  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
   opts
 ]
 ];
 
 log[expr_, opts:OptionsPattern[]] := log[
-  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], 
+  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
   opts
 ];
 log[expr__, opts:OptionsPattern[]] := Scan[log[#, opts]&, {expr}];
@@ -317,20 +317,16 @@ On[General::shdw];
 
 (* ::Section:: *)
 (* Running script *)
-Off[FrontEndObject::notavail];
+If[Not@$Notebooks,
+  Off[FrontEndObject::notavail];
+  systemStamp[];
+  timeStamp[];
+  log[Directory[], "prefix" -> "[directory]: "];
+  forceFlag = argparse["force", False];
+  SetOptions[RG`Scripts`Export, "force" :> forceFlag];
+  verboseFlag = argparse["verbose", False];
+  SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
+  Get["RG/Tools/SetDrawOptions.wl"];
+  Print[ToString@StringForm["[info]: '``' loaded\n", $InputFileName]];
+];
 
-systemStamp[];
-timeStamp[];
-
-log[Directory[], "prefix" -> "[directory]: "];
-forceFlag = argparse["force", False];
-SetOptions[RG`Scripts`Export, "force" :> forceFlag];
-
-verboseFlag = argparse["verbose", False];
-SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
-
-
-Get["RG/Tools/SetDrawOptions.wl"];
-
-
-WriteString["stderr",  StringForm["[package]: '``' loaded\n", $InputFileName]];
