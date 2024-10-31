@@ -1,22 +1,7 @@
 BeginPackage["RG`Parametrization`", {"RG`Tools`",	"RG`BaseUtils`","RG`CommonNotation`",	"RG`Calculation`","LiteRed`","GetRegions`"}]
 
-
-flattenIntegrate::usage="flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
-
-nestIntegrate::usage="nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables";
-
-indetermineIntegrate::usage="indetermineIntegrate[expr] \[LongDash] remove all integration limits";
-
-determineIntegrate::usage="determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
-
-pushIntegrateFactors::usage="pushIntegrateFactors[x][expr] push common factors inside the integrals w.r.t. x
-	pushIntegrateFactors[expr] push common factors inside the integrals w.r.t. any variables
-";
-
 integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
 integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions containing z as a variable";
-
-substitute::usage="substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
 
 getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.
 	[note]:
@@ -41,59 +26,18 @@ getRegions::usage="getRegions[integral, delta] \[LongDash] get region contributi
 mi0::usage="mi0"
 
 
+pull::usage = "pull[expr] \[LongDash] pulls out expression from powers, assuming it is positive"
+
+
 Begin["Private`"];
 
 
 Format[mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
-Unprotect[Plus]
-Format[Plus[mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
-Format[Plus[(-1)*mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
-Protect[Plus]
 
-
-flattenIntegrate[expr_] := ReplaceRepeated[
-	expr,
-	integrate[(d_.) integrate[a_, b_], c__] :> integrate[d * a, c, b]
-];
-
-
-nestIntegrate[expr_] := ReplaceRepeated[
-	expr,
-	integrate[a_, b__, c_] :> integrate[integrate[a, c], b]
-];
-
-
-indetermineIntegrate[expr_] := ReplaceAll[
-	(expr // flattenIntegrate),
-	integrate[a_, b__] :> integrate[a, Sequence @@ (First /@ Flatten /@ List /@ {b})]
-];
-
-
-determineIntegrate[{x_, low_, up_}][expr_] := ReplaceAll[
-	expr,
-	{
-		integrate[a_, x] :> integrate[a, {x, low, up}],
-		integrate[a_, b___, x, c___] :> integrate[integrate[a, {x, low, up}], b, c]
-	}
-];
-
-
-substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
-		ruleTo = Solve[eqs, xs],
-		ruleFrom = Solve[eqs, ys],
-		n = Length[xs]
-	},
-	Assert[Length[xs] === Length[ys] === Length[eqs]];
-	If[(Length /@ ruleTo != {n} || Length /@ ruleFrom != {n}),
-		error["non-unique substitutions, returning all possible solutions"];
-		Return[{ruleTo, ruleFrom}];
-	];
-	With[{det = Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]},
-	  Print["[jacobian]: ", Hold[det]]
-	];
-	Return[First /@ {ruleTo, ruleFrom}]
-];
-substitute[eqs_Equal, xs_Symbol, ys_Symbol] := substitute[{eqs}, {xs}, {ys}];
+Unprotect[Plus];
+  Format[Plus[mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
+  Format[Plus[(-1)*mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
+Protect[Plus];
 
 
 integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
@@ -206,12 +150,6 @@ getRegionContribution[powers_,var_][region_] := With[{
 ];
 
 
-pushIntegrateFactors[s_Symbol] := Function[expr,
-	expr // ReplaceAll[a_ * integrate[b_, vars : ({s, from_, to_} | s)] :> integrate[a b, vars]]
-];
-pushIntegrateFactors[expr_] := ReplaceRepeated[expr, a_ *integrate[b_, vars__] :> integrate[a b, vars]]
-
-
 Options[getRegions]={
   "verbose"->True
 }
@@ -257,6 +195,26 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
   ]]];
   Array[func, Length[regions]]
 ];
+
+
+rule`mi = Times[mi0, (_Hold^_.) ..] -> mi0;
+rule`imaginary = (expr_ + mi0)^p_. :> (-expr)^p Exp[-I Pi p];
+rule`pow = (
+  Times[expr_, factor : (_Hold^_.) ..]^p_ :> 
+    PowerExpand[ReleaseHold[PowerExpand[(Times[factor])^p]]] expr^p
+);
+
+
+pull[factor_] := RightComposition[
+  pullIt[factor],
+  hold[{1/factor, factor}],
+  ReplaceAll[rule`mi],
+  ReplaceAll[rule`pow],
+  ReleaseHold
+]
+pull[factors_List] := RightComposition @@ (pull /@ factors);
+pull[factors__] := pull[{factors}]
+
 
 
 End[];

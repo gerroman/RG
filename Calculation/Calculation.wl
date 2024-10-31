@@ -16,11 +16,6 @@ changeSumVars::usage = "
 	changeSumVars[va -> f[vb], vb -> g[va]] change integration variable va->vb in the integral w.r.t. va
 ";
 
-setIntegrateLimits::usage = "
-	setIntegrateLimits[{x, xMin, xMax}] replace indefinite integral w.r.t. x to definite
-	setIntegrateLimits[{x, xMin, xMax}..]
-";
-
 pullIntegrateFactors::usage = "
 	pullIntegrateFactors[va] pull out constant factor off the integrals w.r.t. va
 ";
@@ -42,28 +37,40 @@ force::usage = "
 ";
 
 
+substitute::usage="substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
+
+flattenIntegrate::usage="flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
+
+nestIntegrate::usage="nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables";
+
+indetermineIntegrate::usage="indetermineIntegrate[expr] \[LongDash] remove all integration limits";
+
+determineIntegrate::usage="determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
+
+
 Begin["`Private`"];
 
 
-Options[changeIntegrateVars] = {hold->False};
-(* changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[ *)
-(* 	{ *)
-(* 		integrate[expr_, va] :> integrate[(expr /. rulea) * D[fb, vb], vb], *)
-(* 		integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. (va -> vaMin), fa /. (va -> vaMax)}] *)
-(* 	} *)
-(* ]; *)
-(* changeIntegrateVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_), opts:OptionsPattern[]] := With[{ *)
-(* 		det = D[fb, vb] *)
-(* 	}, *)
-(* 	ReplaceAll[ *)
-(* 		{ *)
-(* 			integrate[expr_, va] :> integrate[(expr /. rulea) * If[OptionValue[hold], Hold[Evaluate@Factor[det]], det], vb], *)
-(* 			integrate[expr_, {va, vaMin_, vaMax_}] :> integrate[(expr /. rulea) * D[fb, vb], {vb, fa /. {va -> vaMin}, fa /. {va -> vaMax}}] *)
-(* 		} *)
-(* 	] *)
-(* ]; *)
+substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
+		ruleTo = Solve[eqs, xs],
+		ruleFrom = Solve[eqs, ys],
+		n = Length[xs]
+	},
+	Assert[Length[xs] === Length[ys] === Length[eqs]];
+	If[(Length /@ ruleTo != {n} || Length /@ ruleFrom != {n}),
+		Print["[warning]: non-unique substitutions, returning all possible solutions"];
+		Return[{ruleTo, ruleFrom}];
+	];
+	With[{det = Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]},
+	  Print["[jacobian]: ", Hold[det]]
+	];
+	Return[First /@ {ruleTo, ruleFrom}]
+];
+substitute[eqs_Equal, xs_Symbol, ys_Symbol] := substitute[{eqs}, {xs}, {ys}];
 
-changeIntegrateVars[rulex_List, ruley_List, opts:OptionsPattern[]] := With[{
+
+Options[changeIntegrateVars] = {hold->False};
+changeIntegrateVars[rulex:{_Rule..}, ruley:{_Rule..}, opts:OptionsPattern[]] := With[{
 		xs = First /@ rulex,
 		ys = First /@ ruley,
 		fs = Last /@ rulex
@@ -74,14 +81,12 @@ changeIntegrateVars[rulex_List, ruley_List, opts:OptionsPattern[]] := With[{
 		]
 	]
 ];
-
-changeIntegrateVars[rules_List] := changeIntegrateVars[rules[[1]], rules[[2]]]
-
-
-setIntegrateLimits[vx:{x_, xMin_, xMax_}] := ReplaceAll[
-	integrate[expr_, y___, x, z___] :> integrate[expr, y, vx, z]
-];
-setIntegrateLimits[l:{_, _, _}..] := Composition @@ setIntegrateLimits /@ {l};
+changeIntegrateVars[rules:{{_Rule..}, {_Rule..}}, opts:OptionsPattern[]] := (
+  changeIntegrateVars[rules[[1]], rules[[2]], opts]
+);
+changeIntegrateVars[eqs:{_Equal..}, xs_List, ys_List, opts:OptionsPattern[]] := (
+  changeIntegrateVars[substitute[eqs, xs, ys], opts]
+);
 
 
 changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
@@ -92,13 +97,12 @@ changeSumVars[rulea:(va_ -> fb_), ruleb:(vb_ -> fa_)] := ReplaceAll[
 ];
 
 
-pullIntegrateFactors[va_] := ReplaceAll[
+pullIntegrateFactors[va_/; FreeQ[va, integrate]] := ReplaceAll[
 	{
 	 integrate[expr_. * factor_, vs:{va, __}] :> factor * integrate[expr, vs] /; FreeQ[factor, va],
 	 integrate[expr_. * factor_, va] :> factor * integrate[expr, va] /; FreeQ[factor, va]
 	}
 ];
-
 pullIntegrateFactors[] = Function[expr, With[{
   vars = expr //
     Cases[{#}, _integrate, Infinity]& //
@@ -108,6 +112,7 @@ pullIntegrateFactors[] = Function[expr, With[{
   },
   Fold[pullIntegrateFactors[#2][#1]&, expr, vars]
 ]];
+pullIntegrateFactors[expr_] := pullIntegrateFactors[][expr]
 
 
 pullSumFactors[va_] := ReplaceAll[
@@ -148,6 +153,34 @@ force[integrate, x_] = ReplaceAll[#,
 		, integrate[expr_, x] :> Integrate[expr, x]
 	}
 ]&;
+
+
+
+flattenIntegrate[expr_] := ReplaceRepeated[
+	expr,
+	integrate[(d_.) integrate[a_, b_], c__] :> integrate[d * a, c, b]
+];
+
+
+nestIntegrate[expr_] := ReplaceRepeated[
+	expr,
+	integrate[a_, b__, c_] :> integrate[integrate[a, c], b]
+];
+
+
+indetermineIntegrate[expr_] := ReplaceAll[
+	(expr // flattenIntegrate),
+	integrate[a_, b__] :> integrate[a, Sequence @@ (First /@ Flatten /@ List /@ {b})]
+];
+
+
+determineIntegrate[{x_, low_, up_}][expr_] := ReplaceAll[
+	expr,
+	{
+		integrate[a_, x] :> integrate[a, {x, low, up}],
+		integrate[a_, b___, x, c___] :> integrate[integrate[a, {x, low, up}], b, c]
+	}
+];
 
 
 End[];
