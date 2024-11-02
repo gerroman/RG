@@ -183,3 +183,6 @@ End[]
 
 
 EndPackage[]
+
+
+Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];

@@ -327,6 +327,9 @@ If[Not@$Notebooks,
   verboseFlag = argparse["verbose", False];
   SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
   Get["RG/Tools/SetDrawOptions.wl"];
-  Print[ToString@StringForm["[info]: '``' loaded\n", $InputFileName]];
+  (* [note]: print in notebook Messages *)
+  Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
 ];
 
+
+(* [note]: do not print to notebook Messages when reloading Kernel *)
