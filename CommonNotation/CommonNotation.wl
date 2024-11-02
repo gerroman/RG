@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["RG`CommonNotation`"]
+BeginPackage["RG`CommonNotation`", {"RG`Integrate`"}]
 
 
 setIndexed::usage = "
@@ -60,11 +60,6 @@ max::usage = "
 
 setTilde::usage = "
   setTilde[x] set symbol tilde`x in the TraditionalForm to have overtilde
-";
-
-
-integrate::usage = "
-  integrate[expr, region] represent integrals
 ";
 
 
@@ -218,33 +213,6 @@ min /: Format[min, TraditionalForm] = "min";
 max /: Format[max, TraditionalForm] = "max";
 
 
-integrate /: Format[integrate[expr_, {{l_, dim_}}], TraditionalForm] := DisplayForm[
-  RowBox[
-	{
-	  "\[Integral]",
-    RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]], l}],
-	  expr
-	}]
-];
-integrate /: Format[integrate[expr_, ls:{{_, _}..}], TraditionalForm] := With[
-  {lbs = Apply[RowBox[{SuperscriptBox["\[DifferentialD]", #2], #1}]&] /@ ls},
-  DisplayForm[RowBox[{"\[Integral]", Sequence@@lbs, expr}]]
-];
-integrate /: Format[integrate[expr_, {{l1_, dim1_}, dots, {l2_, dim2_}}], TraditionalForm] := DisplayForm[
-  RowBox[{
-	 "\[Integral]",
-   RowBox[{SuperscriptBox["\[DifferentialD]", dim1], l1}],
-	 "\[Ellipsis]",
-   RowBox[{SuperscriptBox["\[DifferentialD]", dim2], l2}],
-	 expr
-	}]
-];
-integrate /: Format[integrate[expr_, region__], TraditionalForm] := (
-  HoldForm[Integrate[expr, region]]
-);
-integrate /: Format[integrate[expr_], TraditionalForm] := (
-  StringForm["\[Integral]``", expr] // ToString
-);
 
 
 sum /: Format[sum[expr_, region__], TraditionalForm] := (
@@ -296,6 +264,35 @@ vector /: Format[vector[expr_], TraditionalForm] := Style[expr, Bold, Italic];
 
 
 dots /: Format[dots, TraditionalForm] := "...";
+(* D-dimensional integral *)
+integrate /: Format[integrate[expr_, {{l_, dim_}}], TraditionalForm] := DisplayForm[
+  RowBox[{
+	  "\[Integral]",
+    RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]], l}],
+	  expr
+	}]
+];
+
+integrate /: Format[integrate[expr_, ls:{{_, _}..}], TraditionalForm] := With[
+  {lbs = Apply[RowBox[{SuperscriptBox["\[DifferentialD]", #2], #1}]&] /@ ls},
+  DisplayForm[RowBox[{"\[Integral]", Sequence@@lbs, expr}]]
+];
+
+
+integrate /: Format[integrate[expr_, {{l1_, dim1_}, dots, {l2_, dim2_}}], TraditionalForm] := DisplayForm[
+  RowBox[{
+	 "\[Integral]",
+   RowBox[{SuperscriptBox["\[DifferentialD]", dim1], l1}],
+	 "\[Ellipsis]",
+   RowBox[{SuperscriptBox["\[DifferentialD]", dim2], l2}],
+	 expr
+	}]
+];
+
+
+integrate /: Format[integrate[expr_], TraditionalForm] := DisplayForm[
+  RowBox[{"[Integral]", expr}]
+]
 
 
 reIndex[expr_, pattern_String, symbol_Symbol] := With[{

@@ -1,102 +1,43 @@
-Global`mi0::usage="mi0 \[LongDash] imaginary part of the propagators denominators (- \[ImaginaryI] \[CurlyEpsilon])"
-
-rule`mi0::usage = "rule`mi0  \[LongDash] replaces mi0 * (_Hold) -> mi0"
-
-rule`imaginary::usage "rule`imaginary  \[LongDash] substitute (expr - \[ImaginaryI] \[CurlyEpsilon])^p assuming expr is negative"
-
-
-rule`f21::usage="rule`f21 \[LongDash] substitute integral representation of Hypergeometric2F1"
-rule`f21arg::usage = "rule`f21arg \[LongDash] argument shift {z -> 1 - z} of Hypergeometric2F1"
-rule`f21ind::usage = "rule`f21ind \[LongDash] index shift of {} Hypergeometric2F1"
-
-rule`appell::usage="rule`f21 \[LongDash] substitute integral representation of AppellF1"
-
-
-Begin["rule`Private`"]
-
-
-(* ::Section:: *)
-(* Правила работы с мнимыми добавками *)
-
-
-rule`mi0 = Times[Global`mi0, (_Hold^_.) ..] -> Global`mi0;
-rule`imaginary = (expr_ + Global`mi0)^(p_.) :> (-expr)^p Exp[-I Pi p];
-
-
-(* ::Section:: *)
-(* Правила работы с гипергеометрической функцией *)
-
-rule`f21 = {
-  integrate[(1 - tau_)^(q_)*tau_^(p_)*(1 + tau_*z_)^r_, {tau_, 0, 1}] :> 
-	  (Gamma[1 + p]*Gamma[1 + q] / Gamma[2 + p + q]) * 
-			 Hypergeometric2F1[-r, 1 + p , 2 + p + q, -z],
-	integrate[(1 - tau_)^(q_)*(1 + tau_*z_)^r_, {tau_, 0, 1}] :> 
-	  (q + 1)^(-1) * Hypergeometric2F1[-r, 1, 2 + q, -z], 
-	integrate[tau_^(p_)*(1 + tau_*z_)^r_, {tau_, 0, 1}] :> 
-    (p + 1)^(-1) * Hypergeometric2F1[-r, 1 + p, 2 + p, -z]
-}
-
-rule`f21ind = {
-  Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]],
-  Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]],
-  Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]]
-}
-
-rule`f21arg = (
-  (f_.) Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  f ((Gamma[c]*Gamma[c - a - b])/(Gamma[c - a]*Gamma[c - b])) * 
-      Hypergeometric2F1[a, b, a + b + 1 - c, 1 - z] + 
-		f ((Gamma[c]*Gamma[a + b - c])/(Gamma[a]*Gamma[b])) * 
-		  (1 - z)^(c - a - b) * Hypergeometric2F1[c - a, c - b, 1 + c - a - b, 1 - z]
-)
-
-rule`appell = {
-	integrate[t_^p_. (1 - t_)^q_. (1 + t_ x_)^r_. (1 + t_ y_)^s_., {t_, 0, 1}] :> 
-	  (Gamma[p + 1] Gamma[q + 1])/ Gamma[p + q + 2] *
-  	  AppellF1[p + 1, -r, -s, p + q + 2, -x, -y], 
-	integrate[(1 - t_)^q_. (1 + t_ x_)^r_. (1 + t_ y_)^s_., {t_, 0, 1}] :> 
-	  (Gamma[1] Gamma[q + 1])/ Gamma[q + 2] * 
-		  AppellF1[1, -r, -s, q + 2, -x, -y], 
-	integrate[t_^p_. (1 + t_ x_)^r_. (1 + t_ y_)^s_., {t_, 0, 1}] :> 
-	  (Gamma[p + 1] Gamma[1]) / Gamma[p + 2] * 
-		  AppellF1[p + 1, -r, -s, p + 2, -x, -y], 
-	integrate[(1 + t_ x_)^r_. (1 + t_ y_)^s_., {t_, 0, 1}] :> 
-	  (Gamma[1] Gamma[1])/Gamma[2] *
-		  AppellF1[1, -r, -s, 2, -x, -y]
-}
-
-
-End[]
-
-
-BeginPackage["RG`Parametrization`", {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Integrate`"}]
-
+BeginPackage["RG`Parametrization`", {"RG`Tools`",	"RG`BaseUtils`","RG`CommonNotation`",	"RG`Calculation`","LiteRed`","GetRegions`"}]
 
 integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
 integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions containing z as a variable";
 
+getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.
+	[note]:
+		(1) it contains \[Delta]-function
+		(2) \[Delta]-function have the form \[Delta](1 - \[CapitalSigma]x), where sum can be taken over subset of parameters {x_i},
+		(3) integration w.r.t. x_i goes from 0 to \[Infinity]
+";
 
-getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.\n[note]: (1) it contains \[Delta]-function in the form \[Delta](1 - \[CapitalSigma]x)\n[note]: (2) integration w.r.t. x_i goes from 0 to \[Infinity]\n[note]: (3) it is assumed that the denominatos have Euclidian form: [-(l + p)^2 + m^2 - i0]";
+getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] make an integral w.r.t. parameters using G polynomial.
+	[note]:
+		(1) integration w.r.t. x_i goes from 0 to \[Infinity]
+";
 
-
-getParametrizationG::usage = "getParametrizationG[LiteRed`j, dim] \[LongDash] make an integral w.r.t. parameters using G polynomial.\n[note]: (1) integration w.r.t. x_i goes from 0 to \[Infinity]";
-
-
-getPsXsPowers::usage="getPsXsPowers[expr_integrate] \[LongDash] get polynomials, xs, and powers of polynomials from the integral parameterization.\n[note]: (1) `expr` must be in the form of indetermine integral w.r.t. parameters x_i,\n[note]: (2) integration w.r.t. x_i must goes from 0 to \[Infinity]";
-
+getPsXsPowers::usage="getPsXsPowers[expr_integrate] \[LongDash] get polynomials, xs, and powers of polynomials from the integral parameterization. [note]: (1) `expr` must be in the form of indetermine integral w.r.t. parameters x_i, (2) integration w.r.t. x_i (in the determine form of the integral) must goes from 0 to \[Infinity]";
 
 getRegionContribution::usage="getRegionContribution[powers, va_][region] \[LongDash] evaluate resulting `var` power, which `region` yields";
 
 
-getRegions::usage="getRegions[integral, delta] \[LongDash] get regions "
+getRegions::usage="getRegions[integral, delta] \[LongDash] get region contribution"
 
+
+mi0::usage="mi0"
+
+
+pull::usage = "pull[expr] \[LongDash] pulls out expression from powers, assuming it is positive"
 
 
 Begin["Private`"];
 
+
+Format[mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
+
+Unprotect[Plus];
+  Format[Plus[mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
+  Format[Plus[(-1)*mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
+Protect[Plus];
 
 
 integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
@@ -146,7 +87,7 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 			With[{integrand = #1, xi = #2[[1]],	ni = #2[[2]]},
 				integrate[integrand * xi^(ni - 1), xi]
 			]&,
-			(F + Global`mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
+			(F + mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
 			Transpose[{xs, ns}]
 		]
 	);
@@ -209,7 +150,10 @@ getRegionContribution[powers_,var_][region_] := With[{
 ];
 
 
-Options[getRegions]={"verbose"->True};
+Options[getRegions]={
+  "verbose"->True
+}
+
 getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
   {int, ps, xs, powers, regions, contrib, vars, subs, func, pos, v, mis, verbose=OptionValue["verbose"]},
 	int = integral //
@@ -219,9 +163,9 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
 	If[verbose, Print[int]];
   {ps, xs, powers} = getPsXsPowers[int];
   If[verbose, Print[{ps, xs, powers}]];
-	mis = (ps // Replace[#, {(f_.) Global`mi0 + _. :> f Global`mi0, _:>0}, {1}]&);
+	mis = (ps // Replace[#, {(f_.)mi0 + a_. :> f mi0, _:>0}, {1}]&);
 	If[verbose, Print[mis]];
-  regions = GetRegions[ps/.{Global`mi0->0}, xs, delta];
+  regions = GetRegions[ps/.{mi0->0}, xs, delta];
 	If[verbose, Print[regions]];
   contrib = getRegionContribution[powers, delta] /@ regions;
 	If[verbose, Print[contrib]];
@@ -233,7 +177,7 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
     With[{
       psSubs = Thread[
 			  ps^powers -> delta^Expand[(regions[[pos, 1]] * powers)] * ((
-				  Factor[ps/.{Global`mi0->0}/.subs[[1]]] / delta^regions[[pos, 1]] //
+				  Factor[ps/.{mi0->0}/.subs[[1]]] / delta^regions[[pos, 1]] //
 					ReplaceAll[delta->0] // Expand)
 					+ mis
 				)^powers
@@ -245,12 +189,32 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
         changeIntegrateVars[Sequence@@subs] //
         ReplaceAll[Thread[vars->xs]] //
         ReplaceAll[contrib[[pos]] -> 1] //
-				RightComposition @@ (determineIntegrate[{#,0,Infinity}]&/@xs) //
+				RightComposition@@(determineIntegrate[{#,0,Infinity}]&/@xs) //
 				flattenIntegrate
     }
   ]]];
   Array[func, Length[regions]]
 ];
+
+
+rule`mi = Times[mi0, (_Hold^_.) ..] -> mi0;
+rule`imaginary = (expr_ + mi0)^p_. :> (-expr)^p Exp[-I Pi p];
+rule`pow = (
+  Times[expr_, factor : (_Hold^_.) ..]^p_ :> 
+    PowerExpand[ReleaseHold[PowerExpand[(Times[factor])^p]]] expr^p
+);
+
+
+pull[factor_] := RightComposition[
+  pullIt[factor],
+  hold[{1/factor, factor}],
+  ReplaceAll[rule`mi],
+  ReplaceAll[rule`pow],
+  ReleaseHold
+]
+pull[factors_List] := RightComposition @@ (pull /@ factors);
+pull[factors__] := pull[{factors}]
+
 
 
 End[];
