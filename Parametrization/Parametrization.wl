@@ -17,6 +17,11 @@ Begin["rule`Private`"]
 
 (* ::Section:: *)
 (* Правила работы с мнимыми добавками *)
+Format[Global`mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
+Unprotect[Plus];
+Format[Plus[Global`mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
+Format[Plus[(-1)*Global`mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
+Protect[Plus];
 
 
 rule`mi0 = Times[Global`mi0, (_Hold^_.) ..] -> Global`mi0;
@@ -96,7 +101,6 @@ getRegions::usage="getRegions[integral, delta] \[LongDash] get regions "
 
 
 Begin["Private`"];
-
 
 
 integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
