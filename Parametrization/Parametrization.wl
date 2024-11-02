@@ -99,6 +99,9 @@ getRegionContribution::usage="getRegionContribution[powers, va_][region] \[LongD
 getRegions::usage="getRegions[integral, delta] \[LongDash] get regions "
 
 
+pullOut::usage="pullOut[x] \[LongDash] pull x out of powers in Feynman parameter interals assuming x is positive\n[note]: it is use hold[]/release internally"
+
+
 
 Begin["Private`"];
 
@@ -255,6 +258,18 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
   ]]];
   Array[func, Length[regions]]
 ];
+
+
+pullOut[xs_List] := RightComposition@@(pullOut /@ xs)
+pullOut[x_] = Function[{expr},
+  expr // 
+		hold[{x}] //
+		ReplaceAll[#, rule`pull]& //
+    ReplaceAll[#, rule`powerExpand]& //
+		ReplaceAll[#, rule`mi0]& //
+		release[{x}]
+]
+pullOut[xs__] := pullOut[{xs}]
 
 
 End[];
