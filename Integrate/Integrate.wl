@@ -52,7 +52,7 @@ substitute[eqs_Equal, x_, y_] := substitute[{eqs}, {x}, {y}];
 
 
 
-Options[changeIntegrateVars] = {hold->False};
+Options[changeIntegrateVars] = {Abs->True};
 changeIntegrateVars[rulex:{_Rule..}, ruley:{_Rule..}, opts:OptionsPattern[]] := With[{
 		xs = First /@ rulex,
 		ys = First /@ ruley,
@@ -60,7 +60,7 @@ changeIntegrateVars[rulex:{_Rule..}, ruley:{_Rule..}, opts:OptionsPattern[]] := 
 	},
 	With[{det = Factor[Det[Outer[D, fs, ys]]]},
 		ReplaceAll[
-			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[hold], Hold[det], det], Sequence@@ys]
+			integrate[expr_, Sequence@@xs] :> integrate[(expr //. rulex) * If[OptionValue[Abs], Abs[det], det], Sequence@@ys]
 		]
 	]
 ];
