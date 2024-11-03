@@ -275,10 +275,11 @@ pullOut[xs_List] := RightComposition@@(pullOut /@ xs)
 pullOut[x_] = Function[{expr},
   expr // 
 		hold[{x}] //
-		ReplaceAll[#, rule`pull]& //
-    ReplaceAll[#, rule`powerExpand]& //
-		ReplaceAll[#, rule`mi0]& //
-		release[{x}]
+		ReplaceRepeated[#, rule`pull]& //
+    ReplaceRepeated[#, rule`powerExpand]& //
+		ReplaceRepeated[#, rule`mi0]& //
+		release[{x}] //
+		powerExpand[x]
 ]
 pullOut[xs__] := pullOut[{xs}]
 
