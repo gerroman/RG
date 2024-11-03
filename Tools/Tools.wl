@@ -30,7 +30,7 @@ rule`hold[xs_List] := Join[
   {expr_Hold:>expr},
 	Thread /@ {xs->(Hold/@xs), Expand[-xs]->-(Hold/@xs)} //
 	  Transpose //
-	  Flatten //
+	  Flatten
 ];
 
 rule`hold[xs__] := rule`hold[{xs}]
