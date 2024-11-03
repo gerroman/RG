@@ -49,7 +49,7 @@ release[xs__]:=release[{xs}]
 powerExpand[xs_List] := Function[expr,
 	expr //
 		hold[xs] //
-		ReplaceAll[rule`powerExpand] //
+		ReplaceRepeated[#, rule`powerExpand]& //
 		release[xs]
 ];
 powerExpand[xs__] := powerExpand[{xs}]
@@ -140,7 +140,9 @@ rule`release[xs_List] := (Hold|HoldForm)[#]-># & /@ xs;
 
 rule`powerExpand = {
 	Times[expr_,  factor:(_Hold^_.)..]^p_ :> PowerExpand[Times[factor]^p] expr^p,
-	Times[factor:(_Hold^_.)..]^p_ :> PowerExpand[Times[factor]^p]
+	Times[factor:(_Hold^_.)..]^p_ :> PowerExpand[Times[factor]^p],
+	Abs[Times[expr_,  factor:(_Hold^_.)..]] :> Times[factor] Abs[expr],
+	Abs[Times[factor:(_Hold^_.)..]] :> Times[factor]
 }
 
 
