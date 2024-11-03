@@ -43,10 +43,6 @@ rule`f21 = {
 
 rule`f21ind = {
   Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]],
-  Hypergeometric2F1[a_, b_, c_, z_] :> 
-	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]],
-  Hypergeometric2F1[a_, b_, c_, z_] :> 
 	  Together[(1 - z)]^(-a) Hypergeometric2F1[a, c - b, c, Together[z/(z - 1)]]
 }
 
