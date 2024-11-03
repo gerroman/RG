@@ -156,7 +156,7 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 			(F + Global`mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
 			Transpose[{xs, ns}]
 		]
-	);
+	) // flattenIntegrate;
 	Return[result];
 ];
 
@@ -181,7 +181,7 @@ getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
 			G^(-dim/2),
 			Transpose[{xs, ns}]
 		]
-	);
+	) // flattenIntegrate;
 	Return[result];
 ];
 
