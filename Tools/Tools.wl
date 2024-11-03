@@ -24,10 +24,11 @@ groupIt::usage="groupIt[expr, func] \[LongDash] replace func[expr]->expr"
 modify::usage="modify[pattern, func] \[LongDash] replace (expr:pattern) :> func[expr]"
 pullIt::usage="pullIt[x] \[LongDash] pull x out of sums.\n[note]: it is using hold[]/release[] pair"
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func"
-
+composition::usage = "composition[fs][expr] \[LongDash] sequentially apply all functions in the list `fs' to `expr' printing intermediate results (by default) and returning final expression\n[note]: it is equivalent to RightComposition[fs][expr]"
 
 force::usage = "force[at | limit | sum | integrate | d] forces evaluation";
 
+cases::usage = "cases[pattern] \[LongDash] just a shortcut for Union[Cases[#, pattern, Infinity]]&"
 
 
 Begin["`Private`"];
@@ -158,6 +159,18 @@ rule`pull = (
     Plus[term * Plus@@({expr, others} / term)]
 )
 
+
+Options[composition] = {"verbose"->False}
+composition[fs_List, opts:OptionsPattern[]] := Function[{expr},
+  With[{l = ComposeList[fs, expr]}, 
+    If[OptionValue["verbose"], Print/@Transpose[{Prepend[fs, Identity], l}]];
+		Last[l]
+  ]
+]
+composition[fs__, opts:OptionsPattern[]] := composition[{fs}]
+
+
+cases[pattern_] := Union[Cases[#, pattern, Infinity]]&
 
 End[]
 
