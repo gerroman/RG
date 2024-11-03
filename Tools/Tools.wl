@@ -22,7 +22,7 @@ factorIt::usage="factorIt[x] \[LongDash] factor out x from sums.\n[note]: it is 
 changeSign::usage="changeSign[x] \[LongDash] replace x^p -> (-x)^p (-1)^p"
 groupIt::usage="groupIt[expr, func] \[LongDash] replace func[expr]->expr"
 modify::usage="modify[pattern, func] \[LongDash] replace (expr:pattern) :> func[expr]"
-pull::usage="pull[x] \[LongDash] pull x out of sums.\n[note]: it is using hold[]/release[] pair"
+pullIt::usage="pullIt[x] \[LongDash] pull x out of sums.\n[note]: it is using hold[]/release[] pair"
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func"
 
 
@@ -76,13 +76,13 @@ modify[pattern_, func_:Expand] := With[{rule = (ex:pattern) :> func[ex]},
 ]
 
 
-pull[xs_List] := Function[expr,
+pullIt[xs_List] := Function[expr,
 	expr //
 		hold[xs] //
 		ReplaceAll[#, rule`pull]& //
 		release[xs]
 ]
-pull[xs__] := pull[{xs}]
+pullIt[xs__] := pullIt[{xs}]
 
 
 
