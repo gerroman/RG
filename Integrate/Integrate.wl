@@ -73,6 +73,9 @@ changeIntegrateVars[eqs:{_Equal..}, xs_List, ys_List, opts:OptionsPattern[]] := 
 changeIntegrateVars[eqs:(_Equal).., xs_List, ys_List, opts:OptionsPattern[]] := (
   changeIntegrateVars[substitute[{eqs}, xs, ys], opts]
 );
+changeIntegrateVars[eqs_Equal, xs_Symbol, ys_Symbol, opts:OptionsPattern[]] := (
+  changeIntegrateVars[substitute[{eqs}, {xs}, {ys}], opts]
+);
 
 
 pullIntegrateFactors[va_/; FreeQ[va, integrate]] := ReplaceAll[
