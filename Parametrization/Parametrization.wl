@@ -32,26 +32,26 @@ rule`imaginary = (expr_ + Global`mi0)^(p_.) :> (-expr)^p Exp[-I Pi p];
 (* Правила работы с гипергеометрической функцией *)
 
 rule`f21 = {
-  integrate[(1 - tau_)^(q_.)*tau_^(p_.)*(1 + tau_*z_)^r_, {tau_, 0, 1}] :> 
+  integrate[(1 - tau_)^(q_.)*(tau_)^(p_.)*(1 + (tau_)*(z_))^r_., {tau_, 0, 1}] :> 
 	  (Gamma[1 + p]*Gamma[1 + q] / Gamma[2 + p + q]) * 
 			 Hypergeometric2F1[-r, 1 + p , 2 + p + q, -z],
-	integrate[(1 - tau_)^(q_.)*(1 + tau_*z_)^r_., {tau_, 0, 1}] :> 
+	integrate[(1 - tau_)^(q_.)*(1 + (tau_) * (z_))^(r_.), {tau_, 0, 1}] :> 
 	  (q + 1)^(-1) * Hypergeometric2F1[-r, 1, 2 + q, -z], 
-	integrate[tau_^(p_.)*(1 + tau_*z_)^r_., {tau_, 0, 1}] :> 
+	integrate[(tau_)^(p_.)*(1 + (tau_)*(z_))^(r_.), {tau_, 0, 1}] :> 
     (p + 1)^(-1) * Hypergeometric2F1[-r, 1 + p, 2 + p, -z],
-	integrate[tau_^p_. (1 + tay_ z1_)^r_. (1 + tau_)^(s_.), {tau_, 0, Infinity}] :> With[
-    {q = -(s + 2 + p + r), z = z1 - 1},
+	integrate[(tau_)^(p_.) (1 + (tau_)*(z_))^(r_.) (1 + tau_)^(s_.), {tau_, 0, Infinity}] :> With[
+    {q = -(s + 2 + p + r)},
 	  (Gamma[1 + p]*Gamma[1 + q] / Gamma[2 + p + q]) * 
-			 Hypergeometric2F1[-r, 1 + p , 2 + p + q, -z]
+			 Hypergeometric2F1[-r, 1 + p , 2 + p + q, 1-z]
 	],
-	integrate[(1 + tay_ z1_)^r_. (1 + tau_)^(s_.), {tau_, 0, Infinity}] :> With[
-    {q = -(s + 2 + r), z = z1 - 1},
-	  (q + 1)^(-1) * Hypergeometric2F1[-r, 1, 2 + q, -z]
+	integrate[(1 +(tau_) (z_))^(r_.) (1 + (tau_))^(s_.), {tau_, 0, Infinity}] :> With[
+	  {q = -(s + 2 + r)},
+	  (q + 1)^(-1) * Hypergeometric2F1[-r, 1, 2 + q, 1-z]
 	],
-	integrate[tau_^p_. (1 + tay_ z1_)^r_., {tau_, 0, Infinity}] :> With[
-    {q = -(2 + p + r), z = z1 - 1},
+	integrate[(tau_)^(p_.) (1 + (tau_) (z_))^(r_.), {tau_, 0, Infinity}] :> With[
+    {q = -(2 + p + r)},
 	  (Gamma[1 + p]*Gamma[1 + q] / Gamma[2 + p + q]) * 
-			 Hypergeometric2F1[-r, 1 + p , 2 + p + q, -z]
+		Hypergeometric2F1[-r, 1 + p , 2 + p + q, 1 - z]
 	]
 }
 
@@ -260,7 +260,7 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
     {
       contrib[[pos]],
       integrate[(First[int] /. psSubs), Sequence@@xs] //
-        changeIntegrateVars[Sequence@@subs] //
+        changeIntegrateVars[Sequence@@subs, Abs->False] //
         ReplaceAll[Thread[vars->xs]] //
         ReplaceAll[contrib[[pos]] -> 1] //
 				RightComposition @@ (determineIntegrate[{#,0,Infinity}]&/@xs) //
