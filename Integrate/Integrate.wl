@@ -47,7 +47,9 @@ substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
 	];
 	Return[First /@ {ruleTo, ruleFrom}]
 ];
-substitute[eqs_Equal, xs_Symbol, ys_Symbol] := substitute[{eqs}, {xs}, {ys}];
+substitute[eqs:(_Equal).., xs_List, ys_List] := substitute[{eqs}, xs, ys];
+substitute[eqs_Equal, x_, y_] := substitute[{eqs}, {x}, {y}];
+
 
 
 Options[changeIntegrateVars] = {hold->False};
@@ -67,6 +69,9 @@ changeIntegrateVars[rules:{{_Rule..}, {_Rule..}}, opts:OptionsPattern[]] := (
 );
 changeIntegrateVars[eqs:{_Equal..}, xs_List, ys_List, opts:OptionsPattern[]] := (
   changeIntegrateVars[substitute[eqs, xs, ys], opts]
+);
+changeIntegrateVars[eqs:(_Equal).., xs_List, ys_List, opts:OptionsPattern[]] := (
+  changeIntegrateVars[substitute[{eqs}, xs, ys], opts]
 );
 
 
