@@ -1,15 +1,18 @@
 (* ::Package:: *)
 
 
-rule`hold::usage = "rule`hold[x] \[LongDash] get rules to replace {x -> Hold[x]}"
+rule`hold::usage = "rule`hold[x] \[LongDash] rules to replace {x -> Hold[x]}"
 
-rule`release::usage = "rule`release[x]  \[LongDash] get rules to replace {(Hold|HoldForm)[x]->x}"
+rule`release::usage = "rule`release[x]  \[LongDash] rules to replace {(Hold|HoldForm)[x]->x}"
 
-rule`powerExpand::usage = "rule`powerExpand \[LongDash] rule to pull Hold[x] out of powers"
+rule`powerExpand::usage = "rule`powerExpand[x] \[LongDash] rule to pull x out of Power[] and Abs[]"
 
-rule`factor::usage = "rule`factor \[LongDash] rule to factor Hold[x] out of sums"
+rule`factor::usage = "rule`factor[x] \[LongDash] rule to factor x out of Plus[]"
 
-rule`pull::usage = "rule`pull \[LongDash] rule to pull Hold[x] out of sums "
+rule`pull::usage = "rule`pull[x] \[LongDash] rule to pull x out of Plus[]"
+
+rule`group::usage = "rule`group[x, func] \[LongDash] rule to replace {func[x] -> x}"
+
 
 (* ::Section:: *)
 (*Rules*)
@@ -18,45 +21,40 @@ rule`pull::usage = "rule`pull \[LongDash] rule to pull Hold[x] out of sums "
 Begin["rule`Private`"]
 
 
-rule`hold[{x_/;NumberQ[x]}] := {
-	(expr_Hold)^(p_.) :> expr^p,
-	x -> Hold[x],
-	-x -> -Hold[x],
-	(i_ /; NumberQ[i] && IntegerQ[Log[x, i]]) :> Hold[x]^Log[x, i],
-	(i_ /; NumberQ[i] && IntegerQ[Log[x, -i]]) :> (-1) * Hold[x]^Log[x, (-i)]
-}
-
 rule`hold[xs_List] := Join[
-  {expr_Hold:>expr},
-	Thread /@ {xs->(Hold/@xs), Expand[-xs]->-(Hold/@xs)} //
-	  Transpose //
-	  Flatten
-];
-
+  {expr_Hold :> expr},
+	Thread[xs -> Hold/@xs]
+]
 rule`hold[xs__] := rule`hold[{xs}]
 
 
-rule`release[xs_List] := (Hold|HoldForm)[#]-># & /@ xs;
+rule`release[xs_List] := Thread[
+ (Hold|HoldForm)[#]-># & /@ xs 
+]
+rule`release[xs__] := rule`release[{xs}]
 
 
-rule`powerExpand = {
-	Times[expr_,  factor:(_Hold^_.)..]^p_ :> PowerExpand[Times[factor]^p] expr^p,
-	Times[factor:(_Hold^_.)..]^p_ :> PowerExpand[Times[factor]^p],
-	Abs[Times[expr_,  factor:(_Hold^_.)..]] :> Times[factor] Abs[expr],
-	Abs[Times[factor:(_Hold^_.)..]] :> Times[factor]
-}
+rule`powerExpand[xs_List] := Flatten[{
+  (expr_. * #^p_.)^q_ :> expr^q * #^(p q),
+	Abs[expr_. * #^p_.] :> Abs[expr] * #^p
+}& /@ xs]
+rule`powerExpand[xs__] := rule`powerExpand[{xs}]
 
 
-rule`factor = (
-	Plus[expr:((factor:(x_Hold)^(_.)) * _.), rest:((x_Hold)^(_.) * _.).., others___] :> 
-    Plus[factor * Plus@@({expr, rest} / factor), others]
-)
+rule`factor[xs_List] := (
+	Plus[expr:(# * _.), rest:(# * _.).., others___] :> 
+   Plus[# * Plus@@({expr, rest} / #), others]
+)& /@ xs;
+rule`factor[xs__] := rule`factor[{xs}]
 
 
-rule`pull = (
-  Plus[expr:((term:(_Hold)^(p_. /; (p > 0))) * _.).., others__] :> 
-    Plus[term * Plus@@({expr, others} / term)] 
-)
+rule`pull[xs_List] := (
+  Plus[expr:(# * _.), others__] :> # * Plus@@({expr, others} / #)
+)& /@ xs
+rule`pull[xs__] := rule`pull[{xs}]
+
+
+rule`group[xs_List, func_] := (func[#]->#)& /@ xs
 
 
 End[]
@@ -69,13 +67,13 @@ End[]
 BeginPackage["RG`Tools`"]
 
 
-hold::usage="hold[x] \[LongDash] replace {x -> Hold[x]}"
+hold::usage="hold[x] \[LongDash] replace {x -> Hold[x]}."
 
-release::usage="release[x] \[LongDash] replace {(Hold|HoldForm)[x]->x}"
+release::usage="release[x] \[LongDash] replace {(Hold|HoldForm)[x]->x}."
 
-powerExpand::usage="powerExpand[x] \[LongDash] pull out x of powers assuming that x is positive.\n[note]: it is using hold[]/release[] pair"
+powerExpand::usage="powerExpand[x] \[LongDash] pull out x of powers assuming that x is positive."
 
-factorIt::usage="factorIt[x] \[LongDash] factor out x from sums.\n[note]: it is using hold[]/release[] pair"
+factorIt::usage="factorIt[x] \[LongDash] factor out x from sums."
 
 changeSign::usage="changeSign[x] \[LongDash] replace x^p -> (-x)^p (-1)^p"
 
@@ -83,7 +81,7 @@ groupIt::usage="groupIt[expr, func] \[LongDash] replace func[expr]->expr"
 
 modify::usage="modify[pattern, func] \[LongDash] replace (expr:pattern) :> func[expr]"
 
-pullIt::usage="pullIt[x] \[LongDash] pull x out of sums.\n[note]: it is using hold[]/release[] pair"
+pullIt::usage="pullIt[x] \[LongDash] pull x out of sums."
 
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
@@ -109,40 +107,37 @@ release[xs_List] := With[{rule=rule`release[xs]},
 release[xs__]:=release[{xs}]
 
 
-powerExpand[xs_List] := Function[expr,
-	expr //
-		hold[xs] //
-		ReplaceRepeated[#, rule`powerExpand]& //
-		release[xs]
+powerExpand[xs_List] := With[{rule=rule`powerExpand[xs]},
+  Function[expr, expr //. rule]
 ];
 powerExpand[xs__] := powerExpand[{xs}]
 
-
-factorIt[xs_List] := Function[expr,
-	expr //
-		hold[xs] //
-		ReplaceRepeated[#, rule`factor]& //
-		release[xs]
+factorIt[xs_List] := With[{rule=rule`factor[xs]}, 
+  Function[expr, expr //. rule]
 ]
 factorIt[xs__] := factorIt[{xs}]
 
 
-changeSign[xs__] := powerExpand[-{xs}]
+changeSign[xs_List] := Function[expr,
+  expr // 
+	  hold[xs] // Echo //
+		ReplaceAll[Thread[Hold/@xs -> - Hold/@(-xs)]] // Echo //
+		powerExpand[Hold/@(-xs)] // Echo //
+		release[-xs]
+]
+changeSign[xs__] := changeSign[{xs}]
 
 
-pullIt[xs_List] := Function[expr,
-	expr //
-		hold[xs] //
-		ReplaceRepeated[#, rule`pull]& //
-		release[xs]
+pullIt[xs_List] := With[{rule=rule`pull[xs]},
+  Function[expr, expr //. rule]
 ]
 pullIt[xs__] := pullIt[{xs}]
 
 
-
-groupIt[ex_, func_:Expand] := With[{rule = func[ex] -> ex},
+groupIt[xs_List, func_:Expand] := With[{rule = rule`group[xs, func]},
 	Function[expr, expr /. rule]
 ]
+groupIt[xs__, func_] := groupIt[{xs}, func]
 
 
 modify[pattern_, func_:Expand] := With[{rule = (ex:pattern) :> func[ex]},
