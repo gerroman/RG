@@ -285,7 +285,8 @@ pullOut[x_] = Function[{expr},
 	  pullIt[Hold[x]] //
 		ReplaceAll[rule`mi0[Hold[x]]] //
 		powerExpand[Hold[x]] //
-		release[x]
+		release[x] //
+ 		powerExpand[x]
 ]
 pullOut[xs__] := pullOut[{xs}]
 
