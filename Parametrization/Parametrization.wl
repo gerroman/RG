@@ -1,4 +1,4 @@
-mi0::usage="mi0 \[LongDash] imaginary part of the propagators denominators (- \[ImaginaryI] \[CurlyEpsilon])"
+Global`mi0::usage="mi0 \[LongDash] imaginary part of the propagators denominators (- \[ImaginaryI] \[CurlyEpsilon])"
 
 rule`mi0::usage = "rule`mi0  \[LongDash] replaces mi0 * (_Hold) -> mi0"
 
@@ -17,19 +17,19 @@ Begin["rule`Private`"]
 
 (* ::Section:: *)
 (* Правила работы с мнимыми добавками *)
-Format[mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
+Format[Global`mi0, TraditionalForm] := DisplayForm[RowBox[{"(","-","\[ImaginaryI]","0",")"}]];
 Unprotect[Plus];
-Format[Plus[mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
-Format[Plus[(-1)*mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
+Format[Plus[Global`mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "-","\[ImaginaryI]0"}]];
+Format[Plus[(-1)*Global`mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxes[a,TraditionalForm], "+","\[ImaginaryI]0"}]];
 Protect[Plus];
 
 
-rule`mi0[x_] := mi0 * x -> mi0;
-rule`imaginary = (expr_ + mi0)^(p_.) :> (
+rule`mi0[x_] := Global`mi0 * x -> Global`mi0;
+rule`imaginary = (expr_ + Global`mi0)^(p_.) :> (
   Print[ToString[StringForm["assuming `` < 0", expr], InputForm]];
 	(-expr)^p Exp[-I Pi p]
 );
-rule`imaginary = (expr_ - mi0)^(p_.) :> (
+rule`imaginary = (expr_ - Global`mi0)^(p_.) :> (
   Print[ToString[StringForm["assuming `` < 0", expr], InputForm]];
 	(-expr)^p Exp[I Pi p]
 );
@@ -171,7 +171,7 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 			With[{integrand = #1, xi = #2[[1]],	ni = #2[[2]]},
 				integrate[integrand * xi^(ni - 1), xi]
 			]&,
-			(F + mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
+			(F + Global`mi0)^(L * dim/2 - n) / U^((L + 1) * dim/2 - n) * DiracDelta[1 - Total[xs]],
 			Transpose[{xs, ns}]
 		]
 	) // flattenIntegrate;
@@ -244,9 +244,9 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
 	If[verbose, Print[int]];
   {ps, xs, powers} = getPsXsPowers[int];
   If[verbose, Print[{ps, xs, powers}]];
-	mis = (ps // Replace[#, {(f_.) mi0 + _. :> f mi0, _:>0}, {1}]&);
+	mis = (ps // Replace[#, {(f_.) Global`mi0 + _. :> f Global`mi0, _:>0}, {1}]&);
 	If[verbose, Print[mis]];
-  regions = GetRegions[ps/.{mi0->0}, xs, delta];
+  regions = GetRegions[ps/.{Global`mi0->0}, xs, delta];
 	If[verbose, Print[regions]];
   contrib = getRegionContribution[powers, delta] /@ regions;
 	If[verbose, Print[contrib]];
@@ -258,7 +258,7 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
     With[{
       psSubs = Thread[
 			  ps^powers -> delta^Expand[(regions[[pos, 1]] * powers)] * ((
-				  Factor[ps/.{mi0->0}/.subs[[1]]] / delta^regions[[pos, 1]] //
+				  Factor[ps/.{Global`mi0->0}/.subs[[1]]] / delta^regions[[pos, 1]] //
 					ReplaceAll[delta->0] // Expand)
 					+ mis
 				)^powers
