@@ -24,7 +24,7 @@ Format[Plus[(-1)*Global`mi0, a_], TraditionalForm] := DisplayForm[RowBox[{ToBoxe
 Protect[Plus];
 
 
-rule`mi0[x_] := Global`mi0 * x -> Global`mi0;
+rule`mi0[x_] := Global`mi0 * x^(p_.) -> Global`mi0;
 rule`imaginary = (expr_ + Global`mi0)^(p_.) :> (
   Print[ToString[StringForm["assuming `` < 0", expr], InputForm]];
 	(-expr)^p Exp[-I Pi p]
