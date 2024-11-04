@@ -120,9 +120,9 @@ factorIt[xs__] := factorIt[{xs}]
 
 changeSign[xs_List] := Function[expr,
   expr // 
-	  hold[xs] // Echo //
-		ReplaceAll[Thread[Hold/@xs -> - Hold/@(-xs)]] // Echo //
-		powerExpand[Hold/@(-xs)] // Echo //
+	  hold[xs] //
+		ReplaceAll[Thread[Hold/@xs -> - Hold/@(-xs)]] //
+		powerExpand[Hold/@(-xs)] //
 		release[-xs]
 ]
 changeSign[xs__] := changeSign[{xs}]
