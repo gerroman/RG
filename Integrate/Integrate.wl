@@ -76,9 +76,9 @@ changeIntegrateVars[eqs_Equal, xs_Symbol, ys_Symbol, opts:OptionsPattern[]] := (
 
 
 pullIntegrateFactors[va_/; FreeQ[va, integrate]] := ReplaceAll[{
-	 integrate[expr_. * factor_, vs:{va, __}] :> 
+	 integrate[expr_. * factor_, vs:{va, __}] :>
 	   factor * integrate[expr, vs] /; FreeQ[factor, va],
-	 integrate[expr_. * factor_, va] :> 
+	 integrate[expr_. * factor_, va] :>
 	   factor * integrate[expr, va] /; FreeQ[factor, va]
 	}
 ];
@@ -100,7 +100,7 @@ force[integrate] = ReplaceAll[#, integrate -> Integrate] &;
 force[integrate, N] = ReplaceAll[#, integrate -> NIntegrate] &;
 
 force[integrate, x_] = ReplaceAll[#, {
- integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}], 
+ integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}],
  integrate[expr_, x] :> Integrate[expr, x]
 }]&;
 
@@ -133,7 +133,7 @@ determineIntegrate[{x_, low_, up_}][expr_] := ReplaceAll[
 
 
 groupIntegrals[va_] := ReplaceRepeated[#, {
-  a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>	
+  a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>
 	  integrate[a exprA + b exprB, vs]
 }]&;
 
