@@ -42,9 +42,6 @@ substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
 		Print["[warning]: non-unique substitutions, returning all possible solutions"];
 		Return[{ruleTo, ruleFrom}];
 	];
-	With[{det = Factor[Det[Outer[D, Last /@ First[ruleTo], ys]]]},
-	  Print["[jacobian]: ", Hold[det]]
-	];
 	Return[First /@ {ruleTo, ruleFrom}]
 ];
 substitute[eqs:(_Equal).., xs_List, ys_List] := substitute[{eqs}, xs, ys];

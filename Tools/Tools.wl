@@ -138,6 +138,7 @@ groupIt[xs_List, func_:Expand] := With[{rule = rule`group[xs, func]},
 	Function[expr, expr /. rule]
 ]
 groupIt[xs__, func_] := groupIt[{xs}, func]
+groupIt[x_] := groupIt[{x}, Expand]
 
 
 modify[pattern_, func_:Expand] := With[{rule = (ex:pattern) :> func[ex]},
