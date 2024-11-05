@@ -36,7 +36,10 @@ rule`powerExpand[xs__] := rule`powerExpand[{xs}]
 
 
 rule`factor[x_] := Plus[expr:(x * _.), other:(x * _.)..] :> x Plus@@({expr, other}/x)
-rule`pull[x_] := Plus[expr:(x * _.), other__] :> x Plus@@({expr, other}/x)
+rule`pull[x_] := {
+	Plus[x, others__] :> x (1 + Plus@@({others}/x)),
+  Plus[expr:(x * _), other__] :> x Plus@@({expr, other}/x)
+}
 
 
 rule`group[x_, func_] := func[x] -> x
@@ -88,18 +91,19 @@ release[xs_List] := With[{rule=rule`release[xs]},	ReplaceRepeated[#, rule]&]
 release[xs__]:=release[{xs}]
 
 
-powerExpand[xs_List] := With[{rule=rule`powerExpand[xs]}, ReplaceRepeated[#, rule]&];
+powerExpand[x_] := With[{rule=rule`powerExpand[x]}, ReplaceRepeated[#, rule]&]
+powerExpand[xs_List] := RightComposition@@(powerExpand/@xs);
 powerExpand[xs__] := powerExpand[{xs}]
 
 
 factorIt[x_] := With[{rule=rule`factor[x]}, ReplaceRepeated[#, rule]&]
 factorIt[xs_List] := RightComposition@@(factorIt/@xs)
-factorIt[x_, xs__] := factorIt[{x, xs}]
+factorIt[xs__] := factorIt[{xs}]
 
 
 pullIt[x_] := With[{rule=rule`pull[x]}, ReplaceRepeated[#, rule]&]
 pullIt[xs_List] := RightComposition@@(pullIt/@xs)
-pullIt[x_, xs__] := pullIt[{x, xs}]
+pullIt[xs__] := pullIt[{xs}]
 
 
 changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr, 
@@ -147,11 +151,11 @@ eq[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
 Options[composition] = {"verbose"->False}
 composition[fs_List, opts:OptionsPattern[]] := Function[{expr},
   With[{l = ComposeList[fs, expr]},
-    If[OptionValue["verbose"], Print/@Transpose[{l, Prepend[fs, Identity]}]];
+    If[OptionValue["verbose"], Print/@l];
 		Last[l]
   ]
 ]
-composition[fs__, opts:OptionsPattern[]] := composition[{fs}]
+composition[fs__, opts:OptionsPattern[]] := composition[{fs}, opts]
 
 
 cases[pattern_] := Union[Cases[#, pattern, Infinity]]&

@@ -278,11 +278,9 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
 pullOut[xs_List] := RightComposition @@ (pullOut /@ xs)
 pullOut[x_] = Function[{expr},
   expr //
-	  hold[x] //
-	  pullIt[Hold[x]] //
-		ReplaceAll[rule`mi0[Hold[x]]] //
-		powerExpand[Hold[x]] //
-		release[x]
+	  pullIt[x] //
+		ReplaceAll[rule`mi0[{x,1/x}]] //
+		powerExpand[x]
 ]
 pullOut[x_, xs__] := pullOut[{x, xs}]
 
