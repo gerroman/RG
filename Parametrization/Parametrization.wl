@@ -267,7 +267,7 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
         changeIntegrateVars[Sequence@@subs, Abs->False] //
         ReplaceAll[Thread[vars->xs]] //
         ReplaceAll[contrib[[pos]] -> 1] //
-				RightComposition @@ (determineIntegrate[{#,0,Infinity}]&/@xs) //
+				Composition @@ (determineIntegrate[{#,0,Infinity}]&/@xs) //
 				flattenIntegrate
     }
   ]]];
@@ -278,11 +278,11 @@ getRegions[integral_, delta_, opts:OptionsPattern[]] := Module[
 pullOut[xs_List] := RightComposition @@ (pullOut /@ xs)
 pullOut[x_] = Function[{expr},
   expr //
-	  pullIt[x] //
+	  ReplaceAll[rule`pull[x]] //
 		ReplaceAll[rule`mi0[{x,1/x}]] //
-		powerExpand[x]
+		powerExpand[{x,1/x}]
 ]
-pullOut[x_, xs__] := pullOut[{x, xs}]
+pullOut[xs__] := pullOut[{xs}]
 
 
 End[];
