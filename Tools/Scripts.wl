@@ -315,21 +315,3 @@ EndPackage[];
 On[General::shdw];
 
 
-(* ::Section:: *)
-(* Running script *)
-If[Not@$Notebooks,
-  Off[FrontEndObject::notavail];
-  systemStamp[];
-  timeStamp[];
-  log[Directory[], "prefix" -> "[directory]: "];
-  forceFlag = argparse["force", False];
-  SetOptions[RG`Scripts`Export, "force" :> forceFlag];
-  verboseFlag = argparse["verbose", False];
-  SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
-  Get["RG/Tools/SetDrawOptions.wl"];
-  (* [note]: print in notebook Messages *)
-  Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
-];
-
-
-(* [note]: do not print to notebook Messages when reloading Kernel *)

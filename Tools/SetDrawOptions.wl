@@ -33,4 +33,4 @@ Block[{
 ];
 
 
-Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
+Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
