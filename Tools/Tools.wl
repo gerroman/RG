@@ -1,17 +1,4 @@
-Needs["RG`Scripts`", "RG/Tools/Scripts.wl"]
-
-
-If[Not@$Notebooks, 
-  Off[FrontEndObject::notavail];
-  systemStamp[];
-  timeStamp[];
-  log[Directory[], "prefix" -> "[info]: working directory: "];
-  forceFlag = argparse["force", False];
-  SetOptions[RG`Scripts`Export, "force" :> forceFlag];
-  verboseFlag = argparse["verbose", False];
-  SetOptions[RG`Scripts`Timing, "verbose" :> verboseFlag];
-]
-
+Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
 
 Get["RG/Tools/Rules.wl"];
 Get["RG/Tools/SetDrawOptions.wl"];
@@ -122,7 +109,5 @@ End[]
 EndPackage[]
 
 
-If[Not@$Notebooks, 
-  (* [note]: print in notebook Messages *)
-  Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
-];
+Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+

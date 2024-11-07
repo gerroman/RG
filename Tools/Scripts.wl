@@ -315,3 +315,9 @@ EndPackage[];
 On[General::shdw];
 
 
+Off[FrontEndObject::notavail];
+systemStamp[];
+timeStamp[];
+log[StringForm["working directory: '``'", Directory[]]];
+log[StringForm["'``' loaded", FileNameTake[$InputFileName, -3]]];
+

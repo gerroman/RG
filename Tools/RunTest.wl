@@ -1,28 +1,24 @@
-test::usage = "test[fname] -- run tests (VerificationTest[]) in 'fname'"
+RunTest::usage = "RunTest[fname] -- run tests (VerificationTest[]) in 'fname'"
 
-test::help = "
+RunTest::help = "
 DESCRIPTION:
   fname -- filename string
 
 EXAMPLES:
-  math -script test.wl Tests.wlt
-  math -script test.wl *.wl
+  math -script RunTest.wl Tests.wlt
+  math -script RunTest.wl *.wl
 ";
 
 
-parse[] := Which[
-  $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
-  Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
-  True, {0, {}}
-];
+Needs["RG`Scripts`", "RG/Tools/Scripts.wl"]
 
 
 main[] := Module[{argc, argv, result},
-  {argc, argv} = parse[];
+  {argc, argv} = RG`Scripts`argparse[];
   If[argc == 0, Return[Null]];
   If[(argc == 2 && argv[[2]] == "-h") || (argc == 1),
-    Write["stderr", test::usage];
-    Write["stderr", test::help];
+    Write["stderr", RunTest::usage];
+    Write["stderr", RunTest::help];
     Exit[0];
   ];
   result = ToString[
