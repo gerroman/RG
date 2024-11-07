@@ -58,9 +58,9 @@ pullIt[xs__] := pullIt[{xs}]
 
 changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr, 
   expr //
-	  hold[xs] //
-		ReplaceAll[Thread[hs -> (-1)*hms]] //
-		release[-xs]
+	hold[xs] //
+	ReplaceAll[Thread[hs -> (-1)*hms]] //
+	release[-xs]
 ]]
 changeSign[xs__] := changeSign[{xs}]
 
@@ -68,7 +68,7 @@ changeSign[xs__] := changeSign[{xs}]
 groupIt[x_, func_:Expand] := With[{rule = rule`group[x, func]},
   ReplaceRepeated[#, rule]&
 ]
-groupIt[xs_List, func_:Expand] := With[{rule = (rule`group[#, func])& /@ xs},
+groupIt[xs_List, func_:Expand] := With[{rule = rule`group[#, func]& /@ xs},
   ReplaceRepeated[#, rule]&
 ]
 
@@ -85,7 +85,7 @@ SetAttributes[eq, HoldFirst]
 Options[eq] = {HoldForm->True};
 eq[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
 	{
-		func = RightComposition@@fs,
+	func = RightComposition@@fs,
     lhs = If[OptionValue[HoldForm], HoldForm[expr], expr]
   },
 	lhs == func[expr]
@@ -93,7 +93,7 @@ eq[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
 eq[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
 	{
     lfunc = RightComposition@@lfs,
-		rfunc = RightComposition@@rfs
+	rfunc = RightComposition@@rfs
   },
 	lfunc[expr] == rfunc[expr]
 ]

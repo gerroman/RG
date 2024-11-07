@@ -52,11 +52,7 @@ rule`pull[x_] := {
 }
 
 
-rule`group[x_, func_:Expand] := {
-  expr_Hold :> expr,
-  expr_HoldForm :> expr,
-  func[x] -> x
-}
+rule`group[x_, func_:Expand] := func[x] ->x
 
 
 End[]
