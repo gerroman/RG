@@ -74,10 +74,10 @@ groupIt[xs_List, func_:Expand] := With[{rule = rule`group[#, func]& /@ xs},
 
 
 modify[pattern_, func_:Expand] := With[{rule = (ex:pattern) :> func[ex]},
-  ReplaceRepeated[#, rule]&
+  ReplaceAll[#, rule]&
 ]
 modify[xs_List, func_:Expand] := With[{rule = (# -> func[#])& /@ xs},
-  ReplaceRepeated[#, rule]&
+  ReplaceAll[#, rule]&
 ]
 
 

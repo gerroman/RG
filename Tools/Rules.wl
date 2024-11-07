@@ -31,7 +31,8 @@ rule`release[xs__] := rule`release[{xs}]
 rule`powerExpand[xs_List] := Flatten[{
   expr_Hold :> expr,
   expr_HoldForm :> expr,
-  (expr_. * #^p_.)^q_ :> expr^q * #^(p q),
+  (#^p_)^q_ :> #^Expand[(p q)],
+  (expr_ * #^p_.)^q_ :> expr^q * #^(p q),
   Abs[expr_. * #^p_.] :> Abs[expr] * #^p
 }& /@ xs]
 rule`powerExpand[xs__] := rule`powerExpand[{xs}]
