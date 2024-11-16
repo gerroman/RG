@@ -1,6 +1,7 @@
 (* ::Package:: *)
 
-BeginPackage["RG`GiNaC`", {"RG`CommonNotation`"}]
+
+BeginPackage["RG`GiNaC`", {"RG`Integrate`"}]
 
 
 Global`G::usage = "G[{z1, ..., zn}, y] represent Goncharov interative polylogarithm";
@@ -15,9 +16,6 @@ GoncharovG::usage = "GoncharovG[{z1, ...}, y] get explicit form of Goncharov pol
 GeneralizedGoncharovG::usage = "GeneralizedGoncharovG[{m1, ...}][{z1, ...}, y] get explicit form of generalized Goncharov polylogarithms";
 
 
-Global`\[Tau]::usage = "\[Tau] used as an indexed temporary variable for the integrals"
-
-
 Begin["`Private`"];
 
 
@@ -27,21 +25,19 @@ Install[FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]];
 Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];
 
 
-
-RG`CommonNotation`setIndexed[Global`\[Tau]];
-RG`CommonNotation`reIndex[expr_] := RG`CommonNotation`reIndex[expr, "tau$", Global`\[Tau]]
-
-
 Format[GoncharovG[zs_List, y_], TraditionalForm] := DisplayForm@RowBox[{Global`G, "(", Row[zs, ","], ";", y, ")"}];
+
 
 Format[GeneralizedGoncharovG[ms__][zs_List, y_], TraditionalForm] :=
   DisplayForm@RowBox[{Subscript[Global`G, Row[{ms}, ","]], "(", Row[zs, ","], ";", y, ")"}];
+
 
 Format[GeneralizedGoncharovG[ms_List][zs_List, y_], TraditionalForm] :=
   DisplayForm@RowBox[{Subscript[Global`G, Row[ms, ","]], "(", Row[zs, ","], ";", y, ")"}];
 
 
 GoncharovG[{}, y_] := 1;
+
 
 GoncharovG[(zs_List /; Not@MemberQ[zs, 0]), y_] := (
   With[{n = Length[zs]},
@@ -84,3 +80,6 @@ End[]
 
 
 EndPackage[]
+
+
+Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];

@@ -1,6 +1,5 @@
 RunScript::usage = "RunScript[fname] -- run 'fname' as script"
 
-
 RunScript::help = "
 DESCRIPTION:
   fname -- filename string

@@ -1,6 +1,5 @@
 Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
 
-
 Get["RG/Tools/Rules.wl"];
 Get["RG/Tools/SetDrawOptions.wl"];
 
@@ -23,8 +22,6 @@ groupIt::usage="groupIt[expr, func] \[LongDash] replace func[expr]->expr"
 modify::usage="modify[pattern, func] \[LongDash] replace (expr:pattern) :> func[expr]"
 
 pullIt::usage="pullIt[x] \[LongDash] pull x out of sums."
-
-pullFactor::usage="pullFactor[x, func] \[LongDash] pull x out of func"
 
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
@@ -113,3 +110,4 @@ EndPackage[]
 
 
 Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+

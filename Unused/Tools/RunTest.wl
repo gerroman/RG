@@ -1,6 +1,5 @@
 RunTest::usage = "RunTest[fname] -- run tests (VerificationTest[]) in 'fname'"
 
-
 RunTest::help = "
 DESCRIPTION:
   fname -- filename string
@@ -31,6 +30,5 @@ main[] := Module[{argc, argv, result},
   ]&;
   Scan[Write["stderr", result[#, TestReport[#]]]&, Rest[argv]];
 ];
-
 
 main[];

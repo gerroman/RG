@@ -24,12 +24,9 @@ getSeriesCoefficients::usage = "getSeriesCoefficients[series] return SeriesData 
 
 series::usage = "series[series] try to evaluate series faster"
 
-
-(* [TODO]: remove Listable attributes to work with matrices *)
-
-
 Begin["`Private`"]
 
+(* [TODO] remove Listable attributes to work with matrices *)
 
 SetAttributes[leadingTermOrder, Listable];
 leadingTermOrder[s_SeriesData] := Part[s, 4];
@@ -83,7 +80,6 @@ subLeadingTerms[s_SeriesData, opts:OptionsPattern[]] := (
 	]
 );
 
-
 SetAttributes[getSeriesData, Listable];
 getSeriesData[s_SeriesData] := With[{
 		var = Part[s, 1],
@@ -95,12 +91,10 @@ getSeriesData[s_SeriesData] := With[{
 	{var, pole, nmin, nmax, den}
 ];
 
-
 SetAttributes[getSeriesCoefficients, Listable];
 getSeriesCoefficients[s_SeriesData] := With[{coefs = Part[s, 3]},
 	Return[coefs]
 ];
-
 
 SetAttributes[leading, Listable];
 leading[s_SeriesData] := Module[
@@ -116,7 +110,7 @@ leading[s_SeriesData, n_Integer /; n > 0] := Module[{
 		(# - Sow[Normal @ leadingTerm[#]]) &,(*func*)
 		s,(*expr*)
 		Normal @ leadingTerm[#] =!= 0 &, (*test*)
-		1, (*most resent results to test*)
+		1,(*most resent results to test*)
 		n
 	]];
 	{var, pole, nmin, nmax, den} = getSeriesData[First[expansion]];
@@ -146,7 +140,6 @@ seriesToRules[s_SeriesData] := Module[
 leadingSeries[expr_, {var_, pole_, order_}] := leading[Series[expr, {var, pole, order}]];
 leadingSeries[expr_, {var_, pole_, order_}, n_Integer] := leading[Series[expr, {var, pole, order}], n];
 
-
 SetAttributes[remainder, Listable];
 remainder[s_SeriesData] := Module[{var, pole, nmin, nmax, den},
 	{var, pole, nmin, nmax, den} = getSeriesData[s];
@@ -175,6 +168,15 @@ series[s_SeriesData, {var_, pole_, n0_}] := With[{data=getSeriesData[s]},
 	];
 	Return[Hold[Series[s, {var, pole, n0}]]]
 ];
+
+(*[TODO]: correct matrix series*)
+(* series[expr_/;FreeQ[expr, SeriesData], {var_, pole_, nmax_}] := Module[ *)
+(*   {s = Series[expr, {var, pole, n0}], nmin, nmax}, *)
+(*   If[Head[s] === List, *)
+(* 	  nmin = Min[leadingTermOrder[s]]; *)
+
+(*   ] *)
+(* ] *)
 
 
 End[]

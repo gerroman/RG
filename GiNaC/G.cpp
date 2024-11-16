@@ -3,6 +3,7 @@
 #include <cassert>
 #include <limits>
 
+
 void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
 {
   double gvalue[2];
@@ -23,9 +24,9 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
     imZs++;
   }
   GiNaC::numeric y(yValue);
-  
+
   GiNaC::ex GValue = GiNaC::G(zs, y);
-  
+
   assert(GiNaC::is_a<GiNaC::numeric>(GValue));
   if (!GiNaC::is_a<GiNaC::numeric>(GValue)) {
     WSPutReal64List(stdlink, gvalue, 2);
@@ -37,7 +38,8 @@ void EvalG(double* reZs, long nReZs, double* imZs, long nImZs, double yValue)
   WSPutReal64List(stdlink, gvalue, 2);
 }
 
+
 int main(int argc, char* argv[])
 {
-	return WSMain(argc, argv);
+  return WSMain(argc, argv);
 }

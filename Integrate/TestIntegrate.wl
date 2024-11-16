@@ -1,9 +1,7 @@
-(* ::Package:: *)
-
 Needs["RG`Integrate`"]
 
 
-eq[integrate[Sin[x]^2,{x, 0, Pi}], {}, {force[integrate]}]
+integrate[Sin[x]^2,{x, 0, Pi}] // force[integrate]
 
 
 integrate[Sin[x],{x,0,Pi}] // indetermineIntegrate // force[integrate]

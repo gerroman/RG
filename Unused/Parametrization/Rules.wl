@@ -10,6 +10,7 @@ rule`imaginary::usage "rule`imaginary  \[LongDash] substitute (expr - \[Imaginar
 rule`f21::usage="rule`f21 \[LongDash] substitute integral representation of Hypergeometric2F1"
 rule`f21arg::usage = "rule`f21arg \[LongDash] argument shift {z -> 1 - z} of Hypergeometric2F1"
 rule`f21ind::usage = "rule`f21ind \[LongDash] index shift of {} Hypergeometric2F1"
+
 rule`appell::usage="rule`f21 \[LongDash] substitute integral representation of AppellF1"
 
 

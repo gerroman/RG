@@ -1,4 +1,6 @@
 Off[General::shdw];
+
+
 BeginPackage["RG`Scripts`"];
 
 
@@ -7,24 +9,20 @@ error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix";
 warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix";
 echo::usage = "echo[expr] \[LongDash] prints and return expr";
 
-
 timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]";
 systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]";
-
 
 Export::usage=System`Export::usage;
 Timing::usage=System`Timing::usage;
 Print::usage=System`Print::usage;
 
-
 argparse::usage = "argparse[] \[LongDash] returns {argc, argv}";
-
 
 info::usage = "info[func] \[LongDash] get information about func: context, usage, attributes, options
 info[func, All] \[LongDash] get full information about func including up/down values";
 
 
-head::usage = "head[fname] \[LongDash] return first line of file contents";
+head::usage = "head[fname] \[LongDash] return first line of the text file";
 sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
 
 
@@ -186,12 +184,10 @@ RG`Scripts`Export::export = "saving '`1`' to the file '`2`' ... ";
 RG`Scripts`Export::hashError = "hash differs ... ";
 RG`Scripts`Export::hashSame = "hash is the same";
 
-
 Options[RG`Scripts`Export] = Join[Options[System`Export], {
   "force" -> False,
   "Comments" -> ""
 }];
-
 
 RG`Scripts`Export[
   fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"m", "wl"}],
@@ -230,7 +226,7 @@ RG`Scripts`Export[
   ];
   Return[fnameFull];
 ];
-RG`Scripts`Export[args__] := System`Export[args];
+RG`Scripts`Export[args__] := Export[args];
 
 
 (* ::Section:: *)
@@ -251,7 +247,6 @@ RG`Scripts`Timing[expr_] := Module[{time, result},
 
 (* ::Section:: *)
 (* Information *)
-
 
 emptyQ[expr_] := Length[expr] == 0;
 
@@ -327,12 +322,12 @@ End[];
 
 
 EndPackage[];
+
+
 On[General::shdw];
 
 
 Off[FrontEndObject::notavail];
-
-
 systemStamp[];
 timeStamp[];
 log[StringForm["working directory: '``'", Directory[]]];

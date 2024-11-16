@@ -1,9 +1,7 @@
 Get["RG/Parametrization/Rules.wl"]
 
 
-BeginPackage["RG`Parametrization`", 
-  {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Integrate`"}
-]
+BeginPackage["RG`Parametrization`", {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Integrate`"}]
 
 
 integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
@@ -28,7 +26,8 @@ getRegions::usage="getRegions[integral, delta] \[LongDash] get regions "
 pullOut::usage="pullOut[x] \[LongDash] pull x out of powers in Feynman parameter interals assuming x is positive\n[note]: it is use hold[]/release internally"
 
 
-Begin["Private`"]
+
+Begin["Private`"];
 
 
 integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
@@ -195,10 +194,10 @@ pullOut[x_] = Function[{expr},
 pullOut[xs__] := pullOut[{xs}]
 
 
-End[]
+End[];
 
 
-EndPackage[]
+EndPackage[];
 
 
 Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];

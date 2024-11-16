@@ -36,9 +36,9 @@ syntaxChecker[fname_String] := Module[
 	result = SyntaxQ @ text;
 
 	WriteString["stderr",
-		StringForm["[syntax]: `` ... ``\n",
-			StringPadRight[FileNameTake[fname], 60, "."],
-			If[result, "[OK]", "[ERROR]"]
+		StringForm["\033[1;34m[syntax]\033[0m: `` ... ``\n",
+			StringPadRight["\033[1;36m"<>FileNameTake[fname]<>"\033[0m ", 69, "."],
+			If[result, "\033[1;32m[OK]\033[0m", "\033[1;31m[ERROR]\033[0m"]
 		]
 	];
 
