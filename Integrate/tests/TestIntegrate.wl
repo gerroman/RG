@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 Needs["RG`Integrate`"]
 
 
@@ -14,7 +16,12 @@ eq`int[1] = eq[integrate[1/(1-x^2),x], {}, {
 }]
 
 
-eq`int[1] //determineIntegrate[{x,0,1/2}] // determineIntegrate[{y, 0, Pi/6}] // ReleaseHold // force[integrate]//FullSimplify
+eq`int[1] //
+  determineIntegrate[{x, 0, 1/2}] //
+  determineIntegrate[{y, 0, Pi/6}] //
+  ReleaseHold // 
+  force[integrate]//
+  FullSimplify
 
 
 substitute[(1-y)y==\[Sigma]^2/4, y, \[Sigma]]

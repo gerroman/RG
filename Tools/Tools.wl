@@ -26,6 +26,8 @@ pullIt::usage="pullIt[x] \[LongDash] pull x out of sums."
 
 pullFactor::usage="pullFactor[x, func] \[LongDash] pull x out of func"
 
+distribute::usage="distribute[outer, inner]"
+
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
 force::usage = "force[at | limit | sum | integrate | d] forces evaluation";
@@ -104,6 +106,16 @@ eq[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
 
 
 cases[pattern_] := Union[Cases[#, pattern, Infinity]]&
+
+
+pullFactor[pattern_, func_] := With[{rule = rule`pullFactor[pattern, func]},
+	ReplaceRepeated[#, rule]&
+]
+
+
+distribute[outer_, inner_:Plus] := With[{rule = rule`distribute[outer, inner]},
+	ReplaceRepeated[#, rule]&
+]
 
 
 End[]

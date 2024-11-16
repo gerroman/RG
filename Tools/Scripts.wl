@@ -105,13 +105,12 @@ log[expr_StringForm, opts:OptionsPattern[]] := With[{
   RG`Scripts`Print[message];
 ];
 log[expr_List, opts:OptionsPattern[]] := If[OptionValue["column"],
-Scan[log[#, opts]&, expr],
-log[
-  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
-  opts
-]
+  Scan[log[#, opts]&, expr],
+  log[
+    ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
+    opts
+  ]
 ];
-
 log[expr_, opts:OptionsPattern[]] := log[
   ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
   opts
@@ -121,7 +120,7 @@ log[expr__, opts:OptionsPattern[]] := Scan[log[#, opts]&, {expr}];
 
 error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
 warning[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[warning]: ", opts];
-echo[expr_] := (logwrite[expr, "width"->Infinity]; expr);
+echo[expr_] := (log[expr, "width"->Infinity, "prefix"->"[echo]: "]; expr);
 
 
 (* ::Section:: *)
@@ -321,6 +320,32 @@ sizeOf[expr_] := Module[
   ];
   {leafs, bytes}
 ];
+
+
+ansiwindows[str_String, color_:Gray] := With[{rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]}, 
+	StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
+]
+
+If[$OperatingSystem == "Windows",
+	SetOptions[RG`Scripts`Print, "colorize"->{
+    "[info]" -> ansiwindows["[info]", Darker@Blue],
+	"[date]" -> ansiwindows["[date]", Darker@Magenta],
+	"[usage]" -> ansiwindows["[usage]", Darker@Yellow],
+	"[ERROR]" -> ansiwindows["[ERROR]", Red],
+	"[OK]" -> ansiwindows["[OK]", Lighter@Green],
+	"[warning]" -> ansiwindows["[warning]", Lighter@Red],
+	"[args]" -> ansiwindows["[args]", Lighter@Magenta],
+	"[time]" -> ansiwindows["[time]", Darker@Cyan],
+	"[seconds]" -> ansiwindows["[seconds]", Darker@Cyan],
+	"[echo]" -> ansiwindows["[echo]", White],
+	"[....]" -> ansiwindows["[....]", White],
+	"[export]" -> ansiwindows["[export]", Magenta],
+	"[hash]" -> ansiwindows["[hash]", Magenta],
+	"[directory]" -> ansiwindows["directory"],
+	"[load]"->ansiwindows["load"]
+	}]
+]
+
 
 
 End[];

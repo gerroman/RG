@@ -15,6 +15,8 @@ group::usage = "rule`group[x, func] \[LongDash] rule to replace {func[x] -> x}"
 
 pullFactor::usage = "rule`pullFactor[pattern, func] \[LongDash] rule to pull (x:pattern) out of func[]assuming linearity of the func"
 
+distribute::usage = "rule`distribute[outer_, inner_] rule to distribute outer w.r.t. inner"
+
 
 Begin["`Private`"]
 
@@ -63,8 +65,8 @@ rule`factor[x_] := {
 
 rule`pull[x_] := {
   expr_Hold :> expr,
-  Plus[x, others__] :> x (1 + Plus@@({others}/x)),
-  Plus[expr:(x * _), other__] :> x Total[{expr, other}/x]
+  (*Plus[x, others__] :> x (1 + Plus@@({others}/x)),*)
+  Plus[expr:(x * _.), other__] :> x Total[{expr, other}/x]
 }
 
 
@@ -72,6 +74,9 @@ rule`group[x_, func_:Expand] := func[x] -> x
 
 
 rule`pullFactor[pattern_, func_] := func[a___, (x:pattern) * b_, c___] :> x * func[a, b, c]
+
+
+rule`distribute[outer_, inner_] := expr:(outer[___, inner[___], ___]) :> Distribute[expr, inner]
 
 
 End[]

@@ -25,7 +25,7 @@ main[] := Module[{argc, argv, result},
     Write["stderr", RunScript::help];
     Exit[0];
   ];
-  Scan[Get, Rest[argv]];
+  Get[argv[[2]]];
   Exit[0];
 ];
 

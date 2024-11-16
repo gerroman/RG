@@ -9,15 +9,15 @@ pullIntegrateFactors::usage = "pullIntegrateFactors[va] \[LongDash] pull out con
 
 groupIntegrals::usage = "groupIntegrals[va]  \[LongDash] group sum of integrals w.r.t. variable va";
 
-substitute::usage="substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
+substitute::usage = "substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
 
-flattenIntegrate::usage="flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
+flattenIntegrate::usage = "flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
 
-nestIntegrate::usage="nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables";
+nestIntegrate::usage = "nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables";
 
-indetermineIntegrate::usage="indetermineIntegrate[expr] \[LongDash] remove all integration limits";
+indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all integration limits";
 
-determineIntegrate::usage="determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
+determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
 
 
 Begin["`Private`"]
