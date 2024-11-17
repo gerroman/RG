@@ -71,11 +71,9 @@ changeSign[xs__] := changeSign[{xs}]
 
 
 groupIt[x_, func_:Expand] := With[{rule = rule`group[x, func]},
-  ReplaceRepeated[#, rule]&
+  ReplaceAll[#, rule]&
 ]
-groupIt[xs_List, func_:Expand] := With[{rule = rule`group[#, func]& /@ xs},
-  ReplaceRepeated[#, rule]&
-]
+groupIt[xs_List, func_:Expand] := RightComposition@@(groupIt[#, func]&/@xs)
 
 
 modify[pattern_, func_:Expand] := With[{rule = (ex:pattern) :> func[ex]},

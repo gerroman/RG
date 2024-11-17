@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 Begin["rule`"]
 
 
@@ -76,7 +78,7 @@ rule`group[x_, func_:Expand] := func[x] -> x
 rule`pullFactor[pattern_, func_] := func[a___, (x:pattern) * b_, c___] :> x * func[a, b, c]
 
 
-rule`distribute[outer_, inner_] := expr:(outer[___, inner[___], ___]) :> Distribute[expr, inner]
+rule`distribute[outer_, inner_] := expr:(outer[a___, inner[x_, xs__], b___]) :> Distribute[expr, inner]
 
 
 End[]
