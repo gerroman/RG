@@ -245,7 +245,7 @@ RG`Scripts`Export[
         "[date]: " <> timeString
       }, {"", " *)\n(* ", ""}
     ],
-    exportOpts = Echo[Complement[{opts}, FilterRules[{opts}, Options[RG`Scripts`Export]]]]
+    exportOpts = Complement[{opts}, FilterRules[{opts}, Options[RG`Scripts`Export]]]
   },
   log[fnameFull];
   If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
