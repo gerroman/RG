@@ -232,7 +232,7 @@ RG`Scripts`Export[
 RG`Scripts`Export[
   fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"png", "jpg"}],
   expr_,
-  opts:OptionsPattern[]
+  opts:OptionsPattern[{RG`Scripts`Export, System`Export, Graphics, Rasterize}]
 ] := Module[
   {
     fnameFull = ToString[fname],
@@ -245,7 +245,7 @@ RG`Scripts`Export[
         "[date]: " <> timeString
       }, {"", " *)\n(* ", ""}
     ],
-    exportOpts = FilterRules[{opts}, Options[System`Export]]
+    exportOpts = Echo[Complement[{opts}, FilterRules[{opts}, Options[RG`Scripts`Export]]]]
   },
   log[fnameFull];
   If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
