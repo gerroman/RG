@@ -216,7 +216,11 @@ RG`Scripts`Export[
     System`Export[fnameFull, expr, "Comments"->comments, Sequence@@exportOpts];
     log["complete", "prefix"->"[export]: "];
     log[StringForm[RG`Scripts`Export::export, hash, fnameHash], "prefix"->"[export]: "];
-    Put[hash, fnameHash];
+    With[{f=OpenWrite[fnameHash]},
+      WriteString[f, "(*"<>comments<>"*)\n"];
+      Write[f, hash];
+      Close[f];
+    ];
     log["complete", "prefix"->"[export]: "];
     Return[fnameFull];
   ];
