@@ -229,6 +229,47 @@ RG`Scripts`Export[
   ];
   Return[fnameFull];
 ];
+RG`Scripts`Export[
+  fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"png", "jpg"}],
+  expr_,
+  opts:OptionsPattern[]
+] := Module[
+  {
+    fnameFull = ToString[fname],
+    fnameHash = ToString[fname] <> ".hash",
+    force = OptionValue["force"],
+    hash = Hash[InputForm[expr]],
+    comments = StringRiffle[{
+        "[comments]: " <> ToString@OptionValue["Comments"],
+        "[author]: " <> systemString,
+        "[date]: " <> timeString
+      }, {"", " *)\n(* ", ""}
+    ],
+    exportOpts = FilterRules[{opts}, Options[System`Export]]
+  },
+  log[fnameFull];
+  If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
+    log[StringForm[RG`Scripts`Export::export, ToString[expr, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
+    System`Export[fnameFull, expr, Sequence@@exportOpts];
+    log["complete", "prefix"->"[export]: "];
+    log[StringForm[RG`Scripts`Export::export, hash, fnameHash], "prefix"->"[export]: "];
+    With[{f=OpenWrite[fnameHash]},
+      WriteString[f, "(*"<>comments<>"*)\n"];
+      Write[f, hash];
+      Close[f];
+    ];
+    log["complete", "prefix"->"[export]: "];
+    Return[fnameFull];
+  ];
+  If[hash === Get[fnameHash],
+    log[RG`Scripts`Export::hashSame, "prefix"->"[hash]: "],
+    (
+      error[RG`Scripts`Export::hashError];
+      Return[$Failed];
+    )
+  ];
+  Return[fnameFull];
+];
 RG`Scripts`Export[args__] := System`Export[args];
 
 
