@@ -1,4 +1,4 @@
-BeginPackage["RG`Integrate`"]
+BeginPackage["RG`Integrate`", {"RG`Tools`"}]
 
 
 integrate::usage = "integrate[expr, region] represent an integral";
