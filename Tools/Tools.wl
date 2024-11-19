@@ -68,7 +68,9 @@ changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr,
 	release[-xs]
 ]]
 changeSign[xs__] := changeSign[{xs}]
-
+changeSign[pattern_] := Function[expr, With[{xs=Union@Cases[expr, pattern, Infinity]},
+  changeSign[xs][expr]
+]]
 
 groupIt[x_, func_:Expand] := With[{rule = rule`group[x, func]},
   ReplaceAll[#, rule]&
