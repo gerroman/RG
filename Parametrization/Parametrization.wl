@@ -97,11 +97,11 @@ getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
   {U, F, xs} = {(-1), (-1), 1} * LiteRed`FeynParUF[LiteRed`Ds[expr], LiteRed`LMs[tag]];
   L = Length[LiteRed`LMs[tag]];
   cf = Exp[EulerGamma * L * (4 - dim)/2] * Gamma[dim / 2] / Gamma[(L + 1) * dim/2 - n] / (Times@@Gamma[ns]);
-  G = F + U;
+  G = F + U + Global`mi0;
   result = cf * (
     Fold[
       With[{integrand = #1, xi = #2[[1]], ni = #2[[2]]},
-        integrate[integrand * xi^(ni - 1), xi]
+        integrate[integrand * xi^(ni - 1), {xi, 0, Infinity}]
       ]&,
       G^(-dim/2),
       Transpose[{xs, ns}]
