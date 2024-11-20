@@ -407,3 +407,7 @@ systemStamp[];
 timeStamp[];
 log[StringForm["working directory: '``'", Directory[]]];
 log[StringForm["'``' loaded", FileNameTake[$InputFileName, -3]]];
+
+
+forceFlag = argparse["force", False];
+SetOptions[RG`Scripts`Export, "force"->forceFlag];
