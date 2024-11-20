@@ -61,6 +61,10 @@ integrateDelta[iexpr_, z_] := With[{delta = DiracDelta}, ReplaceAll[
 ]];
 
 
+(*(Lee, 2013), Eq.(2.2)*)
+(*Additional factor:*)
+(*Exp[EulerGamma * L * (4 - dim)/2]*)
+
 SetAttributes[getParametrizationFU, Listable];
 getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
   {
@@ -72,7 +76,8 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
   n = Total[ns];
   {U, F, xs} = {(-1), (-1), 1} * LiteRed`FeynParUF[LiteRed`Ds[expr], LiteRed`LMs[tag]];
   L = Length[LiteRed`LMs[tag]];
-  cf = Exp[EulerGamma * L * (4 - dim)/2] * Gamma[n - L * dim / 2] / (Times@@Gamma[ns]);
+  cf = Exp[EulerGamma * L * (4 - dim)/2] * 
+    Gamma[n - L * dim / 2] / (Times@@Gamma[ns]);
   result = cf * (
     Fold[
       With[{integrand = #1, xi = #2[[1]],	ni = #2[[2]]},
@@ -86,6 +91,10 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
 ];
 
 
+(*(Lee, 2013), Eq.(2.5)*)
+(*Additional factor:*)
+(*Exp[EulerGamma * L * (4 - dim)/2]*)
+
 SetAttributes[getParametrizationG, Listable];
 getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
     ns = Select[{idxs}, (# =!= 0)&],
@@ -96,7 +105,9 @@ getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
   n = Total[ns];
   {U, F, xs} = {(-1), (-1), 1} * LiteRed`FeynParUF[LiteRed`Ds[expr], LiteRed`LMs[tag]];
   L = Length[LiteRed`LMs[tag]];
-  cf = Exp[EulerGamma * L * (4 - dim)/2] * Gamma[dim / 2] / Gamma[(L + 1) * dim/2 - n] / (Times@@Gamma[ns]);
+  cf = Exp[EulerGamma * L * (4 - dim) / 2] * 
+    Gamma[dim / 2] / 
+    (Gamma[(L + 1) * dim/2 - n] * (Times@@Gamma[ns]));
   G = F + U + Global`mi0;
   result = cf * (
     Fold[
