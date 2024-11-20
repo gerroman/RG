@@ -101,6 +101,15 @@ nestIntegrate[expr_] := ReplaceRepeated[
   integrate[a_, b__, c_] :> integrate[integrate[a, c], b]
 ];
 
+nestIntegrate[expr_, x_] := ReplaceAll[
+  expr,
+  {
+    integrate[a_, b___, x, c___] :> integrate[integrate[a, x], b, c] /; Length[{b,c}] > 0,
+    integrate[a_, b___, range:{x, ___}, c___] :> integrate[integrate[a, range], b, c] /; Length[{b,c}] > 0
+  }
+]
+nestIntegrate[expr_, xs_List] := Fold[nestIntegrate, expr, xs]
+
 
 indetermineIntegrate[expr_] := ReplaceAll[
   (expr // flattenIntegrate),
