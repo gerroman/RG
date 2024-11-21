@@ -22,6 +22,9 @@ getRunner::usage = "
 "
 
 
+holdform::usage = "holdform[expr] \[LongDash] replace expr -> HoldForm[expr]"
+
+
 Begin["`Private`"];
 
 
@@ -152,10 +155,24 @@ shorten[(head_)[xs__], opts : OptionsPattern[]] := With[{
 shorten[expr_, OptionsPattern[]] := expr;
 
 
+SetAttributes[holdform, HoldAll]
+holdform[xs__] := ReplaceRepeated[#, rule`holdform[xs]]&
+
+
 End[]
 
 
 EndPackage[]
+
+
+Begin["rule`"];
+rule`holdform::usage = "rule`holdform[expr] substitute expr -> HoldForm[expr]"
+Begin["`Private`"]
+SetAttributes[rule`holdform, HoldAll]
+rule`holdform[x_] := {ex_HoldForm :> ex, x -> HoldForm[x]}
+rule`holdform[xs__] := Prepend[Thread[{xs} -> Thread[HoldForm[{xs}]]], ex_HoldForm :> ex]
+End[];
+End[];
 
 
 Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]]
