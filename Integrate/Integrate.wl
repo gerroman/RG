@@ -20,6 +20,10 @@ indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all
 determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
 
 
+d::usage="d[expr] represent Dt[expr];
+d[expr, var] represent D[expr, var]"
+
+
 Begin["`Private`"]
 
 
@@ -132,6 +136,10 @@ groupIntegrals[va_] := ReplaceRepeated[#, {
 }]&;
 
 
+Format[d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
+Format[d[args__], TraditionalForm] := HoldForm[D[args]]
+
+
 End[]
 
 
@@ -150,4 +158,7 @@ force[integrate, x_, opts:OptionsPattern[]] = ReplaceAll[#, {
 }]&;
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+force[d, opts:OptionsPattern[]] = ReplaceAll[#, d -> D[##, opts]&]&
+
+
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
