@@ -192,6 +192,22 @@ Options[RG`Scripts`Export] = Join[Options[System`Export], {
 }];
 
 
+getHash[fname_String, nMax_:10] := Module[{f, s, n=0, hash=$Failed},
+  f = OpenRead[fname];
+  While[((s = ReadLine[f]) =!= EndOfFile) && ((n += 1) < nMax),
+    If[StringStartsQ[s, "(* [hash]: "],
+      hash = ToExpression[StringTake[s, {11, -3}]];
+      log[hash, "prefix"->"[hash]: "];
+    ];
+  ];
+  Close[f];
+  If[hash === $Failed,
+    error["can not find [hash] comment"]
+  ];
+  Return[hash]
+];
+
+
 RG`Scripts`Export[
   fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"m", "wl"}],
   expr_,
@@ -199,37 +215,34 @@ RG`Scripts`Export[
 ] := Module[
   {
     fnameFull = ToString[fname],
-    fnameHash = ToString[fname] <> ".hash",
     force = OptionValue["force"],
     hash = Hash[expr],
+    hashPrev = $Failed,
     comments = StringRiffle[{
         "[comments]: " <> ToString@OptionValue["Comments"],
         "[author]: " <> systemString,
-        "[date]: " <> timeString
+        "[date]: " <> timeString,
+        "[hash]: " <> ToString@Hash[expr]
       }, {"", " *)\n(* ", ""}
     ],
     exportOpts = FilterRules[{opts}, Options[System`Export]]
   },
   log[fnameFull];
-  If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
+  If[force || Not[FileExistsQ[fnameFull]],
     log[StringForm[RG`Scripts`Export::export, ToString[expr, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
     System`Export[fnameFull, expr, "Comments"->comments, Sequence@@exportOpts];
     log["complete", "prefix"->"[export]: "];
-    log[StringForm[RG`Scripts`Export::export, hash, fnameHash], "prefix"->"[export]: "];
-    With[{f=OpenWrite[fnameHash]},
-      WriteString[f, "(*"<>comments<>"*)\n"];
-      Write[f, hash];
-      Close[f];
-    ];
-    log["complete", "prefix"->"[export]: "];
     Return[fnameFull];
   ];
-  If[hash === Get[fnameHash],
-    log[RG`Scripts`Export::hashSame, "prefix"->"[hash]: "],
-    (
-      error[RG`Scripts`Export::hashError];
-      Return[$Failed];
-    )
+  If[Not[force] && FileExistsQ[fnameFull],
+    hashPrev = getHash[fnameFull];
+    If[hashPrev === hash,
+      log[RG`Scripts`Export::hashSame, "prefix"->"[hash]: "],
+      (
+        error[RG`Scripts`Export::hashError];
+        Return[$Failed];
+      )
+    ];
   ];
   Return[fnameFull];
 ];
