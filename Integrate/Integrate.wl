@@ -27,6 +27,9 @@ d[expr, var] represent D[expr, var]"
 Begin["`Private`"]
 
 
+integrate /: Format[integrate[expr_, {l_, dim_}], TraditionalForm] := DisplayForm[
+RowBox[{"\[Integral]", RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]], TraditionalForm[l]}], TraditionalForm[expr]}]];
+
 integrate /: Format[integrate[expr_, region___], TraditionalForm] := (
   HoldForm[Integrate[expr, region]]
 );
