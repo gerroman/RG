@@ -1,5 +1,6 @@
 (* ::Title:: *)
 (*Presentation*)
+Needs["RG`Tools`"];
 
 
 BeginPackage["RG`Notebooks`"]
@@ -175,4 +176,4 @@ End[];
 End[];
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]]
+Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]]
