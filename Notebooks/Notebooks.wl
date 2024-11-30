@@ -6,9 +6,9 @@ Needs["RG`Tools`"];
 BeginPackage["RG`Notebooks`"]
 
 
-colorize::usage = "
-  colorize[pattern] colorize matches for the pattern
-  colorize[{x1, ...}] colorize specific expressions x1, ...
+colorize::usage = "colorize[pattern] \[LongDash] colorize matches for the pattern
+colorize[{x1, ...}] \[LongDash] colorize specific expressions x1, ...
+colorize[xs, styleFunc] \[LongDash] use specific style function for colorization
 "
 
 
@@ -42,6 +42,10 @@ colorize[pattern_] := Function[expr,
   ]
 ];
 colorize[xs__] := colorize[{xs}];
+
+
+colorize[pattern_, style_] := ReplaceAll[(x:pattern) -> style[x]]
+colorize[xs_List, style_] := ReplaceAll[Thread[xs -> (style/@xs)]]
 
 
 SetAttributes[buttons, HoldAll];
