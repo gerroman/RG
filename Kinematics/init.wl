@@ -6,8 +6,25 @@ BeginPackage["RG`Kinematics`", {
   "RG`Kinematics`ConservationRules`",
   "RG`Kinematics`ScalarProductRules`",
   "RG`Kinematics`PhysicalRegion`"
-}];
-EndPackage[];
+}]
+
+
+(*Shortcuts*)
+fv=FourVector;
+sp=ScalarProduct;
+li=LorentzIndex;
+
+
+Begin["`Private`"]
+
+
+FourVector[p_, mu_Symbol] := FourVector[p, LorentzIndex[mu]];
+
+
+End[]
+
+
+EndPackage[]
 
 
 Print[ToString@StringForm["[info]: `` loaded", $InputFileName]];
