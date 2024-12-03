@@ -9,9 +9,14 @@ Begin["`Private`"]
 
 GetConservationRules[ps_List] := Module[{subsets, rules, n},
   n = Length[ps];
-  subsets = Subsets[ps, {If[EvenQ[n], n/2 + 1, Ceiling[n/2]], Length[ms]}];
+  subsets = With[{
+      nmin=If[EvenQ[n], n/2 + 1, Ceiling[n/2]],
+      nmax=Length[ps]
+    },
+    Subsets[ps, {nmin, nmax}]
+  ];
   rules = (Total[#] -> (-1) * Total[Complement[ps, #]])& /@ subsets;
-  Join[rules, MapAt[-#&, rules, {All, All}]]
+  Flatten[Transpose[{rules, MapAt[-#&, rules, {All, All}]}]]
 ]
 
 GetConservationRules[eq_Equal] := With[{
