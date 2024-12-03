@@ -1,6 +1,7 @@
 (* ::Title:: *)
 (*Presentation*)
 Needs["RG`Tools`"];
+Needs["RG`Notation`"];
 
 
 BeginPackage["RG`Notebooks`"]
