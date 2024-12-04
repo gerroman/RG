@@ -27,7 +27,8 @@ Scan[Needs, {
   "RG`Kinematics`ScalarInvariants`",
   "RG`Kinematics`ConservationRules`",
   "RG`Kinematics`ScalarProductRules`",
-  "RG`Kinematics`PhysicalRegion`"
+  "RG`Kinematics`PhysicalRegion`",
+  "RG`Kinematics`MetricTensor`"
 }]
 
 
