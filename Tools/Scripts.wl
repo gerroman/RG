@@ -1,25 +1,38 @@
+(* ::Package:: *)
+
 Off[General::shdw];
 BeginPackage["RG`Scripts`"];
 
 
-log::usage = "log[expr] \[LongDash] converts 'expr' to string and call Write[] or Print[] depending on batch or notebooks working mode";
+(* ::Text:: *)
+(*Logging utils*)
+log::usage = "log[expr] \[LongDash] converts 'expr' to string and call Write[] to stderr";
 error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix";
 warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix";
 echo::usage = "echo[expr] \[LongDash] prints and return expr";
 
 
-timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]";
-systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]";
+(* ::Text:: *)
+(*System Information*)
+timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]"
+systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]"
+fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
 
 
+(* ::Text:: *)
+(*Update in system function*)
 Export::usage=System`Export::usage;
 Timing::usage=System`Timing::usage;
 Print::usage=System`Print::usage;
 
 
+(* ::Text:: *)
+(*Parsing command line arguments*)
 argparse::usage = "argparse[] \[LongDash] returns {argc, argv}";
 
 
+(* ::Text:: *)
+(*Getting help*)
 info::usage = "info[func] \[LongDash] get information about func: context, usage, attributes, options
 info[func, All] \[LongDash] get full information about func including up/down values";
 
@@ -31,8 +44,13 @@ Begin["`Private`"];
 (* Logging *)
 
 
-Options[RG`Scripts`Print] = {
+Options[log] = {
+  "prefix" -> "[info]: ",
+  "endl" -> "",
+  "column" -> False,
+  "verbose" -> False,
   "stream" -> "stderr",
+  "width" -> 1000,
   "colorize" -> {
     "[info]" -> "\033[1;35m[info]\033[0m",
     "[directory]" -> "\033[1;35m[directory]\033[0m",
@@ -56,11 +74,12 @@ Options[RG`Scripts`Print] = {
     "[init]" -> "\033[1;36m[init]\033[0m",
     "[warning]" -> "\033[0;33m[warning]\033[0m",
     "[args]" -> "\033[1;34m[args]\033[0m"
-  },
-  "width" :> 1000
+  }
 };
-RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks,
-  System`Print[message],
+log[expr_String, opts:OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
+  },
+  If[OptionValue[verbose], System`Print[expr]];
   WriteString[
     OptionValue["stream"],
     StringJoin[
@@ -68,50 +87,109 @@ RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks,
       StringReplace[message, OptionValue["colorize"]],
       "\n"
     ]
-  ]
+  ];
 ];
-RG`Scripts`Print[expr_, opts:OptionsPattern[]] := If[$Notebooks,
-  System`Print[expr],
+log[expr_StringForm, opts:OptionsPattern[]] := With[{
+    message = StringJoin[OptionValue["prefix"], ToString@expr, OptionValue["endl"]]
+  },
+  If[OptionValue[verbose], System`Print[expr]];
   WriteString[
     OptionValue["stream"],
     StringJoin[
       "\r",
-      ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
+      StringReplace[message, OptionValue["colorize"]],
       "\n"
     ]
-  ]
-];
-RG`Scripts`Print[expr__, opts:OptionsPattern[]] := Scan[RG`Scripts`Print[#, opts]&, {expr}];
-
-
-Options[log] = {
-  "prefix" -> "[info]: ",
-  "endl" -> "",
-  "width" -> 70,
-  "column" -> False
-};
-log[expr_String, opts:OptionsPattern[]] := With[{
-    message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
-  },
-  RG`Scripts`Print[message];
-];
-log[expr_StringForm, opts:OptionsPattern[]] := With[{
-    message = StringJoin[OptionValue["prefix"], ToString[expr], OptionValue["endl"]]
-  },
-  RG`Scripts`Print[message];
+  ];
 ];
 log[expr_List, opts:OptionsPattern[]] := If[OptionValue["column"],
-  Scan[log[#, opts]&, expr],
+  If[OptionValue[verbose], System`Print[expr]];
+  Scan[log[#, verbose->False opts]&, expr],
   log[
     ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
     opts
   ]
 ];
-log[expr_, opts:OptionsPattern[]] := log[
-  ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
-  opts
-];
-log[expr__, opts:OptionsPattern[]] := Scan[log[#, opts]&, {expr}];
+log[expr_, opts:OptionsPattern[]] := With[{
+    message = StringJoin[
+      OptionValue["prefix"],
+      ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
+      OptionValue["endl"]
+    ]
+  },
+  If[OptionValue[verbose], System`Print[expr]];
+  WriteString[
+    OptionValue["stream"],
+    StringJoin[
+      "\r",
+      StringReplace[message, OptionValue["colorize"]]
+      "\n"
+    ]
+  ]
+]
+log[expr__, opts:OptionsPattern[]] := (
+  If[OptionValue[verbose], System`Print[expr]];
+  Scan[log[#, verbose->False, opts]&, {expr}]
+);
+
+
+RG`Scripts`Print[expr__] := If[$Notebooks,
+  System`Print[expr]
+  ,
+  log[expr]
+]
+
+(* Options[RG`Scripts`Print] = { *)
+(*   "stream" -> "stderr", *)
+(*   "colorize" -> { *)
+(*     "[info]" -> "\033[1;35m[info]\033[0m", *)
+(*     "[directory]" -> "\033[1;35m[directory]\033[0m", *)
+(*     "[....]" -> "\033[1;35m[....]\033[0m", *)
+(*     "[usage]" -> "\033[1;37m[usage]\033[0m", *)
+(*     "[load]" -> "\033[1;37m[load]\033[0m", *)
+(*     "[file]" -> "\033[1;35m[file]\033[0m", *)
+(*     "[hash]" -> "\033[1;35m[hash]\033[0m", *)
+(*     "[export]" -> "\033[1;37m[export]\033[0m", *)
+(*     "[ERROR]" -> "\033[1;31m[ERROR]\033[0m", *)
+(*     "[time]" -> "\033[1;35m[time]\033[0m", *)
+(*     "[date]" -> "\033[1;35m[date]\033[0m", *)
+(*     "[seconds]" -> "\033[1;35m[seconds]\033[0m", *)
+(*     "[test]" -> "\033[1;34m[test]\033[0m", *)
+(*     "[OK]" -> "\033[1;32m[OK]\033[0m", *)
+(*     "[note]" -> "\033[1;33m[note]\033[0m", *)
+(*     "[echo]" -> "\033[1;33m[echo]\033[0m", *)
+(*     "[running]" -> "\033[1;36m[running]\033[0m", *)
+(*     "[exit]" -> "\033[1;36m[exit]\033[0m", *)
+(*     "[RESULT]" -> "\033[1;31m[RESULT]\033[0m", *)
+(*     "[init]" -> "\033[1;36m[init]\033[0m", *)
+(*     "[warning]" -> "\033[0;33m[warning]\033[0m", *)
+(*     "[args]" -> "\033[1;34m[args]\033[0m" *)
+(*   }, *)
+(*   "width" :> 1000 *)
+(* }; *)
+(* RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks, *)
+(*   System`Print[message], *)
+(*   WriteString[ *)
+(*     OptionValue["stream"], *)
+(*     StringJoin[ *)
+(*       "\r", *)
+(*       StringReplace[message, OptionValue["colorize"]], *)
+(*       "\n" *)
+(*     ] *)
+(*   ] *)
+(* ]; *)
+(* RG`Scripts`Print[expr_, opts:OptionsPattern[]] := If[$Notebooks, *)
+(*   System`Print[expr], *)
+(*   WriteString[ *)
+(*     OptionValue["stream"], *)
+(*     StringJoin[ *)
+(*       "\r", *)
+(*       ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], *)
+(*       "\n" *)
+(*     ] *)
+(*   ] *)
+(* ]; *)
+(* RG`Scripts`Print[expr__, opts:OptionsPattern[]] := Scan[RG`Scripts`Print[#, opts]&, {expr}]; *)
 
 
 error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
@@ -120,22 +198,30 @@ echo[expr_] := (log[expr, "width"->Infinity, "prefix"->"[echo]: "]; expr);
 
 
 (* ::Section:: *)
-(* Time and System *)
+(* System information *)
 
 
 timeString := DateString[{"<", "Year", "-", "Month", "-", "Day", " ", "Hour",":", "Minute", ":", "Second", ">"}];
-timeStamp[] := With[{stamp = timeString},
-  log[stamp, "prefix" -> "[date]: "];
-];
+timeStamp[] := (
+  log[timeString, "prefix" -> "[date]: "];
+)
+
 
 systemString := ToString@StringForm["``@`` : Wolfram Mathematica ``", $UserName, $MachineName, $Version];
-systemStamp[] := With[{stamp = systemString},
-  log[stamp];
-];
+systemStamp[] := (
+  log[systemString];
+)
+
+
+fileString := ToString@StringForm["`` loaded", $InputFileName]
+fileStamp[] := (
+  log[fileString, "prefix" -> "[file]: "];
+);
 
 
 (* ::Section:: *)
 (* Parsing command line arguments *)
+
 
 argparse[] := Which[
   $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
@@ -294,7 +380,7 @@ Options[RG`Scripts`Timing] = {"verbose"->False};
 SetAttributes[RG`Scripts`Timing, HoldFirst];
 RG`Scripts`Timing[expr_] := Module[{time, result},
   log[ToString[Unevaluated[expr]], "prefix"->"[time]: ", "endl"->" ... "];
-  {time, result} = If[OptionValue[RG`Scripts`Timing, "verbose"], 
+  {time, result} = If[OptionValue[RG`Scripts`Timing, "verbose"],
     AbsoluteTiming[expr], Block[{Print}, AbsoluteTiming[expr]]
   ];
   log[ToString @ NumberForm[time, {6, 2}] <> " [seconds]", "prefix"->"[time]: "];
@@ -334,28 +420,30 @@ info[expr_Symbol, All] := (
 info[expr_String] := log[Names[expr], "width"->Infinity];
 
 
-ansiwindows[str_String, color_:Gray] := With[{rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]}, 
-	StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
+(* ::Text:: *)
+(*Colorization in terminal on Windows*)
+ansiwindows[str_String, color_:Gray] := With[{rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]},
+  StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
 
 If[$OperatingSystem == "Windows",
-	SetOptions[RG`Scripts`Print, "colorize"->{
-    "[info]" -> ansiwindows["[info]", Darker@Blue],
-	"[date]" -> ansiwindows["[date]", Darker@Magenta],
-	"[usage]" -> ansiwindows["[usage]", Darker@Yellow],
-	"[ERROR]" -> ansiwindows["[ERROR]", Red],
-	"[OK]" -> ansiwindows["[OK]", Lighter@Green],
-	"[warning]" -> ansiwindows["[warning]", Lighter@Red],
-	"[args]" -> ansiwindows["[args]", Lighter@Magenta],
-	"[time]" -> ansiwindows["[time]", Darker@Cyan],
-	"[seconds]" -> ansiwindows["[seconds]", Darker@Cyan],
-	"[echo]" -> ansiwindows["[echo]", White],
-	"[....]" -> ansiwindows["[....]", White],
-	"[export]" -> ansiwindows["[export]", Magenta],
-	"[hash]" -> ansiwindows["[hash]", Magenta],
-	"[directory]" -> ansiwindows["directory"],
-	"[load]"->ansiwindows["load"]
-	}]
+  SetOptions[RG`Scripts`Print, "colorize"->{
+  "[info]" -> ansiwindows["[info]", Darker@Blue],
+  "[date]" -> ansiwindows["[date]", Darker@Magenta],
+  "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
+  "[ERROR]" -> ansiwindows["[ERROR]", Red],
+  "[OK]" -> ansiwindows["[OK]", Lighter@Green],
+  "[warning]" -> ansiwindows["[warning]", Lighter@Red],
+  "[args]" -> ansiwindows["[args]", Lighter@Magenta],
+  "[time]" -> ansiwindows["[time]", Darker@Cyan],
+  "[seconds]" -> ansiwindows["[seconds]", Darker@Cyan],
+  "[echo]" -> ansiwindows["[echo]", White],
+  "[....]" -> ansiwindows["[....]", White],
+  "[export]" -> ansiwindows["[export]", Magenta],
+  "[hash]" -> ansiwindows["[hash]", Magenta],
+  "[directory]" -> ansiwindows["directory"],
+  "[load]"->ansiwindows["load"]
+  }]
 ]
 
 
@@ -376,5 +464,8 @@ log[StringForm["working directory: '``'", Directory[]]];
 log[StringForm["'``' loaded", FileNameTake[$InputFileName, -3]]];
 
 
-forceFlag = argparse["force", False];
-SetOptions[RG`Scripts`Export, "force"->forceFlag];
+
+Global`forceFlag = argparse["force", False];
+Global`verboseFlag = argparse["verbose", False];
+SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
+SetOptions[log, "verbose"->Global`verboseFlag];

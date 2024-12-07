@@ -14,8 +14,5 @@ argparse["script", "test"]
 timeStamp[]
 systemStamp[]
 
-echo[head[$InputFileName, 10]]
-
-echo[sizeOf[Range[10]]]
 
 info[argparse]

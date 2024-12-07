@@ -83,3 +83,7 @@ VerificationTest[
 	,
 	a + x (b + x Sin[x])
 ]
+
+
+RG`Scripts`echo[RG`Tools`head[$InputFileName, 10]]
+RG`Scripts`echo[RG`Tools`sizeOf[Range[10]]]

@@ -4,6 +4,9 @@ Needs["RG`Tools`"];
 Needs["RG`Notation`"];
 
 
+Get["RG/Tools/SetDrawOptions.wl"];
+
+
 BeginPackage["RG`Notebooks`"]
 
 
@@ -173,12 +176,14 @@ EndPackage[]
 
 Begin["rule`"];
 rule`holdform::usage = "rule`holdform[expr] substitute expr -> HoldForm[expr]"
+
 Begin["`Private`"]
 SetAttributes[rule`holdform, HoldAll]
 rule`holdform[x_] := {ex_HoldForm :> ex, x -> HoldForm[x]}
 rule`holdform[xs__] := Prepend[Thread[{xs} -> Thread[HoldForm[{xs}]]], ex_HoldForm :> ex]
 End[];
+
 End[];
 
 
-Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]]
+fileStamp[]

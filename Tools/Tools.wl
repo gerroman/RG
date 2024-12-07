@@ -2,7 +2,6 @@ Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
 
 
 Get["RG/Tools/Rules.wl"];
-Get["RG/Tools/SetDrawOptions.wl"];
 
 
 BeginPackage["RG`Tools`"]
@@ -170,4 +169,4 @@ End[]
 EndPackage[]
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+fileStamp[]

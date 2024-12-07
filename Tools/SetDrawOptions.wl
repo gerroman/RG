@@ -33,4 +33,4 @@ Block[{
 ];
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+fileStamp[]
