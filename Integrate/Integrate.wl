@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["RG`Integrate`", {"RG`Tools`"}]
 
 
@@ -28,7 +30,8 @@ Begin["`Private`"]
 
 
 integrate /: Format[integrate[expr_, {l_, dim_}], TraditionalForm] := DisplayForm[
-RowBox[{"\[Integral]", RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]], TraditionalForm[l]}], TraditionalForm[expr]}]];
+RowBox[{"\[Integral]", RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]],  TraditionalForm[l]}], "(",
+  ToBoxes[expr,TraditionalForm], ")"}]];
 
 integrate /: Format[integrate[expr_, region___], TraditionalForm] := (
   HoldForm[Integrate[expr, region]]
