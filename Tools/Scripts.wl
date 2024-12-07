@@ -37,6 +37,8 @@ info::usage = "info[func] \[LongDash] get information about func: context, usage
 info[func, All] \[LongDash] get full information about func including up/down values";
 
 
+ansiwindows::usage="ansiwindows[expr, color]"
+
 Begin["`Private`"];
 
 
@@ -422,12 +424,29 @@ info[expr_String] := log[Names[expr], "width"->Infinity];
 
 (* ::Text:: *)
 (*Colorization in terminal on Windows*)
-ansiwindows[str_String, color_:Gray] := With[{rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]},
+ansiwindows[str_String, color_:Gray] := With[{
+	rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]
+  },
   StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
 
+
+End[];
+
+
+EndPackage[];
+On[General::shdw];
+
+
+Off[FrontEndObject::notavail];
+
+Global`forceFlag = argparse["force", False];
+Global`verboseFlag = If[$OperatingSystem=="Windows", True, argparse["verbose", False]];
+
+SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
+SetOptions[log, "verbose"->Global`verboseFlag];
 If[$OperatingSystem == "Windows",
-  SetOptions[RG`Scripts`Print, "colorize"->{
+  SetOptions[log, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
   "[date]" -> ansiwindows["[date]", Darker@Magenta],
   "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
@@ -443,29 +462,10 @@ If[$OperatingSystem == "Windows",
   "[hash]" -> ansiwindows["[hash]", Magenta],
   "[directory]" -> ansiwindows["directory"],
   "[load]"->ansiwindows["load"]
-  }]
-]
-
-
-
-End[];
-
-
-EndPackage[];
-On[General::shdw];
-
-
-Off[FrontEndObject::notavail];
-
+  *)}]
+];
 
 systemStamp[];
 timeStamp[];
 log[StringForm["working directory: '``'", Directory[]]];
-log[StringForm["'``' loaded", FileNameTake[$InputFileName, -3]]];
-
-
-
-Global`forceFlag = argparse["force", False];
-Global`verboseFlag = argparse["verbose", False];
-SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
-SetOptions[log, "verbose"->Global`verboseFlag];
+fileStamp[];
