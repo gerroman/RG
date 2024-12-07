@@ -1,11 +1,6 @@
 BeginPackage["RG`Kinematics`"]
 
 
-(*Shortcuts*)
-fv=RG`Kinematics`FourVector`FourVector;
-sp=RG`Kinematics`ScalarProduct`ScalarProduct;
-li=RG`Kinematics`LorentzIndex`LorentzIndex;
-mt=RG`Kinematics`MetricTensor`MetricTensor;
 
 Begin["`Private`"]
 
