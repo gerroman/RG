@@ -24,10 +24,6 @@ info::usage = "info[func] \[LongDash] get information about func: context, usage
 info[func, All] \[LongDash] get full information about func including up/down values";
 
 
-head::usage = "head[fname] \[LongDash] return first line of file contents";
-sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
-
-
 Begin["`Private`"];
 
 
@@ -336,48 +332,6 @@ info[expr_Symbol, All] := (
   If[Not[emptyQ[DownValues[expr]]], log[DownValues[expr], "width"->Infinity]];
 );
 info[expr_String] := log[Names[expr], "width"->Infinity];
-
-
-head[fname_String] := Module[{stream, result = $Failed},
-  If[FileExistsQ[fname],
-    (
-      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
-      stream = OpenRead[fname];
-      result = ReadLine[stream];
-      Close[stream];
-    ),
-    log[StringForm["can not find '``'", fname], "prefix"->"[error]: "];
-  ];
-  Return[result];
-];
-
-head[fname_String, n_Integer] := Module[{stream, result = $Failed},
-  If[FileExistsQ[fname],
-    (
-      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
-      stream = OpenRead[fname];
-      result = StringRiffle[
-        Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
-        {"", "\n", ""}
-      ];
-      Close[stream];
-    ),
-    log[StringForm["can not find '``'", fname], "prefix" -> "[error]: "];
-  ];
-  Return[result];
-];
-
-
-sizeOf[expr_] := Module[
-  {leafs = LeafCount[expr], bytes = Quantity[ByteCount[expr], "Bytes"]},
-  bytes = 1`3 * Which[
-    QuantityMagnitude[bytes] > 10^9, UnitConvert[bytes, "Gigabytes"],
-    QuantityMagnitude[bytes] > 10^6, UnitConvert[bytes, "Megabytes"],
-    QuantityMagnitude[bytes] > 10^3, UnitConvert[bytes, "Kilobytes"],
-    True, bytes
-  ];
-  {leafs, bytes}
-];
 
 
 ansiwindows[str_String, color_:Gray] := With[{rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]}, 

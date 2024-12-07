@@ -34,6 +34,9 @@ force::usage = "force[at | limit | sum | integrate | d] forces evaluation";
 
 cases::usage = "cases[pattern] \[LongDash] just a shortcut for Union[Cases[#, pattern, Infinity]]&"
 
+head::usage = "head[fname] \[LongDash] return first line of file contents";
+sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
+
 
 Begin["`Private`"];
 
@@ -116,6 +119,49 @@ pullFactor[pattern_, func_] := With[{rule = rule`pullFactor[pattern, func]},
 distribute[outer_, inner_:Plus] := With[{rule = rule`distribute[outer, inner]},
 	ReplaceRepeated[#, rule]&
 ]
+
+
+head[fname_String] := Module[{stream, result = $Failed},
+  If[FileExistsQ[fname],
+    (
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
+      stream = OpenRead[fname];
+      result = ReadLine[stream];
+      Close[stream];
+    ),
+    log[StringForm["can not find '``'", fname], "prefix"->"[error]: "];
+  ];
+  Return[result];
+];
+
+
+head[fname_String, n_Integer] := Module[{stream, result = $Failed},
+  If[FileExistsQ[fname],
+    (
+      log[StringForm["\"``\" (`` bytes)", fname, FileByteCount[fname]], "prefix"->"[file]: "];
+      stream = OpenRead[fname];
+      result = StringRiffle[
+        Table[ReadLine[stream], n] // DeleteCases[EndOfFile],
+        {"", "\n", ""}
+      ];
+      Close[stream];
+    ),
+    log[StringForm["can not find '``'", fname], "prefix" -> "[error]: "];
+  ];
+  Return[result];
+];
+
+
+sizeOf[expr_] := Module[
+  {leafs = LeafCount[expr], bytes = Quantity[ByteCount[expr], "Bytes"]},
+  bytes = 1`3 * Which[
+    QuantityMagnitude[bytes] > 10^9, UnitConvert[bytes, "Gigabytes"],
+    QuantityMagnitude[bytes] > 10^6, UnitConvert[bytes, "Megabytes"],
+    QuantityMagnitude[bytes] > 10^3, UnitConvert[bytes, "Kilobytes"],
+    True, bytes
+  ];
+  {leafs, bytes}
+];
 
 
 End[]
