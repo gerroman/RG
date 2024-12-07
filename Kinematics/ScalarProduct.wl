@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["RG`Kinematics`ScalarProduct`"]
 
 
@@ -11,6 +13,9 @@ SetAttributes[ScalarProduct, Orderless];
 
 
 ScalarProduct/:Format[ScalarProduct[a_, a_], TraditionalForm] := DisplayForm[SuperscriptBox[RowBox[{"(", ToBoxes[a, TraditionalForm], ")"}], 2]];
+ScalarProduct/:Format[ScalarProduct[a_Plus, b_Plus], TraditionalForm] := DisplayForm[RowBox[{"(", "(", ToBoxes[a, TraditionalForm],")", "\[CenterDot]", "(", ToBoxes[b, TraditionalForm],")", ")"}]];
+ScalarProduct/:Format[ScalarProduct[a_, b_Plus], TraditionalForm] := DisplayForm[RowBox[{"(", ToBoxes[a, TraditionalForm], "\[CenterDot]", "(", ToBoxes[b, TraditionalForm],")", ")"}]];
+ScalarProduct/:Format[ScalarProduct[a_Plus, b_], TraditionalForm] := DisplayForm[RowBox[{"(", "(", ToBoxes[a, TraditionalForm],")", "\[CenterDot]", ToBoxes[b, TraditionalForm], ")"}]];
 ScalarProduct/:Format[ScalarProduct[a_, b_], TraditionalForm] := DisplayForm[RowBox[{"(", ToBoxes[a, TraditionalForm], "\[CenterDot]", ToBoxes[b, TraditionalForm], ")"}]];
 ScalarProduct/:Format[ScalarProduct[a_], TraditionalForm] := DisplayForm[SuperscriptBox[RowBox[{"(", ToBoxes[a,TraditionalForm], ")"}], 2]];
 
@@ -24,4 +29,4 @@ End[]
 EndPackage[]
 
 
-Print[ToString@StringForm["[info]: `` loaded", $InputFileName]];
+fileStamp[];

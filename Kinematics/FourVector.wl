@@ -22,4 +22,4 @@ End[]
 EndPackage[]
 
 
-Print[ToString@StringForm["[info]: `` loaded", $InputFileName]];
+fileStamp[]

@@ -1,19 +1,4 @@
-BeginPackage["RG`Kinematics`"]
-
-
-
-Begin["`Private`"]
-
-
-RG`Kinematics`FourVector`FourVector[p_, mu_Symbol] := RG`Kinematics`FourVector`FourVector[p, RG`Kinematics`LorentzIndex`LorentzIndex[mu]];
-RG`Kinematics`MetricTensor`MetricTensor[mu_Symbol, nu_Symbol] := RG`Kinematics`MetricTensor`MetricTensor[RG`Kinematics`LorentzIndex`LorentzIndex[mu], RG`Kinematics`LorentzIndex`LorentzIndex[nu]]
-
-
-End[]
-
-
-EndPackage[]
-
+(* ::Package:: *)
 
 Scan[Needs, {
   "RG`Kinematics`LorentzIndex`",
@@ -24,7 +9,28 @@ Scan[Needs, {
   "RG`Kinematics`ScalarProductRules`",
   "RG`Kinematics`PhysicalRegion`",
   "RG`Kinematics`MetricTensor`"
+}];
+
+
+BeginPackage["RG`Kinematics`", {
+  "RG`Kinematics`LorentzIndex`",
+  "RG`Kinematics`FourVector`",
+  "RG`Kinematics`MetricTensor`"
 }]
 
 
-Print[ToString@StringForm["[info]: `` loaded", $InputFileName]];
+(*Shortcuts*)
+Begin["`Private`"]
+
+
+FourVector[p_, mu_Symbol] := FourVector[p, LorentzIndex[mu]];
+MetricTensor[mu_Symbol, nu_Symbol] := MetricTensor[LorentzIndex[mu], LorentzIndex[nu]]
+
+
+End[]
+
+
+EndPackage[]
+
+
+fileStamp[]
