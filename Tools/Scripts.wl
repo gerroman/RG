@@ -6,7 +6,7 @@ BeginPackage["RG`Scripts`"];
 
 (* ::Text:: *)
 (*Logging utils*)
-log::usage = "log[expr] \[LongDash] converts 'expr' to string and call Write[] to stderr";
+log::usage = "log[expr, verbose->True] \[LongDash] Print[expr],\nlog[expr, opts] converts 'expr' to string and call Write[] to stderr";
 error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix";
 warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix";
 echo::usage = "echo[expr] \[LongDash] prints and return expr";
@@ -23,7 +23,6 @@ fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
 (*Update in system function*)
 Export::usage=System`Export::usage;
 Timing::usage=System`Timing::usage;
-Print::usage=System`Print::usage;
 
 
 (* ::Text:: *)
@@ -38,6 +37,7 @@ info[func, All] \[LongDash] get full information about func including up/down va
 
 
 ansiwindows::usage="ansiwindows[expr, color]"
+
 
 Begin["`Private`"];
 
@@ -81,117 +81,62 @@ Options[log] = {
 log[expr_String, opts:OptionsPattern[]] := With[{
     message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
   },
-  If[OptionValue[verbose], System`Print[expr]];
-  WriteString[
-    OptionValue["stream"],
-    StringJoin[
-      "\r",
-      StringReplace[message, OptionValue["colorize"]],
-      "\n"
+  If[OptionValue[verbose],
+      Print[message]
+    ,
+    WriteString[
+      OptionValue["stream"],
+      StringJoin[
+        "\r",
+        StringReplace[message, OptionValue["colorize"]],
+        "\n"
+      ]
     ]
-  ];
+  ]
 ];
 log[expr_StringForm, opts:OptionsPattern[]] := With[{
     message = StringJoin[OptionValue["prefix"], ToString@expr, OptionValue["endl"]]
   },
-  If[OptionValue[verbose], System`Print[expr]];
-  WriteString[
-    OptionValue["stream"],
-    StringJoin[
-      "\r",
-      StringReplace[message, OptionValue["colorize"]],
-      "\n"
+  If[OptionValue[verbose],
+    Print[message]
+    ,
+    WriteString[
+      OptionValue["stream"],
+      StringJoin[
+        "\r",
+        StringReplace[message, OptionValue["colorize"]],
+        "\n"
+      ]
     ]
-  ];
+  ]
 ];
 log[expr_List, opts:OptionsPattern[]] := If[OptionValue["column"],
-  If[OptionValue[verbose], System`Print[expr]];
-  Scan[log[#, verbose->False opts]&, expr],
-  log[
-    ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
-    opts
+  Scan[log[#, opts]&, expr]
+  ,
+  log[ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], opts]
+];
+
+log[expr_, opts:OptionsPattern[]] := With[{
+      message = StringJoin[
+        OptionValue["prefix"],
+        ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
+        OptionValue["endl"]
+      ]
+    },
+  If[OptionValue[verbose],
+    Print[message]
+    ,
+    WriteString[
+      OptionValue["stream"],
+      StringJoin[
+        "\r",
+        StringReplace[message, OptionValue["colorize"]],
+        "\n"
+      ]
+    ]
   ]
 ];
-log[expr_, opts:OptionsPattern[]] := With[{
-    message = StringJoin[
-      OptionValue["prefix"],
-      ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]],
-      OptionValue["endl"]
-    ]
-  },
-  If[OptionValue[verbose], System`Print[expr]];
-  WriteString[
-    OptionValue["stream"],
-    StringJoin[
-      "\r",
-      StringReplace[message, OptionValue["colorize"]]
-      "\n"
-    ]
-  ]
-]
-log[expr__, opts:OptionsPattern[]] := (
-  If[OptionValue[verbose], System`Print[expr]];
-  Scan[log[#, verbose->False, opts]&, {expr}]
-);
-
-
-RG`Scripts`Print[expr__] := If[$Notebooks,
-  System`Print[expr]
-  ,
-  log[expr]
-]
-
-(* Options[RG`Scripts`Print] = { *)
-(*   "stream" -> "stderr", *)
-(*   "colorize" -> { *)
-(*     "[info]" -> "\033[1;35m[info]\033[0m", *)
-(*     "[directory]" -> "\033[1;35m[directory]\033[0m", *)
-(*     "[....]" -> "\033[1;35m[....]\033[0m", *)
-(*     "[usage]" -> "\033[1;37m[usage]\033[0m", *)
-(*     "[load]" -> "\033[1;37m[load]\033[0m", *)
-(*     "[file]" -> "\033[1;35m[file]\033[0m", *)
-(*     "[hash]" -> "\033[1;35m[hash]\033[0m", *)
-(*     "[export]" -> "\033[1;37m[export]\033[0m", *)
-(*     "[ERROR]" -> "\033[1;31m[ERROR]\033[0m", *)
-(*     "[time]" -> "\033[1;35m[time]\033[0m", *)
-(*     "[date]" -> "\033[1;35m[date]\033[0m", *)
-(*     "[seconds]" -> "\033[1;35m[seconds]\033[0m", *)
-(*     "[test]" -> "\033[1;34m[test]\033[0m", *)
-(*     "[OK]" -> "\033[1;32m[OK]\033[0m", *)
-(*     "[note]" -> "\033[1;33m[note]\033[0m", *)
-(*     "[echo]" -> "\033[1;33m[echo]\033[0m", *)
-(*     "[running]" -> "\033[1;36m[running]\033[0m", *)
-(*     "[exit]" -> "\033[1;36m[exit]\033[0m", *)
-(*     "[RESULT]" -> "\033[1;31m[RESULT]\033[0m", *)
-(*     "[init]" -> "\033[1;36m[init]\033[0m", *)
-(*     "[warning]" -> "\033[0;33m[warning]\033[0m", *)
-(*     "[args]" -> "\033[1;34m[args]\033[0m" *)
-(*   }, *)
-(*   "width" :> 1000 *)
-(* }; *)
-(* RG`Scripts`Print[message_String, opts:OptionsPattern[]] := If[$Notebooks, *)
-(*   System`Print[message], *)
-(*   WriteString[ *)
-(*     OptionValue["stream"], *)
-(*     StringJoin[ *)
-(*       "\r", *)
-(*       StringReplace[message, OptionValue["colorize"]], *)
-(*       "\n" *)
-(*     ] *)
-(*   ] *)
-(* ]; *)
-(* RG`Scripts`Print[expr_, opts:OptionsPattern[]] := If[$Notebooks, *)
-(*   System`Print[expr], *)
-(*   WriteString[ *)
-(*     OptionValue["stream"], *)
-(*     StringJoin[ *)
-(*       "\r", *)
-(*       ToString[expr, FormatType->InputForm, TotalWidth->OptionValue["width"]], *)
-(*       "\n" *)
-(*     ] *)
-(*   ] *)
-(* ]; *)
-(* RG`Scripts`Print[expr__, opts:OptionsPattern[]] := Scan[RG`Scripts`Print[#, opts]&, {expr}]; *)
+log[expr__, opts:OptionsPattern[]] := Scan[log[#, opts]&, {expr}];
 
 
 error[expr_, opts:OptionsPattern[]] := log[expr, "prefix"->"[ERROR]: ", opts];
@@ -425,7 +370,7 @@ info[expr_String] := log[Names[expr], "width"->Infinity];
 (* ::Text:: *)
 (*Colorization in terminal on Windows*)
 ansiwindows[str_String, color_:Gray] := With[{
-	rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]
+  rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]
   },
   StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
