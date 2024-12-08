@@ -385,13 +385,14 @@ On[General::shdw];
 
 Off[FrontEndObject::notavail];
 
-Global`forceFlag = argparse["force", False];
-Global`verboseFlag = If[$OperatingSystem=="Windows", True, argparse["verbose", False]];
 
+If[$Notebooks, SetOptions[log, "verbose"->True]];
+Global`forceFlag = argparse["force", False];
 SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
-SetOptions[log, "verbose"->Global`verboseFlag];
+
+
 If[$OperatingSystem == "Windows",
-  SetOptions[log, "colorize"->{(*
+  SetOptions[log, {verbose->True, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
   "[date]" -> ansiwindows["[date]", Darker@Magenta],
   "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
@@ -407,7 +408,7 @@ If[$OperatingSystem == "Windows",
   "[hash]" -> ansiwindows["[hash]", Magenta],
   "[directory]" -> ansiwindows["directory"],
   "[load]"->ansiwindows["load"]
-  *)}]
+  *)}}]
 ];
 
 systemStamp[];
