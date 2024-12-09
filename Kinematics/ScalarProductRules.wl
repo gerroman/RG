@@ -1,26 +1,12 @@
 BeginPackage["RG`Kinematics`ScalarProductRules`", {
-  "RG`Kinematics`ScalarProduct`",
-  "RG`Tools`"
+  "RG`Lorentz`ScalarProduct`"
 }]
 
 
 GetScalarProductRules::usage="GetScalarProductRules[{p1, \[Ellipsis], pn}, eqs:{_Equal..}] \[LongDash] get rules to substitute scalar products assuming conservation p1 + \[Ellipsis] + pn == 0 and constraints eqs"
 
 
-EvaluateScalarProducts::usage="EvaluateScalarProducts[expr] \[LongDash] evaluates scalar products using distributive and associative laws\nEvaluateScalarProducts[expr, rules] \[LongDash] evalates scalar products using rules"
-
-
 Begin["`Private`"]
-
-
-EvaluateScalarProducts[expr_] := expr //
-  RG`Tools`distribute[ScalarProduct] //
-  RG`Tools`pullFactor[factor_/;(NumberQ[factor]||NumberQ[factor]), ScalarProduct]
-
-EvaluateScalarProducts[expr_, rules_] := expr //
-  RG`Tools`distribute[ScalarProduct] //
-  RG`Tools`pullFactor[factor_/;(NumberQ[factor]||NumberQ[factor]), ScalarProduct] //
-  ReplaceAll[rules]
 
 
 GetScalarProductRules::badsps = "can not construct `` different scalar products using ``"
@@ -95,4 +81,4 @@ End[]
 EndPackage[]
 
 
-fileStamp[]
+RG`Scripts`fileStamp[]

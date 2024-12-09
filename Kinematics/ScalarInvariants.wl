@@ -7,7 +7,7 @@ GetScalarInvariants::usage="GetScalarInvariants[{p1, \[Ellipsis], pn}, sp] retur
 Begin["`Private`"]
 
 
-GetScalarInvariants[ps_List, sp_:RG`Kinematics`ScalarProduct`ScalarProduct] := Module[{n = Length[ps], nInv, sps, invariants},
+GetScalarInvariants[ps_List, sp_:RG`Lorentz`ScalarProduct`ScalarProduct] := Module[{n = Length[ps], nInv, sps, invariants},
   nInv = n * (n - 1) / 2;
   sps = Flatten[Array[Map[With[{x = Total[#]}, sp[x, x]]&, (Partition[Join[ps, ps[[;;(#-1)]]], #, 1])]&, n]];
   invariants = sps[[;;nInv]]
@@ -20,4 +20,4 @@ End[]
 EndPackage[]
 
 
-fileStamp[]
+RG`Scripts`fileStamp[]

@@ -1,4 +1,4 @@
-BeginPackage["RG`Kinematics`LorentzIndex`"]
+BeginPackage["RG`Lorentz`LorentzIndex`"]
 
 
 LorentzIndex::usage="LorentzIndex[\[Mu]] \[LongDash] Lorentz index \[Mu]\nLorentzIndex[\[Mu], i] \[LongDash] Lorentz index \[Mu] with subscript i"

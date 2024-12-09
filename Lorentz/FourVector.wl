@@ -1,4 +1,6 @@
-BeginPackage["RG`Kinematics`FourVector`", {"RG`Kinematics`LorentzIndex`"}]
+(* ::Package:: *)
+
+BeginPackage["RG`Lorentz`FourVector`", {"RG`Lorentz`LorentzIndex`"}]
 
 
 FourVector::usage="FourVector[p] \[LongDash] 4-vector p\nFourVector[p, \[Mu]] \[LongDash] 4-vector p with Lorentz index \[Mu]"
@@ -22,4 +24,4 @@ End[]
 EndPackage[]
 
 
-fileStamp[]
+RG`Scripts`fileStamp[]

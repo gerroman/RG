@@ -5,26 +5,27 @@ Scan[Needs, {
   "RG`Lorentz`FourVector`",
   "RG`Lorentz`ScalarProduct`",
   "RG`Lorentz`MetricTensor`",
-  "RG`Kinematics`ScalarInvariants`",
-  "RG`Kinematics`ConservationRules`",
-  "RG`Kinematics`ScalarProductRules`",
-  "RG`Kinematics`PhysicalRegion`"
+  "RG`Lorentz`DiracMatrix`"
 }];
 
 
 BeginPackage["RG`Kinematics`", {
   "RG`Lorentz`LorentzIndex`",
   "RG`Lorentz`FourVector`",
-  "RG`Lorentz`MetricTensor`"
+  "RG`Lorentz`ScalarProduct`",
+  "RG`Lorentz`MetricTensor`",
+  "RG`Lorentz`DiracMatrix`"
 }]
 
 
-(*Shortcuts*)
 Begin["`Private`"]
 
 
-FourVector[p_, mu_Symbol] := FourVector[p, LorentzIndex[mu]];
+(*Shortcuts*)
+FourVector[p_Symbol, mu_Symbol] := FourVector[FourVector[p], LorentzIndex[mu]];
 MetricTensor[mu_Symbol, nu_Symbol] := MetricTensor[LorentzIndex[mu], LorentzIndex[nu]]
+DiracMatrix[mu_Symbol] := DiracMatrix[LorentzIndex[mu]];
+DiracSlash[p_Symbol] := DiracSlash[FourVector[p]];
 
 
 End[]

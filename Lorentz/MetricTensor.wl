@@ -1,4 +1,4 @@
-BeginPackage["RG`Kinematics`MetricTensor`", {"RG`Kinematics`LorentzIndex`"}]
+BeginPackage["RG`Lorentz`MetricTensor`", {"RG`Lorentz`LorentzIndex`"}]
 
 
 MetricTensor::usage="MetricTensor[\[Mu]_LorentzIndex, \[Nu]_LorentzIndex] \[LongDash] metric tensor with Lorentz indices"

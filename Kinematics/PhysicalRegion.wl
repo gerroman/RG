@@ -1,5 +1,5 @@
 BeginPackage["RG`Kinematics`PhysicalRegion`", {
-  "RG`Kinematics`ScalarProduct`",
+  "RG`Lorentz`ScalarProduct`",
   "RG`Kinematics`ScalarProductRules`"
 }]
 

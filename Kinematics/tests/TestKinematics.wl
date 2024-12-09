@@ -1,5 +1,6 @@
 (* ::Package:: *)
-Needs["RG`Kinematics`"]
+
+Get["RG`Kinematics`"]
 
 
 fv=FourVector
