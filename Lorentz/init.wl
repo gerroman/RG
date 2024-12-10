@@ -9,7 +9,7 @@ Scan[Needs, {
 }];
 
 
-BeginPackage["RG`Kinematics`", {
+BeginPackage["RG`Lorentz`", {
   "RG`Lorentz`LorentzIndex`",
   "RG`Lorentz`FourVector`",
   "RG`Lorentz`ScalarProduct`",

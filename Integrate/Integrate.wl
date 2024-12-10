@@ -22,7 +22,7 @@ indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all
 determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
 
 
-d::usage="d[expr] represent Dt[expr];
+Global`d::usage="d[expr] represent Dt[expr];
 d[expr, var] represent D[expr, var]"
 
 
@@ -125,6 +125,10 @@ indetermineIntegrate[expr_] := ReplaceAll[
   (expr // flattenIntegrate),
   integrate[a_, b__] :> integrate[a, Sequence @@ (First /@ Flatten /@ List /@ {b})]
 ];
+indetermineIntegrate[expr_, var_] := ReplaceAll[
+  expr,
+  integrate[a_, b___,{var, range___}, c___] :> integrate[a, b, var, c]
+]
 
 
 determineIntegrate[{x_, low_, up_}][expr_] := ReplaceAll[
@@ -135,6 +139,14 @@ determineIntegrate[{x_, low_, up_}][expr_] := ReplaceAll[
   }
 ];
 
+determineIntegrate[{x_, d_}][expr_] := ReplaceAll[
+  expr,
+  {
+    integrate[a_, x] :> integrate[a, {x, d}],
+    integrate[a_, b___, x, c___] :> integrate[integrate[a, {x, d}], b, c]
+  }
+];
+
 
 groupIntegrals[va_] := ReplaceRepeated[#, {
   a_. integrate[exprA_, vs:(va|{va, __})] + b_. integrate[exprB_, vs:(va|{va, __})] :>
@@ -142,8 +154,8 @@ groupIntegrals[va_] := ReplaceRepeated[#, {
 }]&;
 
 
-Format[d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
-Format[d[args__], TraditionalForm] := HoldForm[D[args]]
+Format[Global`d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
+Format[Global`d[args__], TraditionalForm] := HoldForm[D[args]]
 
 
 End[]
@@ -164,7 +176,7 @@ force[integrate, x_, opts:OptionsPattern[]] = ReplaceAll[#, {
 }]&;
 
 
-force[d, opts:OptionsPattern[]] = ReplaceAll[#, d -> D[##, opts]&]&
+force[Global`d, opts:OptionsPattern[]] = ReplaceAll[#, Global`d -> D[##, opts]&]&
 
 
 Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];

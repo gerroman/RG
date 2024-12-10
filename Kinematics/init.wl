@@ -1,6 +1,7 @@
 (* ::Package:: *)
 
 Scan[Needs, {
+  "RG`Lorentz`",
   "RG`Lorentz`LorentzIndex`",
   "RG`Lorentz`FourVector`",
   "RG`Lorentz`ScalarProduct`",
@@ -12,20 +13,11 @@ Scan[Needs, {
 }];
 
 
-BeginPackage["RG`Kinematics`", {
-  "RG`Lorentz`LorentzIndex`",
-  "RG`Lorentz`FourVector`",
-  "RG`Lorentz`MetricTensor`"
-}]
+BeginPackage["RG`Kinematics`"]
 
 
-(*Shortcuts*)
 Begin["`Private`"]
-
-
-FourVector[p_, mu_Symbol] := FourVector[p, LorentzIndex[mu]];
-MetricTensor[mu_Symbol, nu_Symbol] := MetricTensor[LorentzIndex[mu], LorentzIndex[nu]]
-
+(*Shortcuts*)
 
 End[]
 
