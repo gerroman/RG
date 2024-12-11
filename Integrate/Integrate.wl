@@ -22,6 +22,9 @@ indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all
 determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
 
 
+reorderIntegrate::usage = "reorderIntegrate[x][expr] \[LongDash] set the outer integration w.r.t. x"
+
+
 Global`d::usage="d[expr] represent Dt[expr];
 d[expr, var] represent D[expr, var]"
 
@@ -156,6 +159,11 @@ groupIntegrals[va_] := ReplaceRepeated[#, {
 
 Format[Global`d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
 Format[Global`d[args__], TraditionalForm] := HoldForm[D[args]]
+
+
+reorderIntegrate[x_] := ReplaceAll[
+  integrate[a_, b___, var:(x|{x,__}), c___] :> integrate[a, x, b, c]
+]
 
 
 End[]
