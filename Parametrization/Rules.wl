@@ -13,6 +13,7 @@ rule`f21arg::usage = "rule`f21arg \[LongDash] argument shift {z -> 1 - z} of Hyp
 rule`f21ind::usage = "rule`f21ind \[LongDash] index shift of {} Hypergeometric2F1"
 rule`appell::usage="rule`f21 \[LongDash] substitute integral representation of AppellF1"
 
+rule`f21matrix::usage = "rule`f21matrix \[LongDash] return differential system matrix for {Hypergeometric2F1[a, b, c, z], D[Hypergeometric2F1[a, b, c, z], z]}"
 
 Begin["rule`Private`"]
 
@@ -88,6 +89,14 @@ rule`appell = {
   integrate[(1 + t_ x_)^r_. (1 + t_ y_)^s_., {t_, 0, 1}] :>
     (Gamma[1] Gamma[1])/Gamma[2] *
       AppellF1[1, -r, -s, 2, -x, -y]
+}
+
+
+rule`f21matrix = {
+	Hypergeometric2F1[a_, b_, c_, z_] :> {
+		{0, 1},
+		{-((a*b)/(-1 + z)) + (a*b)/z, (-1 - a - b + c)/(-1 + z) - c/z}
+	}
 }
 
 
