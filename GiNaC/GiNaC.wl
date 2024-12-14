@@ -19,10 +19,15 @@ GeneralizedGoncharovG::usage = "GeneralizedGoncharovG[{m1, ...}][{z1, ...}, y] g
 Begin["`Private`"];
 
 
-Install[FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]];
-
-
-Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];
+EvalG::nofile="can not find G.exe to evaluate Goncharov polylogarithms numerically"
+With[{fname=FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]},
+If[FindFile[fname] =!= $Failed, (
+    Install[fname];
+    Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];  
+  )
+  ,
+  Message[EvalG::nofile]
+]]
 
 
 Format[GoncharovG[zs_List, y_], TraditionalForm] := DisplayForm@RowBox[{Global`G, "(", Row[zs, ","], ";", y, ")"}];
