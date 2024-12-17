@@ -6,6 +6,8 @@ BeginPackage["RG`Scripts`"];
 
 (* ::Text:: *)
 (*Logging utils*)
+
+
 log::usage = "log[expr, verbose->True] \[LongDash] Print[expr],\nlog[expr, opts] converts 'expr' to string and call Write[] to stderr";
 error::usage = "error[expr] \[LongDash] log  'expr' with '[ERROR]' prefix";
 warning::usage = "warning[expr] \[LongDash] log  'expr' with '[warning]' prefix";
@@ -14,6 +16,8 @@ echo::usage = "echo[expr] \[LongDash] prints and return expr";
 
 (* ::Text:: *)
 (*System Information*)
+
+
 timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]"
 systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]"
 fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
@@ -21,17 +25,23 @@ fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
 
 (* ::Text:: *)
 (*Update in system function*)
+
+
 Export::usage=System`Export::usage;
 Timing::usage=System`Timing::usage;
 
 
 (* ::Text:: *)
 (*Parsing command line arguments*)
+
+
 argparse::usage = "argparse[] \[LongDash] returns {argc, argv}";
 
 
 (* ::Text:: *)
 (*Getting help*)
+
+
 info::usage = "info[func] \[LongDash] get information about func: context, usage, attributes, options
 info[func, All] \[LongDash] get full information about func including up/down values";
 
@@ -81,7 +91,7 @@ Options[log] = {
 log[expr_String, opts:OptionsPattern[]] := With[{
     message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
   },
-  If[OptionValue[verbose],
+  If[OptionValue["verbose"],
       Print[message]
     ,
     WriteString[
@@ -97,7 +107,7 @@ log[expr_String, opts:OptionsPattern[]] := With[{
 log[expr_StringForm, opts:OptionsPattern[]] := With[{
     message = StringJoin[OptionValue["prefix"], ToString@expr, OptionValue["endl"]]
   },
-  If[OptionValue[verbose],
+  If[OptionValue["verbose"],
     Print[message]
     ,
     WriteString[
@@ -123,7 +133,7 @@ log[expr_, opts:OptionsPattern[]] := With[{
         OptionValue["endl"]
       ]
     },
-  If[OptionValue[verbose],
+  If[OptionValue["verbose"],
     Print[message]
     ,
     WriteString[
@@ -369,6 +379,8 @@ info[expr_String] := log[Names[expr], "width"->Infinity];
 
 (* ::Text:: *)
 (*Colorization in terminal on Windows*)
+
+
 ansiwindows[str_String, color_:Gray] := With[{
   rgb = StringJoin[Riffle[ToString /@ Round[255 * List@@ColorConvert[color, RGBColor]], ";"]]
   },
@@ -392,7 +404,7 @@ SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
 
 
 If[$OperatingSystem == "Windows",
-  SetOptions[log, {verbose->True, "colorize"->{(*
+  SetOptions[log, {"verbose"->True, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
   "[date]" -> ansiwindows["[date]", Darker@Magenta],
   "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
