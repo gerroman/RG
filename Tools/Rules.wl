@@ -5,7 +5,7 @@ Begin["rule`"]
 
 hold::usage = "rule`hold[x] \[LongDash] rules to replace {x -> Hold[x]}"
 
-release::usage = "rule`release[x]  \[LongDash] rules to replace {(Hold|HoldForm)[x]->x}"
+(*release::usage = "rule`release[x]  \[LongDash] rules to replace {(Hold|HoldForm)[x]->x}"*)
 
 powerExpand::usage = "rule`powerExpand[x] \[LongDash] rule to pull x out of Power[] and Abs[]"
 
@@ -34,12 +34,12 @@ rule`hold[pattern_] := {
 }
 
 
-rule`release[xs_List] := Flatten[{Hold[#]->#, HoldForm[#]->#}& /@ xs]
+(*rule`release[xs_List] := Flatten[{Hold[#]->#, HoldForm[#]->#}& /@ xs]
 rule`release[xs__] := rule`release[{xs}]
 rule`release[pattern_] := {
   (Hold[x_]/;MatchQ[x, pattern]) :> x,
   (HoldForm[x_]/;MatchQ[x, pattern]) :> x
-}
+}*)
 
 
 rule`powerExpand[xs_List] := Join[

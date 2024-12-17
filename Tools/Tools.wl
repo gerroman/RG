@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
 
 
@@ -8,8 +10,6 @@ BeginPackage["RG`Tools`"]
 
 
 hold::usage="hold[x] \[LongDash] replace {x -> Hold[x]}."
-
-release::usage="release[x] \[LongDash] replace {(Hold|HoldForm)[x]->x}."
 
 powerExpand::usage="powerExpand[x] \[LongDash] pull out x of powers assuming that x is positive."
 
@@ -40,12 +40,10 @@ sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in 
 Begin["`Private`"];
 
 
-hold[xs_List] := With[{rule=rule`hold[xs]},	ReplaceRepeated[#, rule]&];
+hold[xs_List] := With[{rule=rule`hold[xs]},
+  ReplaceRepeated[#, rule]&
+];
 hold[xs__]:=hold[{xs}]
-
-
-release[xs_List] := With[{rule=rule`release[xs]},	ReplaceRepeated[#, rule]&]
-release[xs__]:=release[{xs}]
 
 
 powerExpand[x_] := With[{rule=rule`powerExpand[x]}, ReplaceRepeated[#, rule]&]
@@ -63,16 +61,17 @@ pullIt[xs_List] := RightComposition@@(pullIt/@xs)
 pullIt[xs__] := pullIt[{xs}]
 
 
-changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr, 
+changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr,
   expr //
-	hold[xs] //
-	ReplaceAll[Thread[hs -> (-1)*hms]] //
-	release[-xs]
+    hold[xs] //
+    ReplaceAll[Thread[hs -> (-1)*hms]] //
+    ReplaceAll[Thread[hms->-xs]]
 ]]
 changeSign[xs__] := changeSign[{xs}]
 changeSign[pattern_] := Function[expr, With[{xs=Union@Cases[expr, pattern, Infinity]},
   changeSign[xs][expr]
 ]]
+
 
 groupIt[x_, func_:Expand] := With[{rule = rule`group[x, func]},
   ReplaceAll[#, rule]&
@@ -91,18 +90,18 @@ modify[xs_List, func_:Expand] := With[{rule = (# -> func[#])& /@ xs},
 SetAttributes[eq, HoldFirst]
 Options[eq] = {HoldForm->True};
 eq[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
-	{
-	func = RightComposition@@fs,
+  {
+  func = RightComposition@@fs,
     lhs = If[OptionValue[HoldForm], HoldForm[expr], expr]
   },
-	lhs == func[expr]
+  lhs == func[expr]
 ]
 eq[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
-	{
+  {
     lfunc = RightComposition@@lfs,
-	rfunc = RightComposition@@rfs
+  rfunc = RightComposition@@rfs
   },
-	lfunc[expr] == rfunc[expr]
+  lfunc[expr] == rfunc[expr]
 ]
 eq[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
 
@@ -111,12 +110,12 @@ cases[pattern_] := Union[Cases[#, pattern, Infinity]]&
 
 
 pullFactor[pattern_, func_] := With[{rule = rule`pullFactor[pattern, func]},
-	ReplaceRepeated[#, rule]&
+  ReplaceRepeated[#, rule]&
 ]
 
 
 distribute[outer_, inner_:Plus] := With[{rule = rule`distribute[outer, inner]},
-	ReplaceRepeated[#, rule]&
+  ReplaceRepeated[#, rule]&
 ]
 
 
