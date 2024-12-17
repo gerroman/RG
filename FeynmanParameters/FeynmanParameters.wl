@@ -1,20 +1,49 @@
+(* ::Package:: *)
+
 BeginPackage["RG`FeynmanParameters`", {"RG`Integrate`"}]
 
-GetFeynmanParametrization::usage="GetParametrization[l, {m2 - sp[l+_], \[Ellipsis]}]"
+
+GetFeynmanParametrization::usage="GetParametrization[denominators_List]"
+RG`FeynmanParameters`x::usage="x[i] \[LongDash] Feynman parameter"
+
 
 Begin["`Private`"]
 
-patternDenominator[l_]:=((_.-_[(_:l)+_.])|(_.-_[(_:l) + a_.,(_:l) + a_.]))
 
-SetAttributes[GetFeynmanParametrization, Listable];
-GetFeynmanParametrization[l_, denominators_List, dim_] := Module[
-  {},
-  Null
+RG`FeynmanParameters`x /: Format[RG`FeynmanParameters`x[i_Integer], TraditionalForm] := DisplayForm[SubscriptBox[Style["x",Italic], i]]
+
+
+GetFeynmanParametrization[denominators_List, powers_List] := Module[
+  {
+    n = Total[powers],
+    xs,
+    commonFactor,
+    integrand,
+    result
+  },
+  xs = Array[RG`FeynmanParameters`x, n];
+  commonFactor = Gamma[n] / Times @@ (Gamma /@ powers);
+  integrand = Times@@(xs^(powers - 1)) *
+    DiracDelta[1 - Total[xs]] *
+    (Total[xs * denominators])^(-n);
+  result = Fold[
+    integrate[#1, {#2, 0, Infinity}]&,
+    integrand,
+    xs
+  ]
 ];
+GetFeynmanParametrization[denominators_List] := (
+  GetFeynmanParametrization[
+    denominators,
+    ConstantArray[1, Length[denominators]]
+  ]
+);
+
 
 End[]
 
 
 EndPackage[]
 
-RG`Scripts`filestamp[]
+
+RG`Scripts`fileStamp[]
