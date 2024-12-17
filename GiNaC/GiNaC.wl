@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`GiNaC`", {"RG`Integrate`"}]
 
 
@@ -22,6 +21,7 @@ Begin["`Private`"];
 EvalG::nofile="can not find G.exe to evaluate Goncharov polylogarithms numerically"
 With[{fname=FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]},
 If[FindFile[fname] =!= $Failed, (
+    Print[fname];
     Install[fname];
     Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];  
   )
@@ -44,7 +44,7 @@ Format[GeneralizedGoncharovG[ms_List][zs_List, y_], TraditionalForm] :=
 GoncharovG[{}, y_] := 1;
 
 
-GoncharovG[(zs_List /; Not@MemberQ[zs, 0]), y_] := (
+GoncharovG[(zs_List), y_] := (
   With[{n = Length[zs]},
     With[{ts = Table[Unique["tau$"], n]},
       integrate[
