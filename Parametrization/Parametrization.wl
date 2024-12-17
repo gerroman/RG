@@ -1,13 +1,9 @@
 Get["RG/Parametrization/Rules.wl"]
 
 
-BeginPackage["RG`Parametrization`", 
+BeginPackage["RG`Parametrization`",
   {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Integrate`"}
 ]
-
-
-integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
-integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions containing z as a variable";
 
 
 getParametrizationFU::usage = "getParametrizationFU[LiteRed`j, dim] \[LongDash] make an integral using U and F polynomials.\n[note]: (1) it contains \[Delta]-function in the form \[Delta](1 - \[CapitalSigma]x)\n[note]: (2) integration w.r.t. x_i goes from 0 to \[Infinity]\n[note]: (3) it is assumed that the denominatos have Euclidian form: [-(l + p)^2 + m^2 - i0]";
@@ -31,36 +27,6 @@ pullOut::usage="pullOut[x] \[LongDash] pull x out of powers in Feynman parameter
 Begin["Private`"]
 
 
-integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
-  iexpr,
-  {
-    (integrate[(expr_.) delta[r_ + s_.],  z_] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s}),
-    (integrate[(expr_.) delta[r_ + s_.], x___, z_,  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}), x, y],
-    (integrate[(expr_.) delta[r_ + s_.],  z_] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s}),
-    (integrate[(expr_.) delta[r_ + s_.], x___, z_,  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}), x, y],
-    (integrate[(expr_.) delta[r_ + s_.], {z_, a_, b_}] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s})  * HeavisideTheta[s - a] * HeavisideTheta[b - s],
-    (integrate[(expr_.) delta[r_ + s_.], x___, {z_, a_, b_},  y___] /; ((-r == z) && FreeQ[s, z])) :>	integrate[(expr /. {z -> s}) * HeavisideTheta[s - a] * HeavisideTheta[b - s], x, y],
-    (integrate[(expr_.) delta[r_ + s_.], {z_, a_, b_}] /; ((r == z) && FreeQ[s, z])) :>	(expr /. {z -> -s})  * HeavisideTheta[-s - a] * HeavisideTheta[b + s],
-    (integrate[(expr_.) delta[r_ + s_.], x___, {z_, a_, b_},  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}) * HeavisideTheta[-s - a] * HeavisideTheta[b + s], x, y]
-  }
-]];
-
-
-integrateDelta[iexpr_, z_] := With[{delta = DiracDelta}, ReplaceAll[
-  iexpr,
-  {
-    (integrate[(expr_.) delta[r_ + s_.],  z] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s}),
-    (integrate[(expr_.) delta[r_ + s_.], x___, z,  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}), x, y],
-    (integrate[(expr_.) delta[r_ + s_.],  z] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s}),
-    (integrate[(expr_.) delta[r_ + s_.], x___, z,  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}), x, y],
-    (integrate[(expr_.) delta[r_ + s_.], {z, a_, b_}] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s})  * HeavisideTheta[s - a] * HeavisideTheta[b - s],
-    (integrate[(expr_.) delta[r_ + s_.], x___, {z, a_, b_},  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}) * HeavisideTheta[s - a] * HeavisideTheta[b - s], x, y],
-    (integrate[(expr_.) delta[r_ + s_.], {z, a_, b_}] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s})  * HeavisideTheta[-s - a] * HeavisideTheta[b + s],
-    (integrate[(expr_.) delta[r_ + s_.], x___, {z, a_, b_},  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}) * HeavisideTheta[-s - a] * HeavisideTheta[b + s], x, y]
-  }
-]];
-
-
 (*(Lee, 2013), Eq.(2.2)*)
 (*Additional factor:*)
 (*Exp[EulerGamma * L * (4 - dim)/2]*)
@@ -76,7 +42,7 @@ getParametrizationFU[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[
   n = Total[ns];
   {U, F, xs} = {(-1), (-1), 1} * LiteRed`FeynParUF[LiteRed`Ds[expr], LiteRed`LMs[tag]];
   L = Length[LiteRed`LMs[tag]];
-  cf = Exp[EulerGamma * L * (4 - dim)/2] * 
+  cf = Exp[EulerGamma * L * (4 - dim)/2] *
     Gamma[n - L * dim / 2] / (Times@@Gamma[ns]);
   result = cf * (
     Fold[
@@ -105,8 +71,8 @@ getParametrizationG[expr:(LiteRed`j[tag_, idxs__]), dim_] := Module[{
   n = Total[ns];
   {U, F, xs} = {(-1), (-1), 1} * LiteRed`FeynParUF[LiteRed`Ds[expr], LiteRed`LMs[tag]];
   L = Length[LiteRed`LMs[tag]];
-  cf = Exp[EulerGamma * L * (4 - dim) / 2] * 
-    Gamma[dim / 2] / 
+  cf = Exp[EulerGamma * L * (4 - dim) / 2] *
+    Gamma[dim / 2] /
     (Gamma[(L + 1) * dim/2 - n] * (Times@@Gamma[ns]));
   G = F + U + Global`mi0;
   result = cf * (

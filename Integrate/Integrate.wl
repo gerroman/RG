@@ -29,6 +29,10 @@ Global`d::usage="d[expr] represent Dt[expr];
 d[expr, var] represent D[expr, var]"
 
 
+integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
+integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions containing z as a variable";
+
+
 Begin["`Private`"]
 
 
@@ -65,8 +69,12 @@ changeIntegrateVars[rulex:{_Rule..}, ruley:{_Rule..}, opts:OptionsPattern[]] := 
   },
   With[{det = Factor[Det[Outer[D, fs, ys]]]},
     ReplaceAll[
-      integrate[expr_, Sequence@@xs] :> 
-        integrate[(expr //. rulex) * If[OptionValue[Abs], Abs[det], det], Sequence@@ys]
+      integrate[expr_, Sequence@@xs] :>
+        integrate[
+          (expr //. rulex) *
+            If[OptionValue[Abs], Abs[det], det],
+          Sequence@@ys
+        ]
     ]
   ]
 ];
@@ -105,7 +113,7 @@ pullIntegrateFactors[expr_] := pullIntegrateFactors[][expr]
 
 flattenIntegrate[expr_] := ReplaceRepeated[
   expr,
-  integrate[(d_.) integrate[a_, b_], c__] :> integrate[d * a, c, b]
+  integrate[(d_.) integrate[a_, b__], c__] :> integrate[d * a, c, b]
 ];
 
 
@@ -157,34 +165,66 @@ groupIntegrals[va_] := ReplaceRepeated[#, {
 }]&;
 
 
-Format[Global`d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
-Format[Global`d[args__], TraditionalForm] := HoldForm[D[args]]
+Global`d/:Format[Global`d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
+Global`d/:Format[Global`d[args__], TraditionalForm] := HoldForm[D[args]]
 
 
 reorderIntegrate[x_] := ReplaceAll[
-  integrate[a_, b___, var:(x|{x,__}), c___] :> integrate[a, x, b, c]
+  integrate[a_, b___, var:(x|{x,__}), c___] :> integrate[a, var, b, c]
 ]
+
+reorderIntegrate[xs__] := Composition @@ (reorderIntegrate/@{xs})
+
+
+integrateDelta[iexpr_] := With[{delta = DiracDelta}, ReplaceAll[
+  iexpr,
+  {
+    (integrate[(expr_.) delta[r_ + s_.],  z_] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s}),
+    (integrate[(expr_.) delta[r_ + s_.], x___, z_,  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}), x, y],
+    (integrate[(expr_.) delta[r_ + s_.],  z_] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s}),
+    (integrate[(expr_.) delta[r_ + s_.], x___, z_,  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}), x, y],
+    (integrate[(expr_.) delta[r_ + s_.], {z_, a_, b_}] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s})  * HeavisideTheta[s - a] * HeavisideTheta[b - s],
+    (integrate[(expr_.) delta[r_ + s_.], x___, {z_, a_, b_},  y___] /; ((-r == z) && FreeQ[s, z])) :>	integrate[(expr /. {z -> s}) * HeavisideTheta[s - a] * HeavisideTheta[b - s], x, y],
+    (integrate[(expr_.) delta[r_ + s_.], {z_, a_, b_}] /; ((r == z) && FreeQ[s, z])) :>	(expr /. {z -> -s})  * HeavisideTheta[-s - a] * HeavisideTheta[b + s],
+    (integrate[(expr_.) delta[r_ + s_.], x___, {z_, a_, b_},  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}) * HeavisideTheta[-s - a] * HeavisideTheta[b + s], x, y]
+  }
+]];
+
+
+integrateDelta[iexpr_, z_] := With[{delta = DiracDelta}, ReplaceAll[
+  iexpr,
+  {
+    (integrate[(expr_.) delta[r_ + s_.],  z] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s}),
+    (integrate[(expr_.) delta[r_ + s_.], x___, z,  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}), x, y],
+    (integrate[(expr_.) delta[r_ + s_.],  z] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s}),
+    (integrate[(expr_.) delta[r_ + s_.], x___, z,  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}), x, y],
+    (integrate[(expr_.) delta[r_ + s_.], {z, a_, b_}] /; ((-r == z) && FreeQ[s, z])) :> (expr /. {z -> s})  * HeavisideTheta[s - a] * HeavisideTheta[b - s],
+    (integrate[(expr_.) delta[r_ + s_.], x___, {z, a_, b_},  y___] /; ((-r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> s}) * HeavisideTheta[s - a] * HeavisideTheta[b - s], x, y],
+    (integrate[(expr_.) delta[r_ + s_.], {z, a_, b_}] /; ((r == z) && FreeQ[s, z])) :> (expr /. {z -> -s})  * HeavisideTheta[-s - a] * HeavisideTheta[b + s],
+    (integrate[(expr_.) delta[r_ + s_.], x___, {z, a_, b_},  y___] /; ((r == z) && FreeQ[s, z])) :> integrate[(expr /. {z -> -s}) * HeavisideTheta[-s - a] * HeavisideTheta[b + s], x, y]
+  }
+]];
+
+
+RG`Tools`force[RG`Integrate`integrate, opts:OptionsPattern[]] = (
+  ReplaceAll[#, RG`Integrate`integrate -> (Integrate[##, opts]&)]&
+)
+RG`Tools`force[RG`Integrate`integrate, N, opts:OptionsPattern[]] = (
+  ReplaceAll[#, RG`Integrate`integrate -> (NIntegrate[##, opts]&)] &
+);
+RG`Tools`force[RG`Integrate`integrate, x_, opts:OptionsPattern[]] := ReplaceAll[#, {
+  RG`Integrate`integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}, opts],
+  RG`Integrate`integrate[expr_, x] :> Integrate[expr, x, opts]
+}]&;
+
+
+RG`Tools`force[Global`d, opts:OptionsPattern[]] = ReplaceAll[#, Global`d -> D[##, opts]&]&
 
 
 End[]
 
 
 EndPackage[]
-
-
-force[integrate, opts:OptionsPattern[]] = (
-  ReplaceAll[#, integrate -> (Integrate[##, opts]&)]&
-)
-force[integrate, N, opts:OptionsPattern[]] = (
-  ReplaceAll[#, integrate -> (NIntegrate[##, opts]&)] &
-);
-force[integrate, x_, opts:OptionsPattern[]] = ReplaceAll[#, {
-  integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}, opts],
-  integrate[expr_, x] :> Integrate[expr, x, opts]
-}]&;
-
-
-force[Global`d, opts:OptionsPattern[]] = ReplaceAll[#, Global`d -> D[##, opts]&]&
 
 
 Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
