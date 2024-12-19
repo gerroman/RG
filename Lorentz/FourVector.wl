@@ -15,6 +15,9 @@ FourVector/:Format[FourVector[a_Symbol, b_LorentzIndex], TraditionalForm] := Dis
 FourVector/:Format[FourVector[a_, b_LorentzIndex], TraditionalForm] := DisplayForm[
   SuperscriptBox[RowBox[{"(", ToBoxes[a, TraditionalForm], ")"}], ToBoxes[b, TraditionalForm]]
 ];
+FourVector/:Format[FourVector[a_, b_Integer], TraditionalForm] := DisplayForm[
+  SuperscriptBox[ToBoxes[a, TraditionalForm], b]
+];
 FourVector/:Format[FourVector[a_], TraditionalForm] := DisplayForm[ToBoxes[a,TraditionalForm]];
 
 

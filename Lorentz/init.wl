@@ -5,7 +5,9 @@ Scan[Needs, {
   "RG`Lorentz`FourVector`",
   "RG`Lorentz`ScalarProduct`",
   "RG`Lorentz`MetricTensor`",
-  "RG`Lorentz`DiracMatrix`"
+  "RG`Lorentz`DiracMatrix`",
+  "RG`Lorentz`PartialDerivative`",
+  "RG`Lorentz`LorentzTensor`"
 }];
 
 
@@ -14,7 +16,9 @@ BeginPackage["RG`Lorentz`", {
   "RG`Lorentz`FourVector`",
   "RG`Lorentz`ScalarProduct`",
   "RG`Lorentz`MetricTensor`",
-  "RG`Lorentz`DiracMatrix`"
+  "RG`Lorentz`DiracMatrix`",
+  "RG`Lorentz`PartialDerivative`",
+  "RG`Lorentz`LorentzTensor`"
 }]
 
 
@@ -26,6 +30,7 @@ FourVector[p_Symbol, mu_Symbol] := FourVector[FourVector[p], LorentzIndex[mu]];
 MetricTensor[mu_Symbol, nu_Symbol] := MetricTensor[LorentzIndex[mu], LorentzIndex[nu]]
 DiracMatrix[mu_Symbol] := DiracMatrix[LorentzIndex[mu]];
 DiracSlash[p_Symbol] := DiracSlash[FourVector[p]];
+PartialDerivative[\[CurlyPhi]_, \[Mu]_Symbol] := PartialDerivative[\[CurlyPhi], LorentzIndex[\[Mu]]]
 
 
 End[]
