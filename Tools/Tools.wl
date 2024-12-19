@@ -168,4 +168,11 @@ End[]
 EndPackage[]
 
 
-fileStamp[]
+Global`forceFlag = RG`Scripts`argparse["force", False];
+SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
+
+
+RG`Scripts`systemStamp[];
+RG`Scripts`timeStamp[];
+RG`Scripts`log[StringForm["working directory: '``'", Directory[]]];
+RG`Scripts`fileStamp[];

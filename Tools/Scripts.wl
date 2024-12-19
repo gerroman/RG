@@ -386,23 +386,6 @@ ansiwindows[str_String, color_:Gray] := With[{
   },
   StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
-
-
-End[];
-
-
-EndPackage[];
-On[General::shdw];
-
-
-Off[FrontEndObject::notavail];
-
-
-If[$Notebooks, SetOptions[log, "verbose"->True]];
-Global`forceFlag = argparse["force", False];
-SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
-
-
 If[$OperatingSystem == "Windows",
   SetOptions[log, {"verbose"->True, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
@@ -423,7 +406,12 @@ If[$OperatingSystem == "Windows",
   *)}}]
 ];
 
-systemStamp[];
-timeStamp[];
-log[StringForm["working directory: '``'", Directory[]]];
-fileStamp[];
+
+End[];
+
+
+EndPackage[];
+
+
+On[General::shdw];
+Off[FrontEndObject::notavail];
