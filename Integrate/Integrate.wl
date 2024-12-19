@@ -227,4 +227,4 @@ End[]
 EndPackage[]
 
 
-Print[ToString@StringForm["[info]: '``' loaded", $InputFileName]];
+RG`Scripts`fileStamp[]
