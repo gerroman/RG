@@ -9,16 +9,16 @@ FourVector::usage="FourVector[p] \[LongDash] 4-vector p\nFourVector[p, \[Mu]] \[
 Begin["`Private`"];
 
 
-FourVector/:Format[FourVector[a_Symbol, b_LorentzIndex], TraditionalForm] := DisplayForm[
+Format[FourVector[a_Symbol, b_], TraditionalForm] := DisplayForm[
   SuperscriptBox[ToBoxes[a, TraditionalForm], ToBoxes[b, TraditionalForm]]
 ];
-FourVector/:Format[FourVector[a_, b_LorentzIndex], TraditionalForm] := DisplayForm[
+Format[FourVector[a_, b_LorentzIndex], TraditionalForm] := DisplayForm[
   SuperscriptBox[RowBox[{"(", ToBoxes[a, TraditionalForm], ")"}], ToBoxes[b, TraditionalForm]]
 ];
-FourVector/:Format[FourVector[a_, b_Integer], TraditionalForm] := DisplayForm[
+Format[FourVector[a_, b_Integer], TraditionalForm] := DisplayForm[
   SuperscriptBox[ToBoxes[a, TraditionalForm], b]
 ];
-FourVector/:Format[FourVector[a_], TraditionalForm] := DisplayForm[ToBoxes[a,TraditionalForm]];
+Format[FourVector[a_], TraditionalForm] := DisplayForm[ToBoxes[a,TraditionalForm]];
 
 
 End[]
