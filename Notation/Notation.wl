@@ -54,7 +54,7 @@ SetAttributes[setSuperscript, {Listable}];
 setSuperscript[x_Symbol] := (
   x /: Format[x[i_List], TraditionalForm] := DisplayForm[SuperscriptBox[ToBoxes[x,TraditionalForm], RowBox[ToBoxes[#,TraditionalForm]&/@i]]];
   x /: Format[x[i_], TraditionalForm] := DisplayForm[SuperscriptBox[ToBoxes[x,TraditionalForm], ToBoxes[i,TraditionalForm]]];
-  x /: Format[x[], TraditionalForm] := ToBoxes[x,TraditionalForm];
+  x /: Format[x[], TraditionalForm] := DisplayForm[ToBoxes[x, TraditionalForm]];
   x
 );
 setSuperscript[x__] := setSuperscript[{x}];
@@ -129,4 +129,4 @@ End[]
 EndPackage[]
 
 
-fileStamp[]
+RG`Scripts`fileStamp[]
