@@ -70,7 +70,7 @@ rule`f21 = {
 rule`f21inv = (
   Hypergeometric2F1[mr_, p1_, pq2_, mz_] :> With[
     {
-      tau=Unique["x"],
+      tau=With[{x=ToExpression["x"]}, If[ValueQ[x], Unique["x$"], x]],
       p = p1 - 1,
       q = pq2 - p1 - 1,
       z = -mz,
@@ -122,4 +122,4 @@ rule`f21matrix = {
 End[]
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+RG`Scripts`fileStamp[]
