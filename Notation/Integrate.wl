@@ -1,32 +1,19 @@
 (* ::Package:: *)
 
-BeginPackage["RG`Integrate`", {"RG`Tools`"}]
+
+BeginPackage["RG`Notation`Integrate`", {"RG`Notation`Force`", "RG`Notation`D`"}]
 
 
-integrate::usage = "integrate[expr, region] represent an integral";
-
-changeIntegrateVars::usage = "changeIntegrateVars[va -> f[vb], vb -> g[va]] \[LongDash]  change integration variable va->vb in the integral w.r.t. va";
-
-pullIntegrateFactors::usage = "pullIntegrateFactors[va] \[LongDash] pull out constant factor off the integrals w.r.t. va";
-
-groupIntegrals::usage = "groupIntegrals[va]  \[LongDash] group sum of integrals w.r.t. variable va";
-
-substitute::usage = "substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules";
-
-flattenIntegrate::usage = "flattenIntegrate[expr] \[LongDash] flatten out nested integrate";
-
-nestIntegrate::usage = "nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables";
-
-indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all integration limits";
-
-determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x";
-
-
+integrate::usage = "integrate[expr, region] represent an integral"
+changeIntegrateVars::usage = "changeIntegrateVars[va -> f[vb], vb -> g[va]] \[LongDash]  change integration variable va->vb in the integral w.r.t. va"
+pullIntegrateFactors::usage = "pullIntegrateFactors[va] \[LongDash] pull out constant factor off the integrals w.r.t. va"
+groupIntegrals::usage = "groupIntegrals[va]  \[LongDash] group sum of integrals w.r.t. variable va"
+substitute::usage = "substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules"
+flattenIntegrate::usage = "flattenIntegrate[expr] \[LongDash] flatten out nested integrate"
+nestIntegrate::usage = "nestIntegrate[expr] \[LongDash] nest integrate w.r.t several variables"
+indetermineIntegrate::usage = "indetermineIntegrate[expr] \[LongDash] remove all integration limits"
+determineIntegrate::usage = "determineIntegrate[{x, low, up}][expr] \[LongDash] determine limits of integration w.r.t. x"
 reorderIntegrate::usage = "reorderIntegrate[x][expr] \[LongDash] set the outer integration w.r.t. x"
-
-
-Global`d::usage="d[expr] represent Dt[expr];
-d[expr, var] represent D[expr, var]"
 
 
 integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDelta functions
@@ -165,8 +152,6 @@ groupIntegrals[va_] := ReplaceRepeated[#, {
 }]&;
 
 
-Global`d/:Format[Global`d[arg_], TraditionalForm] := HoldForm[Dt[arg]]
-Global`d/:Format[Global`d[args__], TraditionalForm] := HoldForm[D[args]]
 
 
 reorderIntegrate[x_] := ReplaceAll[
@@ -206,19 +191,16 @@ integrateDelta[iexpr_, z_] := With[{delta = DiracDelta}, ReplaceAll[
 ]];
 
 
-RG`Tools`force[RG`Integrate`integrate, opts:OptionsPattern[]] = (
-  ReplaceAll[#, RG`Integrate`integrate -> (Integrate[##, opts]&)]&
+force[integrate, opts:OptionsPattern[]] := (
+  ReplaceAll[#, integrate -> (Integrate[##, opts]&)]&
 )
-RG`Tools`force[RG`Integrate`integrate, N, opts:OptionsPattern[]] = (
-  ReplaceAll[#, RG`Integrate`integrate -> (NIntegrate[##, opts]&)] &
+force[integrate, N, opts:OptionsPattern[]] := (
+  ReplaceAll[#, integrate -> (NIntegrate[##, opts]&)] &
 );
-RG`Tools`force[RG`Integrate`integrate, x_, opts:OptionsPattern[]] := ReplaceAll[#, {
-  RG`Integrate`integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}, opts],
-  RG`Integrate`integrate[expr_, x] :> Integrate[expr, x, opts]
+force[integrate, x_, opts:OptionsPattern[]] := ReplaceAll[#, {
+  integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}, opts],
+  integrate[expr_, x] :> Integrate[expr, x, opts]
 }]&;
-
-
-RG`Tools`force[Global`d, opts:OptionsPattern[]] = ReplaceAll[#, Global`d -> D[##, opts]&]&
 
 
 End[]

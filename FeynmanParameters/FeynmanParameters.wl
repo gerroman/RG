@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["RG`FeynmanParameters`", {"RG`Integrate`"}]
+BeginPackage["RG`FeynmanParameters`", {"RG`Notation`Integrate`"}]
 
 
 GetFeynmanParametrization::usage="GetParametrization[denominators_List]"

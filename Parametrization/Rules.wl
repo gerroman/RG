@@ -1,4 +1,4 @@
-Needs["RG`Integrate`"]
+Needs["RG`Notation`Integrate`"]
 
 
 Global`mi0::usage="mi0 \[LongDash] imaginary part of the propagators denominators (- \[ImaginaryI] \[CurlyEpsilon])"

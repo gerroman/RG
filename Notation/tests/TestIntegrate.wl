@@ -1,9 +1,11 @@
-(* ::Package:: *)
+Needs["RG`Notation`Integrate`"]
+Needs["RG`Tools`"]  
 
-Needs["RG`Integrate`"]
+
+integrate[Sin[x]^2,{x, 0, Pi}] // TraditionalForm
 
 
-integrate[Sin[x]^2,{x, 0, Pi}] // force[integrate]
+integrate[Sin[x]^2,{x, 0, Pi}] // force[integrate] // TraditionalForm
 
 
 integrate[Sin[x],{x,0,Pi}] // indetermineIntegrate // force[integrate]
@@ -24,7 +26,4 @@ eq`int[1] //
   FullSimplify
 
 
-substitute[(1-y)y==\[Sigma]^2/4, y, \[Sigma]]
-
-
-
+substitute[(1-y)y == \[Sigma]^2/4, y, \[Sigma]]

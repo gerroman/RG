@@ -2,7 +2,7 @@ Get["RG/Parametrization/Rules.wl"]
 
 
 BeginPackage["RG`Parametrization`",
-  {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Integrate`"}
+  {"LiteRed`","GetRegions`", "RG`Tools`", "RG`Notation`Integrate`"}
 ]
 
 
