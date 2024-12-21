@@ -34,6 +34,8 @@ cases::usage = "cases[pattern] \[LongDash] just a shortcut for Union[Cases[#, pa
 head::usage = "head[fname] \[LongDash] return first line of file contents";
 sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
 
+solve::usage="solve[expr, var] \[LongDash] solve expr w.r.t. var"
+
 
 Begin["`Private`"];
 
@@ -158,6 +160,15 @@ sizeOf[expr_] := Module[
   ];
   {leafs, bytes}
 ];
+
+
+solve[expr_List, vars_List] := Module[{
+    vs=Array[v, Length[vars]]
+  },
+  Solve[expr //. Thread[vars->vs], vs] //. Thread[vs->vars]
+]
+
+solve[expr_, var_] := solve[{expr}, {var}]
 
 
 End[]
