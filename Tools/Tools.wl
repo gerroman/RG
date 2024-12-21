@@ -29,8 +29,6 @@ distribute::usage="distribute[outer, inner]"
 
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
-force::usage = "force[at | limit | sum | integrate | d] forces evaluation";
-
 cases::usage = "cases[pattern] \[LongDash] just a shortcut for Union[Cases[#, pattern, Infinity]]&"
 
 head::usage = "head[fname] \[LongDash] return first line of file contents";
