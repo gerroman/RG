@@ -8,7 +8,7 @@ Begin["`Private`"]
 
 
 sum/:Format[sum[args__], TraditionalForm] := HoldForm[Sum[args]]
-sum/:force[sum, opts:OptionsPattern[]] := ReplaceAll[#, sum -> Sum[##, opts]&]&
+sum/:force[sum, opts:OptionsPattern[]] := ReplaceAll[#, sum -> (Sum[##, opts]&)]&
 
 
 End[]
