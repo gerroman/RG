@@ -186,4 +186,8 @@ End[];
 End[];
 
 
-fileStamp[]
+Print["[date]: " <> RG`Scripts`Private`systemString];
+Print["[info]: " <> RG`Scripts`Private`timeString];
+
+
+RG`Scripts`fileStamp[];
