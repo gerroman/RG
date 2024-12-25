@@ -6,7 +6,8 @@ Scan[Needs, {
   "RG`Notation`At`",
   "RG`Notation`Sum`",
   "RG`Notation`Product`",
-  "RG`Notation`Limit`"
+  "RG`Notation`Limit`",
+  "RG`Notation`NonCommutativeMultiply`"
 }]
 
 
