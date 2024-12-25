@@ -23,14 +23,20 @@ integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions contai
 Begin["`Private`"]
 
 
-integrate /: Format[integrate[expr_, {l_, dim_}], TraditionalForm] := DisplayForm[
-RowBox[{"\[Integral]", RowBox[{SuperscriptBox["\[DifferentialD]", TraditionalForm[dim]],  TraditionalForm[l]}], "(",
-  ToBoxes[expr,TraditionalForm], ")"}]];
-
-integrate /: Format[integrate[expr_, region___], TraditionalForm] := (
-  HoldForm[Integrate[expr, region]]
-);
-
+integrate /: Format[integrate[expr_, ls__], TraditionalForm] := DisplayForm[
+  RowBox[{
+    RowBox[
+      Which[
+        # === Global`\[Ellipsis], Global`\[Ellipsis],
+        Head[#]===List && Length[#] == 2, RowBox[{"\[Integral]", SuperscriptBox["\[DifferentialD]", TraditionalForm[#[[2]]]],  TraditionalForm[#[[1]]]}],
+        Head[#]===List && Length[#] == 3, RowBox[{SubsuperscriptBox["\[Integral]",TraditionalForm[#[[2]]], TraditionalForm[#[[3]]]], "\[DifferentialD]", TraditionalForm[#[[1]]]}],
+        True, RowBox[{"\[Integral]", "\[DifferentialD]", TraditionalForm[#]}]
+      ]& /@
+      {ls}
+    ],
+    "(", ToBoxes[expr,TraditionalForm], ")"
+  }]
+];
 
 substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
     ruleTo = Solve[eqs, xs],
