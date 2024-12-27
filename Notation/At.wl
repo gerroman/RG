@@ -18,6 +18,10 @@ at /: Format[at[expr_, {var_, a_, b_}], TraditionalForm] := DisplayForm[
   ]
 ]
 
+at /: Format[at[expr_, cond_], TraditionalForm] := DisplayForm[
+  SubscriptBox[""[expr], ToBoxes[cond, TraditionalForm]]
+]
+
 
 End[]
 

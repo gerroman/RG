@@ -20,7 +20,8 @@ getMiddlePosition[{p1:{_, _}, p2:{_, _}}] := (p1 + p2) / 2;
 
 Options[fermionLine] = {
   "ArrowSize"->Automatic,
-  "ArrowShift"->0.
+  "ArrowShift"->0.,
+  "FermionLineColor"->Black
 }
 
 fermionLine[points:{{_, _}...}, opt:OptionsPattern[]] := Module[{
@@ -41,6 +42,7 @@ fermionLine[points:{{_, _}...}, opt:OptionsPattern[]] := Module[{
     ] // Map[First] // Rest
   ) / l;
   {
+	OptionValue["FermionLineColor"],
     Arrowheads[Map[{OptionValue["ArrowSize"], #}&, arrowHeadsPositions]],
     Arrow[points]
   }
@@ -64,11 +66,11 @@ DrawGraph[g_Graph, vsPos_List, opts : OptionsPattern[]] := Module[{
     Message[DrawGraph::vertexlist, vs, First/@vsPos];
     Return[$Failed];
   )];
-  ps = Point[vs /. vsPos];
+  ps = Point[vs //. vsPos];
   arrows = edges // Cases[_DirectedEdge] // ReplaceAll[
-      DirectedEdge[v1_, v2_] :> fermionLine[{v1, v2} /. vsPos, fermionLineOpts]
+      DirectedEdge[v1_, v2_] :> fermionLine[{v1, v2} //. vsPos, fermionLineOpts]
   ];
-  waves = edges // Cases[_UndirectedEdge] // ReplaceAll[UndirectedEdge[v1_, v2_] :> photonLine[{v1, v2} /. vsPos, photonLineOpts]];
+  waves = edges // Cases[_UndirectedEdge] // ReplaceAll[UndirectedEdge[v1_, v2_] :> photonLine[{v1, v2} //. vsPos, photonLineOpts]];
   aspectRatio = With[{xs=Map[First, First[ps]], ys=Map[Last, First[ps]]},
     With[{dy = Max[ys]-Min[ys], dx=Max[xs] - Min[ys]},
       If[dx == 0 || dy == 0,
@@ -83,7 +85,8 @@ DrawGraph[g_Graph, vsPos_List, opts : OptionsPattern[]] := Module[{
 
 Options[photonLine] = {
   "DefaultSegmentLength"->0.3,
-  "NumberOfWiggles"->Automatic
+  "NumberOfWiggles"->Automatic,
+  "PhotonLineColor"->Black
 }
 
 photonLine[points:{p1:{_,_}, p2:{_,_}}, opts:OptionsPattern[]] := Module[{
@@ -106,7 +109,10 @@ photonLine[points:{p1:{_,_}, p2:{_,_}}, opts:OptionsPattern[]] := Module[{
     p1 + direction * (n - 1/2) * segmentLength - crossDirection * segmentLength / 2,
     p1 + direction * n * segmentLength
   }], nWiggles] // Flatten[#, 1]& // Prepend[#, p1]&;
-  graph = BezierCurve[bezierPoints];
+  graph = {
+	OptionValue["PhotonLineColor"],
+	BezierCurve[bezierPoints]
+  };
   Return[graph]
 ];
 
