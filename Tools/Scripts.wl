@@ -21,6 +21,7 @@ echo::usage = "echo[expr] \[LongDash] prints and return expr";
 timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]"
 systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]"
 fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
+gitRef::usage="gitRef[path] \[LongDash] return reference string assuming path under git version control system"
 
 
 (* ::Text:: *)
@@ -407,13 +408,12 @@ If[$OperatingSystem == "Windows",
 ];
 
 
-gitRef = StringTrim[RunProcess[{
+gitRef[path_String] := "[" <> path <> "]: " <> StringTrim[RunProcess[{
 	"git",
-	"--git-dir", FileNameJoin[{$UserBaseDirectory, "Applications", "RG", ".git"}],
-    "--work-tree", FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}], "log",
+	"log",
     "--pretty=reference",
 	"-n", "1"
-}, "StandardOutput"]];
+}, "StandardOutput", ProcessDirectory->path]];
 
 
 End[];
