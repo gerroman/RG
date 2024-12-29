@@ -38,6 +38,65 @@ integrate /: Format[integrate[expr_, ls__], TraditionalForm] := DisplayForm[
   }]
 ];
 
+integrate /: Format[integrate[expr_, {k_, d_}, "factor" -> factor_], TraditionalForm] := With[{
+		num = If[Numerator[factor] =!= 1, ToBoxes[Numerator[factor], TraditionalForm], Nothing]
+		,
+		den = Denominator[factor]
+	}
+	,
+	DisplayForm[RowBox[{
+		"\[Integral]",
+		If[den =!= 1,
+			FractionBox[
+				RowBox[{num, SuperscriptBox["\[DifferentialD]", TraditionalForm[d]], ToBoxes[k, TraditionalForm]}]
+				,
+				ToBoxes[den, TraditionalForm]
+			]
+			,
+			RowBox[{num, SuperscriptBox["\[DifferentialD]", TraditionalForm[d]], TraditionalForm[k]}]
+		]
+		,
+		ToBoxes[expr, TraditionalForm]
+	}]]
+]
+
+
+integrate /: Format[integrate[expr_, var_, "factor" -> factor_], TraditionalForm] := With[{
+		num = If[Numerator[factor] =!= 1, ToBoxes[Numerator[factor], TraditionalForm], Nothing]
+		,
+		den = Denominator[factor]
+		,
+		k = If[Head[var] === List,
+			var[[1]]
+			,
+			var
+		]
+		,
+		int = If[Head[var] === List,
+			SubsuperscriptBox["\[Integral]", ToBoxes[var[[2]], TraditionalForm], ToBoxes[var[[3]], TraditionalForm]]
+			,
+			"\[Integral]"
+		]
+	}
+	,
+	DisplayForm[RowBox[{
+		int
+		,
+		If[den =!= 1,
+			FractionBox[
+				RowBox[{num, "\[DifferentialD]", ToBoxes[k, TraditionalForm]}]
+				,
+				ToBoxes[den, TraditionalForm]
+			]
+			,
+			RowBox[{num, "\[DifferentialD]", ToBoxes[k, TraditionalForm]}]
+		]
+		,
+		ToBoxes[expr, TraditionalForm]
+	}]]
+]
+
+
 substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
     ruleTo = Solve[eqs, xs],
     ruleFrom = Solve[eqs, ys],
