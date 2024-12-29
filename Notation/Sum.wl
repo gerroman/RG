@@ -1,7 +1,7 @@
 BeginPackage["RG`Notation`Sum`", {"RG`Notation`Force`"}]
 
 
-sum::usage="sum[expr, var]"
+sum::usage="sum[expr, var]\nsum[expr, {var, i, j}]\nsum[expr,{}]"
 
 
 Begin["`Private`"]
@@ -17,6 +17,12 @@ sum/:Format[sum[expr_, {var_, i_, j_}], TraditionalForm] := DisplayForm[RowBox[{
   ,
   ToBoxes[expr, TraditionalForm]
 }]];
+
+sum/:Format[sum[expr__, {}], TraditionalForm] := DisplayForm[RowBox[Riffle[
+	ToBoxes[#, TraditionalForm]&/@{expr}
+	,
+	"+"
+]]]
 
 sum/:force[sum, opts:OptionsPattern[]] := ReplaceAll[#, sum -> (Sum[##, opts]&)]&;
 
