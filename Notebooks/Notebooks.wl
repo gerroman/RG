@@ -1,12 +1,3 @@
-(* ::Title:: *)
-(*Presentation*)
-Needs["RG`Tools`"];
-Needs["RG`Notation`"];
-
-
-Get["RG/Tools/SetDrawOptions.wl"];
-
-
 BeginPackage["RG`Notebooks`"]
 
 
@@ -186,8 +177,11 @@ End[];
 End[];
 
 
+Get["RG/Tools/SetDrawOptions.wl"];
+
 Print["[date]: " <> RG`Scripts`Private`systemString];
 Print["[info]: " <> RG`Scripts`Private`timeString];
 
-
 RG`Scripts`fileStamp[];
+
+
