@@ -407,6 +407,15 @@ If[$OperatingSystem == "Windows",
 ];
 
 
+gitRef = StringTrim[RunProcess[{
+	"git",
+	"--git-dir", FileNameJoin[{$UserBaseDirectory, "Applications", "RG", ".git"}],
+    "--work-tree", FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}], "log",
+    "--pretty=reference",
+	"-n", "1"
+}, "StandardOutput"]];
+
+
 End[];
 
 

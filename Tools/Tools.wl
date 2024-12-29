@@ -181,6 +181,7 @@ EndPackage[]
 Global`forceFlag = RG`Scripts`argparse["force", False];
 SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
 RG`Scripts`log[StringForm["working directory: '``'", Directory[]]];
+RG`Scripts`log[RG`Scripts`Private`gitRef, "prefix"->"[git]: "];
 
 
 RG`Scripts`fileStamp[];

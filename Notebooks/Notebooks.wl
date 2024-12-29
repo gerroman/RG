@@ -1,4 +1,4 @@
-BeginPackage["RG`Notebooks`"]
+BeginPackage["RG`Notebooks`", {"RG`Tools`"}]
 
 
 colorize::usage = "colorize[pattern] \[LongDash] colorize matches for the pattern
@@ -181,6 +181,7 @@ Get["RG/Tools/SetDrawOptions.wl"];
 
 Print["[date]: " <> RG`Scripts`Private`systemString];
 Print["[info]: " <> RG`Scripts`Private`timeString];
+Print["[git]: " <> RG`Scripts`Private`gitRef];
 
 RG`Scripts`fileStamp[];
 
