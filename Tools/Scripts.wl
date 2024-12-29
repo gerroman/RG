@@ -408,7 +408,7 @@ If[$OperatingSystem == "Windows",
 ];
 
 
-gitRef[path_String] := "[" <> path <> "]: " <> StringTrim[RunProcess[{
+gitRef[path_String] := StringTrim[RunProcess[{
 	"git",
 	"log",
     "--pretty=reference",
