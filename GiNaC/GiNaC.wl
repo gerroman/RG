@@ -1,12 +1,18 @@
 (* ::Package:: *)
 
-BeginPackage["RG`GiNaC`", {"RG`Integrate`"}]
+BeginPackage["RG`GiNaC`", {"RG`Notation`Integrate`"}]
 
 
 Global`G::usage = "G[{z1, ..., zn}, y] represent Goncharov interative polylogarithm";
 
 
 EvalG::usage = "EvalG[{Re[z1], ..., Re[zn]}, {Im[z1], .., Im[zn]}, y] evaluate iterative polylog for Complex {`z1`, ..., `zn`} and Real `y`";
+
+
+Global`H::usage = "H[{m1, ..., mn}, y] harmonic polylogarithm";
+
+
+EvalH::usage = "EvalH[{m1, ..., mn}, x] evaluate harmonic polylogarithm for integer {m1, ..., mn} and Real `x`";
 
 
 GoncharovG::usage = "GoncharovG[{z1, ...}, y] get explicit form of Goncharov polylogarithms in terms of folded integrals";
@@ -24,6 +30,7 @@ If[FindFile[fname] =!= $Failed, (
     Print[fname];
     Install[fname];
     Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];  
+    Global`H /: N[Global`H[ms_List, y_]] := Complex @@ EvalH[ms, N@y];
   )
   ,
   Message[EvalG::nofile]
