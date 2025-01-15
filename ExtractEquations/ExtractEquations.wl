@@ -4,7 +4,10 @@ BeginPackage["RG`ExtractEquations`"];
 
 
 GetEquations::usage="GetEquations[filename, env] \[LongDash] extract \\begin{env}...\\end{env} fragments \
-from TeX file. Return a list {{l, fragment}..} meaning that fragment appears at line l of the file"
+from TeX file. Return a list {{l, fragment}..} meaning that fragment appears at line l of the \
+file.\n\
+GetEquations[filename] \[LongDash] extract equations within environments {equation, align, multline, \
+gather, eqnarray}"
 ParseEquation::usage="ParseEquation[fragment_String, opts] \[LongDash] convert TeX fragment to \
 Mathematica expression. \
 Setting the option \"rules\" (default = {}) define a list of string substitution rules applied \
@@ -30,9 +33,13 @@ GetEquations::notfound="[error]: file '``' not found";
 GetEquations::notmatch="[error]: unmatched '``' environment";
 
 
-GetEquations[fname_, env_String:"equation"] := Module[{
-  text, posIn, posOut
+Options[GetEquations]={"verbose"->False}
+
+
+GetEquations[fname_, env_String,opts:OptionsPattern[]] := Module[{
+  text, posIn, posOut, verbose=OptionValue["verbose"]
 },
+If[verbose, PrintTemporary["reading ", fname]];
 If[Not@FileExistsQ[fname],(
   Message[GetEquations::notfound,fname];
   Return[$Failed];
@@ -41,16 +48,35 @@ With[{f=OpenRead[fname]},
   text=ReadList[f, String];(*read file content as list of strings*)
   Close[f];
 ];
-text=Map[StringTrim, text];(*remove trailing spaces*)
-text=DeleteCases[text, s_String/;StringMatchQ[s,"%"~~__]]; (* skip TeX comments *)
-posIn=Flatten[Position[text, s_String/;StringStartsQ[s,"\\begin{"<>env<>"}"]]]; (* find begin positions *)
-posOut=Flatten[Position[text, s_String/;StringStartsQ[s,"\\end{"<>env<>"}"]]]; (* find end positions *)
+(*remove trailing spaces*)
+text=Map[StringTrim, text];
+(* skip TeX comments *)
+text=DeleteCases[text, s_String/;StringMatchQ[s,"%"~~__]];
+If[verbose, PrintTemporary["search for ", env]];
+(* find begin positions *)
+posIn=Flatten[Position[text, s_String/;StringStartsQ[s,"\\begin{"<>env<>"}"]]];
+(* find end positions *)
+posOut=Flatten[Position[text, s_String/;StringStartsQ[s,"\\end{"<>env<>"}"]]];
 If[Length[posIn]!=Length[posOut], (
   Message[GetEquations::notmatch, env];
   Return[$Failed];
 )];
 {#[[1]], StringJoin[Riffle[text[[#[[1]];;#[[2]]]], "\n"]]}& /@ Transpose[{posIn,posOut}]
 ];
+
+
+GetEquations[fname_, opts:OptionsPattern[]] := Sort[Join@@(GetEquations[fname, #, opts]& /@ {
+  "equation",
+  "equation*",
+  "align",
+  "align*",
+  "gather",
+  "gather*",
+  "multline",
+  "multline*",
+  "eqnarray",
+  "eqnarray*"
+})];
 
 
 Options[ParseEquation]={"verbose"->False, "rules"->{}}
