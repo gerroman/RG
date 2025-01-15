@@ -14,7 +14,7 @@ shorten::usage = "
 
 getRunner::usage = "
   getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
-	getRunner[nb]  \[LongDash] create pallete in new window
+  getRunner[nb]  \[LongDash] create pallete in new window
 "
 
 
@@ -74,7 +74,7 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
    )],
    Button["Select Input",
      SetSelectedNotebook[nb];
-	   NotebookFind[nb, "Input", All, CellStyle];
+     NotebookFind[nb, "Input", All, CellStyle];
    ],
    Button["Save",
      FrontEndTokenExecute[nb, "Save"]
@@ -113,7 +113,7 @@ buttons[notebook_] := With[{nb=Hold[notebook]}, Grid[{{
     )],
    Button["Select Code",
      SetSelectedNotebook[nb];
-	   NotebookFind[nb, "Code", All, CellStyle];
+     NotebookFind[nb, "Code", All, CellStyle];
    ],
    Button["Quit", (
        If[nb =!= EvaluationNotebook[],
@@ -181,11 +181,13 @@ Get["RG/Tools/SetDrawOptions.wl"];
 
 Print["[info]: " <> RG`Scripts`Private`systemString];
 Print["[date]: " <> RG`Scripts`Private`timeString];
-Print["[git]: " <> RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]]
-Print["[git]: " <> RG`Scripts`gitRef[NotebookDirectory[]]];
+Print["[git]: RG-package " <>
+  RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]
+]
+Print["[git]: notebook " <>
+  RG`Scripts`gitRef[NotebookDirectory[]]
+];
 
 
 
 RG`Scripts`fileStamp[];
-
-
