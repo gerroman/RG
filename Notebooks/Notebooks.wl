@@ -181,11 +181,13 @@ Get["RG/Tools/SetDrawOptions.wl"];
 
 Print["[info]: " <> RG`Scripts`Private`systemString];
 Print["[date]: " <> RG`Scripts`Private`timeString];
-Print["[git]: RG-package " <>
-  RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]
+Print["[git]: " <>
+  RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]] <>
+  " - [RG-package]"
 ]
-Print["[git]: notebook " <>
-  RG`Scripts`gitRef[NotebookDirectory[]]
+Print["[git]: " <>
+  RG`Scripts`gitRef[NotebookDirectory[]] <>
+  " - [notebook]"
 ];
 
 
