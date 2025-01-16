@@ -4,11 +4,14 @@ Scan[Needs, {
   "RG`Notation`D`",
   "RG`Notation`Integrate`",
   "RG`Notation`At`",
-  "RG`Notation`Sum`",
   "RG`Notation`Product`",
-  "RG`Notation`Limit`",
-  "RG`Notation`NonCommutativeMultiply`"
+  "RG`Notation`Limit`"
 }]
+
+
+Get["RG`Notation`i0`"]
+Get["RG`Notation`NonCommutativeMultiply`"]
+Get["RG`Notation`Sum`"]
 
 
 BeginPackage["RG`Notation`"]
