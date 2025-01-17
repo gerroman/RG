@@ -1,7 +1,10 @@
+BeginPackage["RG`Notation`NonCommutativeMultiply`"]
+
+
 RG`Notation`ncm::usage="ncm \[LongDash] shortcut for NonCommutativeMultiply"
 
 
-Begin["RG`Notation`Private`"]
+Begin["`Private`"]
 
 
 preform[expr_Plus] := RowBox[{"(", ToBoxes[expr,TraditionalForm], ")"}];
@@ -20,3 +23,6 @@ RG`Notation`ncm=System`NonCommutativeMultiply
 
 
 End[]
+
+
+EndPackage[]

@@ -1,19 +1,4 @@
 (* ::Package:: *)
-Scan[Needs, {
-  "RG`Notation`Force`",
-  "RG`Notation`D`",
-  "RG`Notation`Integrate`",
-  "RG`Notation`At`",
-  "RG`Notation`Product`",
-  "RG`Notation`Limit`"
-}]
-
-
-Get["RG`Notation`i0`"]
-Get["RG`Notation`NonCommutativeMultiply`"]
-Get["RG`Notation`Sum`"]
-
-
 BeginPackage["RG`Notation`"]
 
 
@@ -121,4 +106,14 @@ End[]
 EndPackage[]
 
 
-RG`Scripts`fileStamp[]
+Scan[Get, {
+  "RG`Notation`Force`",
+  "RG`Notation`D`",
+  "RG`Notation`Integrate`",
+  "RG`Notation`At`",
+  "RG`Notation`Product`",
+  "RG`Notation`Limit`",
+  "RG`Notation`i0`",
+  "RG`Notation`NonCommutativeMultiply`",
+  "RG`Notation`Sum`"
+}]

@@ -1,4 +1,11 @@
-RG`Notation`sum::usage="sum[expr, var]\nsum[expr, {var, i, j}]\nsum[expr,{}]"
+BeginPackage["RG`Notation`Sum`", {"RG`Notation`Force`"}]
+
+
+RG`Notation`sum::usage="\
+sum[expr, var] \[LongDash] indefinite sum w.r.t. var\n\
+sum[expr, {var, i, j}] \[LongDash] definite sum w.r.t. var\n\
+sum[expr1, expr2, ..., {}] \[LongDash] representation expr1 + expr2 + ... preserving order\
+"
 
 
 Begin["RG`Notation`Private`"]
@@ -9,20 +16,26 @@ RG`Notation`sum/:Format[RG`Notation`sum[expr_, var_], TraditionalForm] := Displa
   ,
   ToBoxes[expr, TraditionalForm]
 }]];
-RG`Notation`sum/:Format[RG`Notation`sum[expr_, {var_, i_, j_}], TraditionalForm] := DisplayForm[RowBox[{
-  UnderoverscriptBox[ToBoxes["\[Sum]", TraditionalForm], ToBoxes[var == i, TraditionalForm], ToBoxes[j,TraditionalForm]]
-  ,
-  ToBoxes[expr, TraditionalForm]
-}]];
+RG`Notation`sum/:Format[RG`Notation`sum[expr_, {var_, i_, j_}], TraditionalForm] := DisplayForm[
+  RowBox[{
+    UnderoverscriptBox[
+      ToBoxes["\[Sum]", TraditionalForm],
+      ToBoxes[var == i, TraditionalForm],
+      ToBoxes[j,TraditionalForm]
+    ]
+    ,
+    ToBoxes[expr, TraditionalForm]
+  }]
+];
 
 RG`Notation`sum/:Format[RG`Notation`sum[expr__, {}], TraditionalForm] := DisplayForm[RowBox[Riffle[
-	ToBoxes[#, TraditionalForm]&/@{expr}
-	,
-	"+"
+  ToBoxes[#, TraditionalForm]&/@{expr}
+  ,
+  "+"
 ]]]
 
 
-RG`Notation`sum/:RG`Notation`Force`force[RG`Notation`sum, opts:OptionsPattern[]] := ReplaceAll[#, {
+RG`Notation`sum/:force[RG`Notation`sum, opts:OptionsPattern[]] := ReplaceAll[#, {
    RG`Notation`sum[a__, {}] :> Total[{a}],
    RG`Notation`sum -> (Sum[##, opts]&)
 }]&;
@@ -31,4 +44,4 @@ RG`Notation`sum/:RG`Notation`Force`force[RG`Notation`sum, opts:OptionsPattern[]]
 End[]
 
 
-RG`Scripts`fileStamp[]
+EndPackage[]
