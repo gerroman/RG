@@ -30,7 +30,7 @@ distribute::usage="distribute[outer, inner]"
 
 eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
-cases::usage = "cases[pattern] \[LongDash] just a shortcut for Union[Cases[#, pattern, Infinity]]&"
+cases::usage = "cases[pattern] \[LongDash] just a shortcut for DeleteDuplicates[Cases[#, pattern, Infinity]]&"
 
 head::usage = "head[fname] \[LongDash] return first line of file contents";
 sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in bytes of 'expr'";
@@ -69,7 +69,7 @@ changeSign[xs_List] := With[{hs=Hold/@xs, hms=Hold/@(-xs)}, Function[expr,
     ReplaceAll[Thread[hms->-xs]]
 ]]
 changeSign[xs__] := changeSign[{xs}]
-changeSign[pattern_] := Function[expr, With[{xs=Union@Cases[expr, pattern, Infinity]},
+changeSign[pattern_] := Function[expr, With[{xs=DeleteDuplicates[Cases[expr, pattern, Infinity]]},
   changeSign[xs][expr]
 ]]
 
@@ -107,7 +107,7 @@ eq[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
 eq[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
 
 
-cases[pattern_] := Union[Cases[#, pattern, Infinity]]&
+cases[pattern_] := DeleteDuplicates[Cases[#, pattern, Infinity]]&
 
 
 pullFactor[pattern_, func_] := With[{rule = rule`pullFactor[pattern, func]},
