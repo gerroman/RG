@@ -37,6 +37,9 @@ sizeOf::usage = "sizeOf[expr] \[LongDash] evaluates number of leafs and size in 
 
 solve::usage="solve[expr, var] \[LongDash] solve expr w.r.t. var"
 
+reindex::usage="reindex[expr, pattern, func] \[LongDash] search subexpressions matching pattern, \
+replace them with array of func values"
+
 
 Begin["`Private`"];
 
@@ -170,6 +173,16 @@ solve[expr_List, vars_List] := Module[{
 ]
 
 solve[expr_, var_] := solve[{expr}, {var}]
+
+
+reindex[expr_, pattern_, func_] := Module[{
+    syms = DeleteDuplicates[Cases[expr, pattern, Infinity]],
+    rules
+  },
+  rules = Thread[syms -> Array[func, Length[syms]]];
+  Echo[rules];
+  ReplaceAll[expr, rules]
+]
 
 
 End[]
