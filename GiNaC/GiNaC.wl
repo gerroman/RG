@@ -89,7 +89,7 @@ GeneralizedGoncharovG[ms__][zs_List, y_] := GeneralizedGoncharovG[{ms}][zs, y];
 
 
 (*Based on rule derived by R.N.Lee*)
-G /: Series[G[idxs : {as___, a_}, z_], {z_, 0, order_}] := (
+Global`G /: Series[Global`G[idxs : {as___, a_}, z_], {z_, 0, order_}] := (
   With[{l = Length[idxs]},
    Fold[
      Integrate[#1/(z - #2), z] &,
