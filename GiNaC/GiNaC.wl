@@ -29,7 +29,7 @@ With[{fname=FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]},
 If[FindFile[fname] =!= $Failed, (
     Print[fname];
     Install[fname];
-    Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];  
+    Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];
     Global`H /: N[Global`H[ms_List, y_]] := Complex @@ EvalH[ms, N@y];
   )
   ,
@@ -56,7 +56,7 @@ GoncharovG[(zs_List), y_] := (
     With[{ts = Table[Unique["tau$"], n]},
       integrate[
         Inner[1/(#1 - #2) &, ts, zs, Times],
-  	    Sequence @@ Transpose[{ts, ConstantArray[0, n], Most[ts] // Prepend[y]}]
+        Sequence @@ Transpose[{ts, ConstantArray[0, n], Most[ts] // Prepend[y]}]
       ]
     ]
   ]
@@ -74,7 +74,7 @@ GoncharovG[{z_ /; z =!= 0, zs___}, y_] := (
 
 
 GeneralizedGoncharovG::args = "unequal lengths of indices lists";
-GeneralizedGoncharovG[ms_List][zs_List, y_] := If[Length[ms] == Length[zs], 
+GeneralizedGoncharovG[ms_List][zs_List, y_] := If[Length[ms] == Length[zs],
   With[{
       idxs=Flatten@Riffle[ConstantArray[0, #] & /@ (ms - 1), zs]
     },
@@ -86,6 +86,18 @@ GeneralizedGoncharovG[ms_List][zs_List, y_] := If[Length[ms] == Length[zs],
 
 
 GeneralizedGoncharovG[ms__][zs_List, y_] := GeneralizedGoncharovG[{ms}][zs, y];
+
+
+(*Based on rule derived by R.N.Lee*)
+G /: Series[G[idxs : {as___, a_}, z_], {z_, 0, order_}] := (
+  With[{l = Length[idxs]},
+   Fold[
+     Integrate[#1/(z - #2), z] &,
+     Integrate[Series[1/(z - a), {z, 0, Max[order - l, 0]}], z],
+     Reverse[{as}]
+     ] // MapAt[Together, #, {3, All}] &
+   ]
+) /; FreeQ[idxs, 0];
 
 
 End[]
