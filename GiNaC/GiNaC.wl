@@ -97,7 +97,7 @@ G /: Series[G[idxs : {as___, a_}, z_], {z_, 0, order_}] := (
      Reverse[{as}]
      ] // MapAt[Together, #, {3, All}] &
    ]
-) /; FreeQ[idxs, 0];
+) /; FreeQ[idxs, 0, 1];
 
 
 End[]
