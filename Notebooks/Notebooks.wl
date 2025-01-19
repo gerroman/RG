@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["RG`Notebooks`", {"RG`Tools`"}]
 
 
@@ -16,6 +18,9 @@ getRunner::usage = "
   getRunner[] \[LongDash] create pallete for evaluate cells, hide/show code, and clear all outputs
   getRunner[nb]  \[LongDash] create pallete in new window
 "
+
+
+getCellArchivator::usage = "getCellArchivator[] \[LongDash] create pallete to \"un(archive)\" cells within notebook"
 
 
 holdform::usage = "holdform[expr] \[LongDash] replace expr -> HoldForm[expr]"
@@ -157,6 +162,92 @@ shorten[expr_, OptionsPattern[]] := expr;
 
 SetAttributes[holdform, HoldAll]
 holdform[xs__] := ReplaceRepeated[#, rule`holdform[xs]]&
+
+
+getCellArchivator[]:=CreatePalette[DisplayForm[GridBox[{
+{
+ButtonBox["Prev",
+ButtonFunction:>SelectionMove[SelectedNotebook[],Previous,Cell] ,
+Evaluator->Automatic
+]
+,
+ButtonBox["Next",
+ButtonFunction:>SelectionMove[SelectedNotebook[],Next,Cell],
+Evaluator->Automatic
+]
+},
+{
+ButtonBox["Unarchive",
+ButtonFunction:>With[{content=NotebookRead[SelectedNotebook[]]},
+(
+Switch[content[[2]],
+"Input",SetOptions[NotebookSelection[SelectedNotebook[]],{
+Evaluatable->True,
+Editable->True,
+CellTags->{}
+}
+],
+_,SetOptions[NotebookSelection[SelectedNotebook[]],{
+Editable->True
+}
+]
+];
+SelectionMove[SelectedNotebook[],Next,Cell];
+)
+],
+Evaluator->Automatic
+],
+ButtonBox["Archive",
+ButtonFunction:>With[{content=NotebookRead[SelectedNotebook[]]},
+(
+Switch[content[[2]],
+"Input",SetOptions[NotebookSelection[SelectedNotebook[]],{
+Evaluatable->False,
+Editable->False,
+CellTags->"archive"
+}
+],
+_,SetOptions[NotebookSelection[SelectedNotebook[]],{
+Editable->False
+}
+]
+];
+SelectionMove[SelectedNotebook[],Next,Cell];
+)
+],
+Evaluator->Automatic
+]
+},
+{
+ButtonBox["Editable",
+ButtonFunction:>(
+SetOptions[NotebookSelection[SelectedNotebook[]],Editable->True];
+),
+Evaluator->Automatic
+],
+ButtonBox["Uneditable",
+ButtonFunction:>(
+SetOptions[NotebookSelection[SelectedNotebook[]],Editable->False];
+),
+Evaluator->Automatic
+]
+},
+{
+ButtonBox["Evaluatable",
+ButtonFunction:>(
+SetOptions[NotebookSelection[SelectedNotebook[]],Evaluatable->True];
+),
+Evaluator->Automatic
+],
+ButtonBox["Unevaluatable",
+ButtonFunction:>(
+SetOptions[NotebookSelection[SelectedNotebook[]],Evaluatable->False];
+),
+Evaluator->Automatic
+]
+}
+}]
+],WindowMargins->{{0, Automatic}, {Automatic, 0}}, WindowTitle->"(Un)archive cells ..."];
 
 
 End[]
