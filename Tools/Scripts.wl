@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-Off[General::shdw];
+
 BeginPackage["RG`Scripts`"];
 
 
@@ -66,7 +66,7 @@ Options[log] = {
   "width" -> 1000,
   "colorize" -> {
     "[info]" -> "\033[1;35m[info]\033[0m",
-    "[directory]" -> "\033[1;35m[directory]\033[0m",
+    "[path]" -> "\033[1;35m[path]\033[0m",
     "[....]" -> "\033[1;35m[....]\033[0m",
     "[usage]" -> "\033[1;37m[usage]\033[0m",
     "[load]" -> "\033[1;37m[load]\033[0m",
@@ -408,12 +408,17 @@ If[$OperatingSystem == "Windows",
 ];
 
 
-gitRef[path_String] := StringTrim[RunProcess[{
-	"git",
-	"log",
-    "--pretty=reference",
-	"-n", "1"
-}, "StandardOutput", ProcessDirectory->path]];
+gitRef[path_String] := (
+  RunProcess[{
+      "git",
+      "log",
+      "--pretty=reference",
+      "-n", "1"
+    },
+    "StandardOutput",
+    ProcessDirectory->path
+  ]
+);
 
 
 End[];
@@ -422,5 +427,8 @@ End[];
 EndPackage[];
 
 
-On[General::shdw];
-Off[FrontEndObject::notavail];
+systemStamp[];
+timeStamp[];
+Global`forceFlag = argparse["force", False];
+SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
+log[StringForm["working directory: '``'", Directory[]], "prefix"->"[path]: "];

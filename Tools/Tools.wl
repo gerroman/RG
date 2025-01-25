@@ -1,9 +1,6 @@
 (* ::Package:: *)
 
 
-Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
-
-
 Get["RG/Tools/Rules.wl"];
 
 
@@ -189,12 +186,3 @@ End[]
 
 
 EndPackage[]
-
-
-Global`forceFlag = RG`Scripts`argparse["force", False];
-SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
-RG`Scripts`log[StringForm["working directory: '``'", Directory[]]];
-RG`Scripts`log[RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]], "prefix"->"[git]: "];
-
-
-RG`Scripts`fileStamp[];

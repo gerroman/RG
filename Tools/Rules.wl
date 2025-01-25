@@ -1,5 +1,6 @@
 (* ::Package:: *)
 
+
 Begin["rule`"]
 
 
@@ -15,7 +16,8 @@ pull::usage = "rule`pull[x] \[LongDash] rule to pull x out of Plus[]"
 
 group::usage = "rule`group[x, func] \[LongDash] rule to replace {func[x] -> x}"
 
-pullFactor::usage = "rule`pullFactor[pattern, func] \[LongDash] rule to pull (x:pattern) out of func[]assuming linearity of the func"
+pullFactor::usage = "rule`pullFactor[pattern, func] \[LongDash] rule to pull (x:pattern) out of func[] \
+assuming linearity of the func"
 
 distribute::usage = "rule`distribute[outer_, inner_] rule to distribute outer w.r.t. inner"
 
@@ -78,13 +80,12 @@ rule`group[x_, func_:Expand] := func[x] -> x
 rule`pullFactor[pattern_, func_] := func[a___, (x:pattern) * b_, c___] :> x * func[a, b, c]
 
 
-rule`distribute[outer_, inner_] := expr:(outer[a___, inner[x_, xs__], b___]) :> Distribute[expr, inner]
+rule`distribute[outer_, inner_] := (
+  expr:(outer[a___, inner[x_, xs__], b___]) :> Distribute[expr, inner]
+)
 
 
 End[]
 
 
 End[]
-
-
-fileStamp[]

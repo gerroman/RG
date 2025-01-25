@@ -1,6 +1,5 @@
 (* ::Package:: *)
-
-BeginPackage["RG`Notebooks`", {"RG`Tools`"}]
+BeginPackage["RG`Notebooks`"]
 
 
 colorize::usage = "colorize[pattern] \[LongDash] colorize matches for the pattern
@@ -250,6 +249,9 @@ Evaluator->Automatic
 ],WindowMargins->{{0, Automatic}, {Automatic, 0}}, WindowTitle->"(Un)archive cells ..."];
 
 
+setDrawOptions[] := Get["RG/Tools/SetDrawOptions.wl"];
+
+
 End[]
 
 
@@ -264,23 +266,21 @@ SetAttributes[rule`holdform, HoldAll]
 rule`holdform[x_] := {ex_HoldForm :> ex, x -> HoldForm[x]}
 rule`holdform[xs__] := Prepend[Thread[{xs} -> Thread[HoldForm[{xs}]]], ex_HoldForm :> ex]
 End[];
-
 End[];
 
 
-Get["RG/Tools/SetDrawOptions.wl"];
 
+Needs["RG`Scripts`"];
+Needs["RG`Tools`"];
 Print["[info]: " <> RG`Scripts`Private`systemString];
 Print["[date]: " <> RG`Scripts`Private`timeString];
-Print["[git]: " <>
-  RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]] <>
-  " - [RG-package]"
-]
-Print["[git]: " <>
-  RG`Scripts`gitRef[NotebookDirectory[]] <>
-  " - [notebook]"
+Print[
+  ToString@StringForm["[git]: `` - [RG-package]",
+    RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]
+  ]
 ];
-
-
-
-RG`Scripts`fileStamp[];
+If[$Notebooks, Print[
+  ToString@StringForm["[git]: `` - [notebook]",
+    RG`Scripts`gitRef[NotebookDirectory[]]
+  ]
+]];

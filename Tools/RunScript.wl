@@ -14,7 +14,7 @@ EXAMPLES:
 SetOptions["stderr", "PageWidth"->Infinity];
 
 
-Needs["RG`Scripts`", "RG/Tools/Scripts.wl"]
+Quiet@Needs["RG/Tools/Scripts.wl"];
 
 
 main[] := Module[{argc, argv, result},
@@ -25,7 +25,7 @@ main[] := Module[{argc, argv, result},
     Write["stderr", RunScript::help];
     Exit[0];
   ];
-  Get[argv[[2]]];
+  Map[Get, argv[[2;;]]];
   Exit[0];
 ];
 
