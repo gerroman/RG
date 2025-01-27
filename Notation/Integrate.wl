@@ -96,6 +96,8 @@ integrate /: Format[integrate[expr_, var_, "factor" -> factor_], TraditionalForm
 	}]]
 ]
 
+Format[integrate[expr_],TraditionalForm] := DisplayForm@RowBox[{"\[Integral]", ToBoxes[expr,TraditionalForm]}]
+
 
 substitute[eqs:{_Equal..}, xs_List, ys_List] := Module[{
     ruleTo = Solve[eqs, xs],
