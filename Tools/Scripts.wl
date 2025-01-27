@@ -408,8 +408,9 @@ If[$OperatingSystem == "Windows",
 ];
 
 
-gitRef[path_String] := (
-  RunProcess[{
+gitRef[path_String] := With[{
+  gitString = RunProcess[
+    {
       "git",
       "log",
       "--pretty=reference",
@@ -417,8 +418,9 @@ gitRef[path_String] := (
     },
     "StandardOutput",
     ProcessDirectory->path
-  ]
-);
+  ]},
+  StringTrim[gitString, "\n"]
+];
 
 
 End[];
