@@ -36,7 +36,7 @@ If[FileExistsQ[ofname] && Not[force], (
 Print[ifname, " => ", ofname];
 UsingFrontEnd[
 With[{nb = NotebookOpen[ifname,Visible->False]}, (
-  data = Riffle[NotebookImport[nb, "Input"|"Code"->"InputText"],"\n\n"];
+  data = Riffle[NotebookImport[nb, "Input"|"Code"->"InputText"],"\n\n\n"];
   NotebookClose[nb];
 )]
 ];
