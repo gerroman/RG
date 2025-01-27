@@ -36,7 +36,7 @@ GetEquations::notmatch="[error]: unmatched '``' environment";
 Options[GetEquations]={"verbose"->False}
 
 
-GetEquations[fname_, env_String,opts:OptionsPattern[]] := Module[{
+GetEquations[fname_, env_String, opts:OptionsPattern[]] := Module[{
   text, posIn, posOut, verbose=OptionValue["verbose"]
 },
 If[verbose, PrintTemporary["reading ", fname]];
@@ -101,21 +101,21 @@ tmp = StringReplace[tmp, {
   "\\left."->" ",
   "\\right."->" "
 }];
-If[verbose, Print[phase++,": (remove TeX delimiters): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (remove TeX delimiters): ",tmp]];
 tmp = StringReplace[tmp, RegularExpression["\\\\label{[^}]+}"]->" "];
-If[verbose, Print[phase++,": (remove labels): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (remove labels): ",tmp]];
 tmp = StringTrim[tmp];
-If[verbose, Print[phase++,": (remove trailing spaces): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (remove trailing spaces): ",tmp]];
 tmp = StringTrim[tmp, "\\,,"|"\\,."];
-If[verbose, Print[phase++,": (remove trailing punctuation): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (remove trailing punctuation): ",tmp]];
 tmp = StringSplit[tmp, "\\,,"|"\\,."];
-If[verbose, Print[phase++,": (split by inner punctuation): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (split by inner punctuation): ",tmp]];
 tmp = Map[StringTrim, tmp];
-If[verbose, Print[phase++,": (remove trailing spaces): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (remove trailing spaces): ",tmp]];
 tmp = Fold[StringReplace[#1, #2]&, tmp, rules];
-If[verbose, Print[phase++,": (apply final rules): ",tmp]];
+If[verbose, PrintTemporary[phase++,": (apply final rules): ",tmp]];
 tmp = MapIndexed[(
-  Print[ToString@StringForm["``: ``", #2[[1]], #1]];
+  PrintTemporary[ToString@StringForm["``: ``", #2[[1]], #1]];
   ToExpression[#1,TeXForm,HoldForm]
 )&, tmp];
 Return[If[Length[tmp]==1, tmp[[1]], tmp]]
@@ -147,24 +147,24 @@ PrintEquation[s_String, opts:OptionsPattern[]] := Module[{
   verbose = OptionValue["verbose"],
   rules = OptionValue["rules"]
 },
-If[verbose, Print[phase++,": (initial equation):\n",tmp]];
+If[verbose, PrintTemporary[phase++,": (initial equation):\n",tmp]];
 tmp = StringReplace[s, {
   "{equation}"->"{equation*}",
   "{align}"->"{align*}",
   "{gather}"->"{gather*}",
   "{multline}"->"{multline*}"
 }];
-If[verbose, Print[phase++, ": (unnumbered equation):\n", tmp]];
+If[verbose, PrintTemporary[phase++, ": (unnumbered equation):\n", tmp]];
 tmp = StringReplace[tmp, rules];
-If[verbose, Print[phase++, ": (applying rules):\n", tmp]];
+If[verbose, PrintTemporary[phase++, ": (applying rules):\n", tmp]];
 content = template[preambula, tmp];
-If[verbose, Print[phase++, ": (adding preambula):\n", content]];
-If[verbose, Print[phase++, ": (saving TeX file): ", tex]];
+If[verbose, PrintTemporary[phase++, ": (adding preambula):\n", content]];
+If[verbose, PrintTemporary[phase++, ": (saving TeX file): ", tex]];
 With[{fstream=OpenWrite[tex]}, (
   WriteString[fstream, content];
   Close[fstream];
 )];
-If[verbose, Print[phase++, ": running pdflatex ... "]];
+If[verbose, PrintTemporary[phase++, ": running pdflatex ... "]];
 result = RunProcess[{"pdflatex",
 "-output-directory", DirectoryName[tex],
 "-output-format", "pdf",
@@ -175,19 +175,19 @@ If[result["ExitCode"] != 0, (
   Print[result["StandardOutput"]];
   Return[$Failed];
 )];
-If[verbose, Print[phase++, ": running pdftoppm ... "]];
+If[verbose, PrintTemporary[phase++, ": running pdftoppm ... "]];
 result = RunProcess[{"pdftoppm", "-r", "150", "-png", pdf}];
 If[result["ExitCode"] != 0, (
   Print[content];
   Print[result["StandardError"]];
   Return[$Failed];
 )];
-If[verbose, Print[phase++, ": (saving PNG file): ", png]];
+If[verbose, PrintTemporary[phase++, ": (saving PNG file): ", png]];
 With[{fstream=OpenWrite[png,BinaryFormat->True]}, (
   WriteString[fstream, result["StandardOutput"]];
   Close[fstream];
 )];
-If[verbose, Print[phase++, ": (importing PNG file ", png]];
+If[verbose, PrintTemporary[phase++, ": (importing PNG file ", png]];
 Print[Import[png]];
 ]
 
