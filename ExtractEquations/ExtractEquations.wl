@@ -188,7 +188,7 @@ With[{fstream=OpenWrite[png,BinaryFormat->True]}, (
   Close[fstream];
 )];
 If[verbose, PrintTemporary[phase++, ": (importing PNG file ", png]];
-Print[Import[png]];
+Import[png]
 ]
 
 
