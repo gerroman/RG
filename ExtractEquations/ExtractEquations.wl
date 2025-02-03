@@ -1,30 +1,38 @@
 (* ::Package:: *)
 
+
 BeginPackage["RG`ExtractEquations`"];
 
 
 GetEquations::usage="GetEquations[filename, env] \[LongDash] extract \\begin{env}...\\end{env} fragments \
-from TeX file. Return a list {{l, fragment}..} meaning that fragment appears at line l of the \
-file.\n\
+from TeX file. Return an association <|pos->fragment, label->fragment ...|> meaning that fragment
+appears at position pos of the file or with the label.\n\
 GetEquations[filename] \[LongDash] extract equations within environments {equation, align, multline, \
 gather, eqnarray}"
+
+
 ParseEquation::usage="ParseEquation[fragment_String, opts] \[LongDash] convert TeX fragment to \
 Mathematica expression. \
 Setting the option \"rules\" (default = {}) define a list of string substitution rules applied \
 just before calling ToExpression[]. \
 Setting the option \"verbose\" \[Rule] True (default = False) allow to see intermidiate results."
+
+
 PrintEquation::usage="PrintEquation[fragment_String] \[LongDash] perform a sequence of actions: \
 (1) save fragment to temporary TeX file, \
 (2) create pdf using pdflatex, \
 (3) convert pdf to png using pdftoppm, \
 (4) import png image. Options: \
-\"preambula\" define TeX file preambula (default = \"\\documentclass[varwidth=8in,crop]{standalone}...\"); \
+\"preambula\" define TeX file preambula (default = \
+\"\\documentclass[varwidth=8in,crop]{standalone}...\"); \
 \"rules\" define a list of string substitution rules (default = {}) applied \
 just before saving TeX file; \
 \"basename\" defines auxiliary file name (excluding extension .tex, .pdf, .png)); \
 \"verbose\" \[Rule] True (default = False) allow to see intermidiate results. \
 "
-$preambula::usage="$preamabula \[LongDash] default preambula used for TeX fragments"
+
+
+$preambula::usage="$preambula \[LongDash] default preambula used for TeX fragments"
 
 
 Begin["`Private`"]
@@ -38,7 +46,9 @@ Options[GetEquations]={"verbose"->False}
 
 
 GetEquations[fname_, env_String, opts:OptionsPattern[]] := Module[{
-  text, posIn, posOut, verbose=OptionValue["verbose"]
+  text, posIn, posOut, verbose=OptionValue["verbose"],
+  posList, eqnList, labelList,
+  eqns
 },
 If[verbose, PrintTemporary["reading ", fname]];
 If[Not@FileExistsQ[fname],(
@@ -58,15 +68,30 @@ If[verbose, PrintTemporary["search for ", env]];
 posIn=Flatten[Position[text, s_String/;StringStartsQ[s,"\\begin{"<>env<>"}"]]];
 (* find end positions *)
 posOut=Flatten[Position[text, s_String/;StringStartsQ[s,"\\end{"<>env<>"}"]]];
+(* check for matching environments *)
 If[Length[posIn]!=Length[posOut], (
   Message[GetEquations::notmatch, env];
   Return[$Failed];
 )];
-{#[[1]], StringJoin[Riffle[text[[#[[1]];;#[[2]]]], "\n"]]}& /@ Transpose[{posIn,posOut}]
+posList = posIn;
+eqnList = StringJoin[Riffle[text[[#[[1]];;#[[2]]]], "\n"]]& /@ Transpose[{posIn,posOut}];
+labelList = Map[
+  StringCases[#, label:RegularExpression["\\\\label{[^}]+}"]:>StringTake[label, {8, -2}]]&,
+  eqnList
+];
+eqns = Association[Thread[posList->eqnList]];
+Scan[
+  If[#[[1]] =!= {}, (
+    AssociateTo[eqns, Thread[#[[1]]->#[[2]]]]
+  )]&,
+  Transpose[{labelList, eqnList}]
+];
+Return[eqns]
 ];
 
 
-GetEquations[fname_, opts:OptionsPattern[]] := Sort[Join@@(GetEquations[fname, #, opts]& /@ {
+GetEquations[fname_, opts:OptionsPattern[]] := Module[{eqns,numkeys,ruleKeys},
+eqns = Join@@(GetEquations[fname, #, opts]& /@ {
   "equation",
   "equation*",
   "align",
@@ -77,7 +102,12 @@ GetEquations[fname_, opts:OptionsPattern[]] := Sort[Join@@(GetEquations[fname, #
   "multline*",
   "eqnarray",
   "eqnarray*"
-})];
+});
+numKeys = Sort[Select[Keys[eqns],NumberQ]];
+ruleKeys = Append[Thread[numKeys->Range[Length[numKeys]]], x_:>x];
+eqns = KeyMap[Replace[ruleKeys], eqns];
+Return[eqns]
+]
 
 
 Options[ParseEquation]={"verbose"->False, "rules"->{}}
