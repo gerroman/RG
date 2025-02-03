@@ -11,7 +11,7 @@ GetEquations[filename] \[LongDash] extract equations within environments {equati
 gather, eqnarray}"
 
 
-ParseEquation::usage="ParseEquation[fragment_String, opts] \[LongDash] convert TeX fragment to \
+ParseEquation::usage="ParseEquation[fragment_String, opts] \[LongDash] try (!!!) to convert TeX fragment to \
 Mathematica expression. \
 Setting the option \"rules\" (default = {}) define a list of string substitution rules applied \
 just before calling ToExpression[]. \
