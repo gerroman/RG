@@ -24,6 +24,7 @@ just before saving TeX file; \
 \"basename\" defines auxiliary file name (excluding extension .tex, .pdf, .png)); \
 \"verbose\" \[Rule] True (default = False) allow to see intermidiate results. \
 "
+$preambula::usage="$preamabula \[LongDash] default preambula used for TeX fragments"
 
 
 Begin["`Private`"]
@@ -121,13 +122,15 @@ tmp = MapIndexed[(
 Return[If[Length[tmp]==1, tmp[[1]], tmp]]
 ]
 
-
-Options[PrintEquation]={
-"preambula"->"\
+$preambula="\
 \\documentclass[varwidth=8in,crop]{standalone}\n\
 \\usepackage{amsmath}\n\
 \\usepackage{amssymb}\
-",
+";
+
+
+Options[PrintEquation]={
+"preambula" :> $preambula,
 "basename" :> FileNameJoin[{$TemporaryDirectory,"tmp"}],
 "verbose" -> False,
 "rules" -> {}
@@ -176,7 +179,7 @@ If[result["ExitCode"] != 0, (
   Return[$Failed];
 )];
 If[verbose, PrintTemporary[phase++, ": running pdftoppm ... "]];
-result = RunProcess[{"pdftoppm", "-r", "300", "-png", pdf}];
+result = RunProcess[{"pdftoppm", "-r", "150", "-png", pdf}];
 If[result["ExitCode"] != 0, (
   Print[content];
   Print[result["StandardError"]];
