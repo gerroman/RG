@@ -2,9 +2,13 @@
 BeginPackage["RG`Notebooks`"]
 
 
-colorize::usage = "colorize[pattern] \[LongDash] colorize matches for the pattern
+colorize::usage="colorize[pattern] \[LongDash] colorize matches for the pattern
 colorize[{x1, ...}] \[LongDash] colorize specific expressions x1, ...
-colorize[xs, styleFunc] \[LongDash] use specific style function for colorization
+colorize[xs_List, \"StyleFunction\"->func] \[LongDash] use specific style function func[x] to colorize x, \
+(default = None)
+colorize[xs_List, \"ColorFunction\"->func] \[LongDash] use specific color function func[xs] for colorization of \
+the whole expr (default - based on DarkRainbow color data)
+colorize[xs_List|pattern, style] \[LongDash] shortcut for colorize[xs, \"StyleFunction\"->(Style[#, style]&)]
 "
 
 
@@ -28,23 +32,36 @@ holdform::usage = "holdform[expr] \[LongDash] replace expr -> HoldForm[expr]"
 Begin["`Private`"];
 
 
-colorize[xs_List] := With[{n = Length[xs]},
-  With[{styles = If[n > 0, Array[i \[Function] ColorData["DarkRainbow"][i / Max[1, n - 1]], n, 0], {}]},
-    With[{rules = Thread[Inner[(#1 -> Style[#1, #2(*, Background->Lighter@Lighter[#2]*)])&, xs, styles, List]]},
-      ReplaceAll[rules]
+Options[colorize] = {
+  "ColorFunction" -> Function[{xs},
+    With[{n=Length[xs]},
+      With[{colors = Array[ColorData["DarkRainbow"][# / Max[1, n - 1]]&, n, 0]},
+        With[{styledxs = MapIndexed[Style[#1, colors[[#2]]]&, xs]},
+          ReplaceRepeated[#, Join[Thread[styledxs -> styledxs], Thread[xs->styledxs]]]&
+        ]
+      ]
+    ]
+  ],
+  "StyleFunction" -> None
+};
+colorize[xs_List, opts:OptionsPattern[]] := Function[
+  expr,
+  With[{
+      cf=OptionValue[colorize, "ColorFunction"],
+      sf=OptionValue[colorize, "StyleFunction"]
+    },
+    If[sf===None,
+      cf[xs][expr],
+      ReplaceRepeated[expr, Join[Thread[sf/@xs->sf/@xs], Thread[xs->sf/@xs]]]
     ]
   ]
+]
+colorize[pattern_, opts:OptionsPattern[]]:=Function[expr,
+    With[{xs=Union@Cases[{expr}, pattern, Infinity]},
+      colorize[xs, opts][expr]
+    ]
 ];
-colorize[pattern_] := Function[expr,
-  With[{xs = Union@Cases[{expr}, pattern, Infinity]},
-    colorize[xs][expr]
-  ]
-];
-colorize[xs__] := colorize[{xs}];
-
-
-colorize[pattern_, style_] := ReplaceAll[(x:pattern) -> style[x]]
-colorize[xs_List, style_] := ReplaceAll[Thread[xs -> (style/@xs)]]
+colorize[arg_, style_] := colorize[arg, "StyleFunction"->(Style[#, style]&)];
 
 
 SetAttributes[buttons, HoldAll];
