@@ -287,8 +287,9 @@ End[];
 
 
 
-Needs["RG`Scripts`"];
+Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
 Needs["RG`Tools`"];
+
 Print["[info]: " <> RG`Scripts`Private`systemString];
 Print["[date]: " <> RG`Scripts`Private`timeString];
 Print[

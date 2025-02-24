@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`ExtractEquations`"];
 
 
@@ -209,7 +208,7 @@ If[result["ExitCode"] != 0, (
   Return[$Failed];
 )];
 If[verbose, PrintTemporary[phase++, ": running pdftoppm ... "]];
-result = RunProcess[{"pdftoppm", "-r", "150", "-png", pdf}];
+result = RunProcess[{"pdftoppm", "-r", "300", "-png", pdf}];
 If[result["ExitCode"] != 0, (
   Print[content];
   Print[result["StandardError"]];
