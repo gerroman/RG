@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 BeginPackage["RG`LoopGraph`"]
 
 
@@ -20,6 +22,7 @@ rule`LoopGraphTags = Association[{_->Gray}];
 
 
 LoopGraph::denominator="denominators `` are not match pattern ``"
+
 Options[LoopGraph] = {
   "colorize"->True,
   EdgeStyle->Automatic,
@@ -31,7 +34,7 @@ LoopGraph[l_Symbol, ds_List, opts:OptionsPattern[]] := Module[{
     n = Length[ds],
     ps, m2s,
     loop, legs, edges, tags, labels,
-    loopLabels, legsLabels, sps, sp, edgeStyle, edgeLables,
+    loopLabels, legsLabels, sps, sp, edgeStyle, edgeLabels,
     colors=ColorData[63, "ColorList"]
   },
   If[Not@MatchQ[ds, {pattern`denominator[l]..}], (
@@ -106,6 +109,3 @@ End[]
 
 
 EndPackage[]
-
-
-RG`Scripts`fileStamp[];
