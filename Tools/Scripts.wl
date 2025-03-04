@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`Scripts`"];
 
 
@@ -260,7 +259,7 @@ RG`Scripts`Export[
     hashPrev = $Failed,
     comments = StringRiffle[{
         "[comments]: " <> ToString@OptionValue["Comments"],
-        "[author]: " <> systemString,
+        "[created]: " <> systemString,
         "[date]: " <> timeString,
         "[hash]: " <> ToString@Hash[expr]
       }, {"", " *)\n(* ", ""}
