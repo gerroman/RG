@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 BeginPackage["RG`Notation`Integrate`", {"RG`Notation`Force`", "RG`Notation`D`"}]
 
 
@@ -56,7 +55,10 @@ integrate /: Format[integrate[expr_, {k_, d_}, "factor" -> factor_], Traditional
 			RowBox[{num, SuperscriptBox["\[DifferentialD]", TraditionalForm[d]], TraditionalForm[k]}]
 		]
 		,
-		ToBoxes[expr, TraditionalForm]
+		If[Head[expr]===Plus,
+          RowBox[{"(", ToBoxes[expr, TraditionalForm], ")"}],
+          ToBoxes[expr, TraditionalForm]
+        ]
 	}]]
 ]
 
@@ -92,7 +94,10 @@ integrate /: Format[integrate[expr_, var_, "factor" -> factor_], TraditionalForm
 			RowBox[{num, "\[DifferentialD]", ToBoxes[k, TraditionalForm]}]
 		]
 		,
-		ToBoxes[expr, TraditionalForm]
+		If[Head[expr]===Plus,
+          RowBox[{"(", ToBoxes[expr, TraditionalForm], ")"}],
+          ToBoxes[expr, TraditionalForm]
+        ]
 	}]]
 ]
 
