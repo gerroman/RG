@@ -260,6 +260,7 @@ RG`Scripts`Export[
     comments = StringRiffle[{
         "[comments]: " <> ToString@OptionValue["Comments"],
         "[created]: " <> systemString,
+        "[source]: " <> FileNameTake[If[$Notebooks, ToString@NotebookFileName[], $InputFileName]],
         "[date]: " <> timeString,
         "[hash]: " <> ToString@Hash[expr]
       }, {"", " *)\n(* ", ""}
