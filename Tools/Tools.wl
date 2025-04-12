@@ -25,7 +25,7 @@ pullFactor::usage="pullFactor[x, func] \[LongDash] pull x out of func"
 
 distribute::usage="distribute[outer, inner]"
 
-eq::usage = "eq[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
+equation::usage = "equation[expr, func] \[LongDash] form an equation HoldForm[expr] == func[expr]"
 
 cases::usage = "cases[pattern] \[LongDash] just a shortcut for DeleteDuplicates[Cases[#, pattern, All]]&"
 
@@ -88,23 +88,23 @@ modify[xs_List, func_:Expand] := With[{rule = (# -> func[#])& /@ xs},
 ]
 
 
-SetAttributes[eq, HoldFirst]
-Options[eq] = {HoldForm->True};
-eq[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
+SetAttributes[equation, HoldFirst]
+Options[equation] = {HoldForm->True};
+equation[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
   {
   func = RightComposition@@fs,
     lhs = If[OptionValue[HoldForm], HoldForm[expr], expr]
   },
   lhs == func[expr]
 ]
-eq[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
+equation[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
   {
     lfunc = RightComposition@@lfs,
   rfunc = RightComposition@@rfs
   },
   lfunc[expr] == rfunc[expr]
 ]
-eq[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
+equation[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
 
 
 cases[pattern_] := DeleteDuplicates[Cases[#, pattern, All]]&
