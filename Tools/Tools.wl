@@ -92,7 +92,7 @@ SetAttributes[equation, HoldFirst]
 Options[equation] = {HoldForm->True};
 equation[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
   {
-  func = RightComposition@@fs,
+    func = RightComposition@@fs,
     lhs = If[OptionValue[HoldForm], HoldForm[expr], expr]
   },
   lhs == func[expr]
@@ -100,11 +100,11 @@ equation[expr_, fs_List:{Identity}, opts:OptionsPattern[]] := With[
 equation[expr_, lfs_List, rfs_List, opts:OptionsPattern[]] := With[
   {
     lfunc = RightComposition@@lfs,
-  rfunc = RightComposition@@rfs
+    rfunc = RightComposition@@rfs
   },
   lfunc[expr] == rfunc[expr]
 ]
-equation[expr_, fs__, opts:OptionsPattern[]] := eq[expr, {fs}, opts]
+equation[expr_, fs__, opts:OptionsPattern[]] := equation[expr, {fs}, opts]
 
 
 cases[pattern_] := DeleteDuplicates[Cases[#, pattern, All]]&
