@@ -30,12 +30,6 @@ getCellArchivator::usage = "getCellArchivator[] \[LongDash] create pallete to \"
 holdform::usage = "holdform[expr] \[LongDash] replace expr -> HoldForm[expr]"
 
 
-begin::usage="begin[] \[LongDash] begin evaluation in the section"
-end::usage="end[] \[LongDash] end evaluation in the section"
-clear::usage="clear[] \[LongDash] clear temporary variables"
-todo::usage="todo[] - mark section needs to be done"
-
-
 Begin["`Private`"];
 
 
@@ -274,40 +268,6 @@ Evaluator->Automatic
 
 
 setDrawOptions[] := Get["RG/Tools/SetDrawOptions.wl"];
-
-
-Options[clear] = {"pattern"->"tmp"};
-Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray};
-Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
-
-clear[opts:OptionsPattern[]] := With[{vars = Names[OptionValue["pattern"]]}, Clear @@ vars];
-
-begin[opts:OptionsPattern[]] := With[
-   {nb = EvaluationNotebook[], cell = EvaluationCell[]},
-   SelectionMove[cell, Previous, Cell];
-   SelectionMove[nb, All, Cell];
-   CurrentValue[SelectedCells[nb], Background] =
-    OptionValue[Background];
-   CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
-   SelectionMove[cell, After, Cell];
-   clear[];
-   ];
-
-end[opts:OptionsPattern[]] := With[
-   {nb = EvaluationNotebook[], cell = EvaluationCell[]},
-   SelectionMove[cell, All, CellGroup,OptionValue["n"]];
-   SelectionMove[nb, Before, CellContents];
-   SelectionMove[nb, All, Cell];
-   CurrentValue[SelectedCells[nb], Background] =
-    OptionValue[Background];
-   CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
-   SelectionMove[cell, All, CellGroup,OptionValue["n"]];
-   FrontEndTokenExecute["OpenCloseGroup"];
-   SelectionMove[cell, After, CellGroup];
-   clear[];
-];
-
-todo[] := end[Background -> LightRed, FontColor -> RGBColor[170, 0, 0]];
 
 
 End[]
