@@ -455,16 +455,15 @@ begin[opts:OptionsPattern[]] := If[$Notebooks, With[
 
 end[opts:OptionsPattern[]] := If[$Notebooks, With[
    {nb = EvaluationNotebook[], cell = EvaluationCell[]},
-   SelectionMove[cell, All, CellGroup,OptionValue["n"]];
+   SelectionMove[cell, All, CellGroup, OptionValue["n"]];
    SelectionMove[nb, Before, CellContents];
    SelectionMove[nb, All, Cell];
    CurrentValue[SelectedCells[nb], Background] =
     OptionValue[Background];
    CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
-   SelectionMove[cell, All, CellGroup,OptionValue["n"]];
+   SelectionMove[cell, All, CellGroup, OptionValue["n"]];
    FrontEndTokenExecute["OpenCloseGroup"];
    SelectionMove[cell, After, CellGroup];
-   clear[];
 ], log[RG`Scripts`Private`timeString, "prefix"->"[end]: "]];
 
 todo[] := end[Background -> LightRed, FontColor -> RGBColor[170, 0, 0]];
