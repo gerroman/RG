@@ -312,7 +312,7 @@ RG`Scripts`Export[
   },
   log[fnameFull];
   If[force || Not@FileExistsQ[fnameFull] || Not@FileExistsQ[fnameHash],
-    log[StringForm[RG`Scripts`Export::export, ToString[expr, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
+    log[StringForm[RG`Scripts`Export::export, ToString[expr, InputForm, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
     System`Export[fnameFull, expr, Sequence@@exportOpts];
     log["complete", "prefix"->"[export]: "];
     log[StringForm[RG`Scripts`Export::export, hash, fnameHash], "prefix"->"[export]: "];
