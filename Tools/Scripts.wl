@@ -253,6 +253,17 @@ getHash[fname_String, nMax_:10] := Module[{f, s, n=0, hash=$Failed},
 ];
 
 
+getFileSize[fname_String] := With[
+  {bytes=FileInformation[fname, "ByteCount"]},
+  Which[
+    bytes < 1024, ToString@StringForm["`` bytes", bytes],
+    bytes < 1048576, ToString@StringForm["`` Kb", N[bytes/1024,2]],
+    bytes < 1073741824, ToString@StringForm["`` Mb", N[bytes/1048576,2]],
+    True, ToString@StringForm["`` Gb", N[bytes/1073741824,2]]
+  ]
+]
+
+
 RG`Scripts`Export[
   fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"m", "wl"}],
   expr_,
@@ -275,12 +286,14 @@ RG`Scripts`Export[
   },
   log[fnameFull];
   If[force || Not[FileExistsQ[fnameFull]],
-    log[StringForm[RG`Scripts`Export::export, ToString[expr, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
+    log[StringForm[RG`Scripts`Export::export, ToString[expr, InputForm, TotalWidth->300],  fnameFull], "prefix"->"[export]: "];
     System`Export[fnameFull, expr, "Comments"->comments, Sequence@@exportOpts];
-    log["complete", "prefix"->"[export]: "];
+    log["complete", "prefix"->"[info]: "];
+    log[getFileSize[fnameFull], "prefix"->"[size]: "];
     Return[fnameFull];
   ];
   If[Not[force] && FileExistsQ[fnameFull],
+    log[getFileSize[fnameFull], "prefix"->"[size]: "];
     hashPrev = getHash[fnameFull];
     If[hashPrev === hash,
       log[RG`Scripts`Export::hashSame, "prefix"->"[hash]: "],
@@ -322,9 +335,11 @@ RG`Scripts`Export[
       Close[f];
     ];
     log["complete", "prefix"->"[export]: "];
+    log[getFileSize[fnameFull], "prefix"->"[size]: "];
     Return[fnameFull];
   ];
   If[hash === Get[fnameHash],
+    log[getFileSize[fnameFull], "prefix"->"[size]: "];
     log[RG`Scripts`Export::hashSame, "prefix"->"[hash]: "],
     (
       error[RG`Scripts`Export::hashError];
