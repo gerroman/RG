@@ -437,8 +437,8 @@ Options[clear] = {"pattern"->"tmp"};
 Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray};
 Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
 
-clear[opts:OptionsPattern[]] := With[{vars = Names[OptionValue["pattern"]]},
-  Echo[vars, "Clear"];
+clear[opts:OptionsPattern[]] := With[
+  {vars = Names[OptionValue["pattern"]]},
   Clear @@ vars
 ];
 
