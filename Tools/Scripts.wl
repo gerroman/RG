@@ -59,6 +59,13 @@ clear::usage="clear[] \[LongDash] clear temporary variables"
 todo::usage="todo[] - mark section needs to be done"
 
 
+(* ::Text:: *)
+(* Exporting code *)
+
+
+write::usage="write[filename, code] write code to file in binary format using UTF-8 encoding"
+
+
 Begin["`Private`"];
 
 
@@ -486,6 +493,22 @@ end[opts:OptionsPattern[]] := If[$Notebooks, With[
 ], log[RG`Scripts`Private`timeString, "prefix"->"[end]: "]];
 
 todo[] := end[Background -> LightRed, FontColor -> RGBColor[170, 0, 0]];
+
+
+Options[write] = {force -> False};
+write[fname_String, code_String, opts:OptionsPattern[]] := (
+  If[FileExistsQ[fname] && Not@OptionValue[force], (
+    warning[StringForm["file '``' does exist, use force->True option to overwrite", fname]];
+    Return[fname]
+  )];
+  log[StringForm["writing to the file '``' ...", ExpandFileName[fname]]];
+  With[{file = OpenWrite[fname, BinaryFormat -> True]},
+    BinaryWrite[file, ToCharacterCode[code, "UTF-8"]];
+    Close[file]
+  ];
+  log["complete"];
+  Return[fname]
+);
 
 
 End[];
