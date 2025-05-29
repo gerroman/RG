@@ -466,31 +466,39 @@ gitRef[path_String] := With[{
 
 
 Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray};
-begin[opts:OptionsPattern[]] := If[$Notebooks, With[
-   {nb = EvaluationNotebook[], cell = EvaluationCell[]},
-   SelectionMove[cell, Previous, Cell];
-   SelectionMove[nb, All, Cell];
-   CurrentValue[SelectedCells[nb], Background] =
-    OptionValue[Background];
-   CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
-   SelectionMove[cell, After, Cell];
-   (* clear[]; *)
-], log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]];
+begin[opts:OptionsPattern[]] := If[$Notebooks,
+  With[{nb = EvaluationNotebook[], cell = EvaluationCell[]},
+    SelectionMove[cell, Previous, Cell];
+    SelectionMove[nb, All, Cell];
+    If[1 == Length[Cells[NotebookSelection[], CellStyle->"Subsubsection"|"Subsection"|"Section"]], (
+      CurrentValue[SelectedCells[nb], Background] = OptionValue[Background];
+      CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
+    )];
+    SelectionMove[cell, After, Cell];
+    (* clear[]; *)
+  ]
+  ,
+  log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]
+];
 
 
 Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
-end[opts:OptionsPattern[]] := If[$Notebooks, With[
-   {nb = EvaluationNotebook[], cell = EvaluationCell[]},
-   SelectionMove[cell, All, CellGroup, OptionValue["n"]];
-   SelectionMove[nb, Before, CellContents];
-   SelectionMove[nb, All, Cell];
-   CurrentValue[SelectedCells[nb], Background] =
-    OptionValue[Background];
-   CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
-   SelectionMove[cell, All, CellGroup, OptionValue["n"]];
-   FrontEndTokenExecute["OpenCloseGroup"];
-   SelectionMove[cell, After, CellGroup];
-], log[RG`Scripts`Private`timeString, "prefix"->"[end]: "]];
+end[opts:OptionsPattern[]] := If[$Notebooks,
+  With[{nb = EvaluationNotebook[], cell = EvaluationCell[]},
+    SelectionMove[cell, All, CellGroup, OptionValue["n"]];
+    SelectionMove[nb, Before, CellContents];
+    SelectionMove[nb, All, Cell];
+    If[1 == Length[Cells[NotebookSelection[], CellStyle->"Subsubsection"|"Subsection"|"Section"]], (
+      CurrentValue[SelectedCells[nb], Background] = OptionValue[Background];
+      CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
+      SelectionMove[cell, All, CellGroup, OptionValue["n"]];
+      FrontEndTokenExecute["OpenCloseGroup"];
+    )];
+    SelectionMove[cell, After, CellGroup];
+  ]
+  ,
+  log[RG`Scripts`Private`timeString, "prefix"->"[end]: "];
+];
 
 
 (* todo::usage="todo[] - mark section needs to be done" *)
