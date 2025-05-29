@@ -457,15 +457,11 @@ gitRef[path_String] := With[{
 ];
 
 
-(* clear::usage="clear[] \[LongDash] clear temporary variables" *)
-(* Options[clear] = {"pattern"->"tmp"}; *)
-(* clear[opts:OptionsPattern[]] := With[ *)
-(*   {vars = Names[OptionValue["pattern"]]}, *)
-(*   Clear @@ vars *)
-(* ]; *)
+clear::usage="clear[pattern] \[LongDash] clear temporary variables matching pattern"
+clear[pattern_] := With[{vars = Names[pattern]}, Clear @@ vars];
 
 
-Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray};
+Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray, "pattern"->""};
 begin[opts:OptionsPattern[]] := If[$Notebooks,
   With[{nb = EvaluationNotebook[], cell = EvaluationCell[]},
     SelectionMove[cell, Previous, Cell];
@@ -474,11 +470,14 @@ begin[opts:OptionsPattern[]] := If[$Notebooks,
       CurrentValue[SelectedCells[nb], Background] = OptionValue[Background];
       CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
     )];
+    clear[OptionValue["pattern"]];
     SelectionMove[cell, After, Cell];
-    (* clear[]; *)
   ]
   ,
-  log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]
+  (
+    clear[OptionValue["pattern"]];
+    log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]
+  )
 ];
 
 
