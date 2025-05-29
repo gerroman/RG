@@ -55,8 +55,6 @@ ansiwindows::usage="ansiwindows[expr, color]"
 
 begin::usage="begin[] \[LongDash] begin evaluation in the section"
 end::usage="end[] \[LongDash] end evaluation in the section"
-clear::usage="clear[] \[LongDash] clear temporary variables"
-todo::usage="todo[] - mark section needs to be done"
 
 
 (* ::Text:: *)
@@ -459,15 +457,15 @@ gitRef[path_String] := With[{
 ];
 
 
-Options[clear] = {"pattern"->"tmp"};
+(* clear::usage="clear[] \[LongDash] clear temporary variables" *)
+(* Options[clear] = {"pattern"->"tmp"}; *)
+(* clear[opts:OptionsPattern[]] := With[ *)
+(*   {vars = Names[OptionValue["pattern"]]}, *)
+(*   Clear @@ vars *)
+(* ]; *)
+
+
 Options[begin] = {Background -> LightGray, FontColor -> Darker@Gray};
-Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
-
-clear[opts:OptionsPattern[]] := With[
-  {vars = Names[OptionValue["pattern"]]},
-  Clear @@ vars
-];
-
 begin[opts:OptionsPattern[]] := If[$Notebooks, With[
    {nb = EvaluationNotebook[], cell = EvaluationCell[]},
    SelectionMove[cell, Previous, Cell];
@@ -479,6 +477,8 @@ begin[opts:OptionsPattern[]] := If[$Notebooks, With[
    clear[];
 ], log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]];
 
+
+Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
 end[opts:OptionsPattern[]] := If[$Notebooks, With[
    {nb = EvaluationNotebook[], cell = EvaluationCell[]},
    SelectionMove[cell, All, CellGroup, OptionValue["n"]];
@@ -492,7 +492,9 @@ end[opts:OptionsPattern[]] := If[$Notebooks, With[
    SelectionMove[cell, After, CellGroup];
 ], log[RG`Scripts`Private`timeString, "prefix"->"[end]: "]];
 
-todo[] := end[Background -> LightRed, FontColor -> RGBColor[170, 0, 0]];
+
+(* todo::usage="todo[] - mark section needs to be done" *)
+(* todo[] := end[Background -> LightRed, FontColor -> RGBColor[170, 0, 0]]; *)
 
 
 Options[write] = {force -> False};
