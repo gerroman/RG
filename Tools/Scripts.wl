@@ -474,7 +474,7 @@ begin[opts:OptionsPattern[]] := If[$Notebooks, With[
     OptionValue[Background];
    CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
    SelectionMove[cell, After, Cell];
-   clear[];
+   (* clear[]; *)
 ], log[RG`Scripts`Private`timeString, "prefix"->"[begin]: "]];
 
 
