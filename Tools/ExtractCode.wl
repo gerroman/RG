@@ -48,6 +48,7 @@ If[FileExistsQ[ofname] && Not[force], (
   Message[ExtractCode::exist, ofname];
   Return[$Failed]
 )];
+Write["stderr", ToString@StringForm["[info]: extracting code from file '``' ... ", ifname]];
 UsingFrontEnd[
   With[{nb = NotebookOpen[ifname,Visible->False]}, (
     data = Riffle[NotebookImport[nb, "Input"|"Code"->"InputText"],"\n\n\n"];
@@ -84,28 +85,18 @@ parse[] := Which[
 
 main[] := Module[{argc, argv, result, forceFlag},
   {argc, argv} = parse[];
-
-  If[argc == 0,
-    (*not running as a script*)
-    Return[Null]
-  ];
-
+  If[argc == 0, Return[Null]];
   If[MemberQ[argv, "-h"] || MemberQ[argv, "-help"] || (argc == 1),
     Write["stderr", ExtractCode::usage];
     Write["stderr", ExtractCode::help];
     Exit[0];
   ];
-
   forceFlag = MemberQ[argv, "-force"];
   If[forceFlag, (
     argv = DeleteCases[argv, "-force"];
     argc -= 1;
-  )]
-
-  Write["stderr", ToString@StringForm["[info]: extracting code from `` ... ", Rest[argv]]];
-
+  )];
   result = ExtractCode[#, Null, "force"->forceFlag]& /@ Rest[argv];
-
   Exit[Boole[MemberQ[result, $Failed]]];
 ];
 
