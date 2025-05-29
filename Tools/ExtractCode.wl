@@ -11,6 +11,7 @@ DESCRIPTION:
   ifname -- notebook file name (String)
   output -- output file name (default = Null means save notebook contents to the file with changed \
 extension to wl)
+  '-force' -- force overwriting of the output file
 EXAMPLES:
   math -script ExtractCode.wl notebook.nb code.wl
   math -script ExtractCode.wl notebook.nb
@@ -55,11 +56,11 @@ UsingFrontEnd[
   )]
 ];
 If[FileExistsQ[ofname] && hash === getHash[ofname],
-  Print["[hash]: hash is the same"];
-  Print["[info]: complete"];
+  Write["stderr", "[hash]: hash is the same"];
+  Write["stderr", "[info]: complete"];
   Return[ofname];
 ];
-Print[ToString@StringForm["[info]: writing to the file '``' ... ", ofname]];
+Write["stderr", ToString@StringForm["[info]: writing to the file '``' ... ", ofname]];
 With[{fstream=OpenWrite[ofname]}, (
   WriteString[fstream, ToString[StringForm[headerTemplate, ifname]]];
   WriteString[fstream, ToString[StringForm[dateTemplate, DateString[]]]];
@@ -67,7 +68,7 @@ With[{fstream=OpenWrite[ofname]}, (
   WriteString[fstream,#]&/@data;
   Close[fstream];
 )];
-Print["[info]: complete"];
+Write["stderr", "[info]: complete"];
 Return[ofname];
 ];
 
@@ -101,9 +102,7 @@ main[] := Module[{argc, argv, result, forceFlag},
     argc -= 1;
   )]
 
-  Print[
-    ToString@StringForm["[info]: extracting code from `` ... ", Rest[argv]]
-  ];
+  Write["stderr", ToString@StringForm["[info]: extracting code from `` ... ", Rest[argv]]];
 
   result = ExtractCode[#, Null, "force"->forceFlag]& /@ Rest[argv];
 
