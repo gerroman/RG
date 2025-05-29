@@ -49,6 +49,10 @@ info[func, All] \[LongDash] get full information about func including up/down va
 ansiwindows::usage="ansiwindows[expr, color]"
 
 
+(* ::Text:: *)
+(* Notebook structure *)
+
+
 begin::usage="begin[] \[LongDash] begin evaluation in the section"
 end::usage="end[] \[LongDash] end evaluation in the section"
 clear::usage="clear[] \[LongDash] clear temporary variables"
