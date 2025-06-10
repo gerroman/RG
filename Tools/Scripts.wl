@@ -367,7 +367,7 @@ RG`Scripts`Export[args__] := System`Export[args];
 Options[RG`Scripts`Timing] = {"verbose"->False};
 SetAttributes[RG`Scripts`Timing, HoldFirst];
 RG`Scripts`Timing[expr_] := Module[{time, result},
-  log[ToString[Unevaluated[expr]], "prefix"->"[time]: ", "endl"->" ... "];
+  log[ToString[Unevaluated[expr], InputForm], "prefix"->"[time]: ", "endl"->" ... "];
   {time, result} = If[OptionValue[RG`Scripts`Timing, "verbose"],
     AbsoluteTiming[expr], Block[{Print}, AbsoluteTiming[expr]]
   ];
