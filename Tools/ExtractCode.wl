@@ -14,11 +14,13 @@ extension to wl)
   '-force' -- force overwriting of the output file
 EXAMPLES:
   math -script ExtractCode.wl notebook.nb code.wl
+  math -script ExtractCode.wl notebook.nb -o path
+  math -script ExtractCode.wl notebook.nb -o path/code.wl
   math -script ExtractCode.wl notebook.nb
   math -script ExtractCode.wl notebook.nb -force
 "
 
-ExtractCode::exist = "file `` does exist, use '-force' flag to overwrite"
+ExtractCode::exist = "file '``' does exist, use '-force' flag to overwrite"
 getHash[fname_String, nMax_:5] := Module[{s, n=0, hash=$Failed},
   With[{f = OpenRead[fname]},
     While[((s = ReadLine[f]) =!= EndOfFile) && ((n += 1) < nMax),
@@ -43,7 +45,11 @@ If[Not@FileExistsQ[ifname], (
   Message[General::notfound, ifname];
   Return[$Failed];
 )];
-ofname = If[output === Null, FileBaseName[ifname]<>".wl", output];
+ofname = Which[
+  output === Null, FileBaseName[ifname]<>".wl",
+  DirectoryQ[output], ExpandFileName@FileNameJoin[{output, FileBaseName[ifname]<>".wl"}],
+  True, output
+];
 If[FileExistsQ[ofname] && Not[force], (
   Message[ExtractCode::exist, ofname];
   Return[$Failed]
@@ -75,17 +81,17 @@ Return[ofname];
 
 
 parse[] := Which[
-  $ScriptCommandLine =!= {},
-  {Length[#], #}&[$ScriptCommandLine],
-  Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script",
-  {Length[#], #}&[$CommandLine[[3;;]]],
+  $ScriptCommandLine =!= {}, {Length[#], #}&[$ScriptCommandLine],
+  Length[$CommandLine] >= 2 && $CommandLine[[2]] === "-script", {Length[#], #}&[$CommandLine[[3;;]]],
   True, {0, {}}
 ];
 
 
-main[] := Module[{argc, argv, result, forceFlag},
+main[] := Module[{argc, argv, result, forceFlag, output=Null},
   {argc, argv} = parse[];
+  (* can not parse command-line arguments *)
   If[argc == 0, Return[Null]];
+  (* usage message *)
   If[MemberQ[argv, "-h"] || MemberQ[argv, "-help"] || (argc == 1),
     Write["stderr", ExtractCode::usage];
     Write["stderr", ExtractCode::help];
@@ -96,7 +102,13 @@ main[] := Module[{argc, argv, result, forceFlag},
     argv = DeleteCases[argv, "-force"];
     argc -= 1;
   )];
-  result = ExtractCode[#, Null, "force"->forceFlag]& /@ Rest[argv];
+  If[MemberQ[argv, "-o"], (
+    With[{pos = First@Flatten@Position[argv, "-o"]},
+      output = argv[[pos + 1]];
+      argv = Delete[argv, {{pos}, {pos + 1}}];
+    ];
+  )];
+  result = ExtractCode[#, output, "force"->forceFlag]& /@ Rest[argv];
   Exit[Boole[MemberQ[result, $Failed]]];
 ];
 
