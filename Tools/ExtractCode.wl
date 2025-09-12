@@ -20,7 +20,7 @@ EXAMPLES:
   math -script ExtractCode.wl notebook.nb -force
 "
 
-ExtractCode::exist = "file '``' does exist, use '-force' flag to overwrite"
+ExtractCode::exist = "file '``' does exist, use '-force' flag to overwrite\n"
 getHash[fname_String, nMax_:5] := Module[{s, n=0, hash=$Failed},
   With[{f = OpenRead[fname]},
     While[((s = ReadLine[f]) =!= EndOfFile) && ((n += 1) < nMax),
