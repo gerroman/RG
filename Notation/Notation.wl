@@ -106,7 +106,7 @@ End[]
 EndPackage[]
 
 
-Scan[Get, {
+Scan[Needs, {
   "RG`Notation`Force`",
   "RG`Notation`D`",
   "RG`Notation`Integrate`",
