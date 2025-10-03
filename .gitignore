@@ -9,4 +9,4 @@ debug/
 release/
 build/
 *.log
-/Unused/projects/run/
+run/
