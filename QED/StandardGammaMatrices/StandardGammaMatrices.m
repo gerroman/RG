@@ -40,18 +40,7 @@ DiracUParity::usage = "DiracUParity \[LongDash] parity conjugation matrix for Di
 DiracUTime::usage = "DiracUTime \[LongDash] time conjugation matrix for Dirac spinors"
 
 
-MetricTensor::usage = "MetricTensor[\[Mu],\[Nu]] is metric tensor"
-
-
 Begin["`Private`"]
-
-
-Format[DiracGammaMatrix[mu_],TraditionalForm] := HoldForm[Superscript[Global`\[Gamma], mu]];
-Format[DiracGammaMatrix[{}, mu_],TraditionalForm] := HoldForm[Subscript[Global`\[Gamma], mu]];
-
-
-Format[MetricTensor[mu_,nu_],TraditionalForm] := HoldForm[Superscript[Global`g,Row[{mu,nu}]]]
-Format[MetricTensor[{},{mu_,nu_}],TraditionalForm] := HoldForm[Subscript[Global`g,Row[{mu,nu}]]]
 
 
 PauliId = IdentityMatrix[2];
