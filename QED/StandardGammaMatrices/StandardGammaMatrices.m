@@ -100,12 +100,12 @@ ChiSpinor[{theta_, phi_}, -1] := {-Cos[theta/2], -Exp[I phi] Sin[theta/2]};
 PauliUCharge = (-I) * PauliMatrix[2];
 
 
-USpinor[p4_, m_, phi_] := With[{epsilon = First[p4], p = Rest[p4], sigma = Array[PauliSigmaMatrix, 3]},
+USpinor[p4_List, m_, phi_List] := With[{epsilon = First[p4], p = Rest[p4], sigma = Array[PauliSigmaMatrix, 3]},
 Sqrt[epsilon + m] * Flatten[{phi, Total[sigma * p].phi / (epsilon + m)}]
 ]
 
 
-VSpinor[p4_, m_, chi_] := With[{epsilon = First[p4], p = Rest[p4], sigma = Array[PauliSigmaMatrix, 3]},
+VSpinor[p4_List, m_, chi_List] := With[{epsilon = First[p4], p = Rest[p4], sigma = Array[PauliSigmaMatrix, 3]},
 Sqrt[epsilon + m] * Flatten[{Total[sigma * p].chi / (epsilon + m), chi}]
 ]
 
