@@ -439,19 +439,12 @@ If[$OperatingSystem == "Windows",
 
 
 gitRef[path_String] := With[{
-  gitString = Quiet@RunProcess[
-    {
-      "git",
-      "log",
-      "--pretty=reference",
-      "-n", "1"
-    },
+  gitString = RunProcess[{"git", "log", "-n", "1"},
     "StandardOutput",
     ProcessDirectory->path
   ]},
   If[gitString =!= $Failed,
-    StringTrim[gitString, "\n"]
-    ,
+    First@StringSplit[gitString, EndOfLine],
     warning[StringForm["can not define git reference for '``'", ExpandFileName[path]]]
   ]
 ];
