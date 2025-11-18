@@ -14,7 +14,8 @@ colorize[xs_List|pattern, style] \[LongDash] shortcut for colorize[xs, \"StyleFu
 
 
 shorten::usage = "
-  shorten[expr] print shorten version of expr
+  shorten[expr] \[LongDash] short version of expr
+  shorten[expr, n->5] \[LongDash] short version of expr
 ";
 
 
