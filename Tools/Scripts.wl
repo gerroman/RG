@@ -475,7 +475,7 @@ begin[opts:OptionsPattern[]] := If[$Notebooks,
 ];
 
 
-Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1};
+Options[end] = {Background -> LightGreen, FontColor -> Darker@Green,"n"->1, Close->True};
 end[opts:OptionsPattern[]] := If[$Notebooks,
   With[{nb = EvaluationNotebook[], cell = EvaluationCell[]},
     SelectionMove[cell, All, CellGroup, OptionValue["n"]];
@@ -485,7 +485,7 @@ end[opts:OptionsPattern[]] := If[$Notebooks,
       CurrentValue[SelectedCells[nb], Background] = OptionValue[Background];
       CurrentValue[SelectedCells[nb], FontColor] = OptionValue[FontColor];
       SelectionMove[cell, All, CellGroup, OptionValue["n"]];
-      FrontEndTokenExecute["OpenCloseGroup"];
+      If[OptionValue[Close], FrontEndTokenExecute["OpenCloseGroup"]];
     )];
     SelectionMove[cell, After, CellGroup];
   ]
