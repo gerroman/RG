@@ -315,7 +315,7 @@ RG`Scripts`Export[
   Return[fnameFull];
 ];
 RG`Scripts`Export[
-  fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"png", "jpg", "pdf"}],
+  fname_ /; StringMatchQ[FileExtension[ToString[fname]], {"png", "jpg", "pdf", "eps"}],
   expr_,
   opts:OptionsPattern[{RG`Scripts`Export, System`Export, Graphics, Rasterize}]
 ] := Module[
