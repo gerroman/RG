@@ -1,3 +1,9 @@
+(* ::Package:: *)
+
+(* ::Section::Closed:: *)
+(*Begin*)
+
+
 BeginPackage["RG`DrawGraph`"]
 
 
@@ -6,8 +12,11 @@ DrawGraph::usage="DrawGraph[g, vpos] draw graph using vertex positions"
 
 fermionLine::usage = "fermionLine[{p1, p2, ...}] electron line"
 photonLine::usage = "photonLine[{p1, p2}] photon line"
-fermionArc::usage = "fermionArc[{p1, p2}] fermion arc line"
-photonArc::usage = "photonArc[{p1, p2}] photon arc line"
+
+
+fermionArc::usage = "fermionArc[{p1, p2}, label] fermion arc line"
+photonArc::usage = "photonArc[{p1, p2}, label] photon arc line"
+particleLine::usage = "particleLine[{p1, p2}, label] photon arc line"
 
 
 Begin["`Private`"]
@@ -16,6 +25,10 @@ Begin["`Private`"]
 getLength[{p1:{_, _}, p2:{_, _}}] := (p1 - p2) // Norm;
 getCrossDirection[{p1:{_, _}, p2:{_, _}}] := (p1 - p2) // Reverse // ({1, -1} * # &) // Normalize;
 getMiddlePosition[{p1:{_, _}, p2:{_, _}}] := (p1 + p2) / 2;
+
+
+(* ::Section::Closed:: *)
+(*FermionLine*)
 
 
 Options[fermionLine] = {
@@ -47,6 +60,10 @@ fermionLine[points:{{_, _}...}, opt:OptionsPattern[]] := Module[{
     Arrow[points]
   }
 ];
+
+
+(* ::Section::Closed:: *)
+(*DrawGraph*)
 
 
 DrawGraph::vertexlist="insufficient vertex position list\n[needed]: ``\n[defined]: ``"
@@ -83,6 +100,11 @@ DrawGraph[g_Graph, vsPos_List, opts : OptionsPattern[]] := Module[{
   Return[graph];
 ]
 
+
+(* ::Section::Closed:: *)
+(*PhotonLine*)
+
+
 Options[photonLine] = {
   "DefaultSegmentLength"->0.3,
   "NumberOfWiggles"->Automatic,
@@ -117,23 +139,21 @@ photonLine[points:{p1:{_,_}, p2:{_,_}}, opts:OptionsPattern[]] := Module[{
 ];
 
 
-(*
-
-(* ::Section:: *)
-(*Photon arc*)
+(* ::Section::Closed:: *)
+(*PhotonArc*)
 
 
-arcHelper[points:{p1:{_,_},p2:{_,_}}, nWiggles_:4, arcAngle_:\[Pi], flip_:False] := Module[
+arcHelper[points:{p1:{_,_},p2:{_,_}}, nWiggles_:4, arcAngle_:\[Pi]] := Module[
   {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength},
   fullSegmentLength = getLength[N@points];
   direction = N@(p2 - p1) // Normalize;
-  crossDirection = getCrossDirection[N@points] * getFlipFactor[flip];
+  crossDirection = getCrossDirection[N@points];
   radius = fullSegmentLength /(2 Sin[arcAngle/2]);
   centerPosition = getMiddlePosition[points] + crossDirection * radius * Cos[arcAngle/2];
   initialAngle = ToPolarCoordinates[p1 - centerPosition] // Last;
   finalAngle = ToPolarCoordinates[p2 - centerPosition] // Last;
   segmentAngle = Which[
-    arcAngle == \[Pi], getFlipFactor[flip] * arcAngle / nWiggles,
+    arcAngle == \[Pi], arcAngle / nWiggles,
     -\[Pi] < finalAngle - initialAngle < \[Pi], (finalAngle - initialAngle) / nWiggles,
     finalAngle - initialAngle < -\[Pi], (2\[Pi] + finalAngle - initialAngle) / nWiggles,
     finalAngle - initialAngle > \[Pi], (finalAngle - initialAngle - 2\[Pi]) / nWiggles,
@@ -144,11 +164,11 @@ arcHelper[points:{p1:{_,_},p2:{_,_}}, nWiggles_:4, arcAngle_:\[Pi], flip_:False]
 ];
 
 
-photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip_:False, arrowWidth_:Automatic, shiftFactor_:2] := Module[{
+photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], arrowWidth_:Automatic, shiftFactor_:2] := Module[{
      fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength,
      bezierPoints
   },
-  {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength} = arcHelper[points, nWiggles, arcAngle, flip];
+  {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle, segmentAngle, segmentLength} = arcHelper[points, nWiggles, arcAngle];
 
   bezierPoints = With[{angle = i \[Function] initialAngle + (i - 1/2) * segmentAngle},
     Array[n \[Function] {
@@ -176,19 +196,18 @@ photonArc[points:{p1:{_,_},p2:{_,_}}, label_, nWiggles_:4, arcAngle_:\[Pi], flip
     ]
   }
 ];
-(*  *)
 
 
-(* ::Section:: *)
-(*Fermion arc*)
+(* ::Section::Closed:: *)
+(*FermionArc*)
 
 
-fermionArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWidth_:Automatic, shiftFactor_:2] := Module[{
+fermionArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], arrowWidth_:Automatic, shiftFactor_:2] := Module[{
     fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle,
     segmentAngle, segmentLength
   },
   {fullSegmentLength, direction, crossDirection, radius, centerPosition, initialAngle, finalAngle,
-    segmentAngle, segmentLength} = arcHelper[points, 1, arcAngle, flip];
+    segmentAngle, segmentLength} = arcHelper[points, 1, arcAngle];
   {
     Circle[centerPosition, radius, {initialAngle, initialAngle+segmentAngle}],
     With[{pos = centerPosition + radius * {Cos[initialAngle + segmentAngle / 2], Sin[initialAngle + segmentAngle / 2]}},
@@ -203,7 +222,9 @@ fermionArc[points:{{_,_},{_,_}}, label_, arcAngle_:\[Pi], flip_:False, arrowWidt
   }
 ];
 
-(*  *)
+
+(* ::Section::Closed:: *)
+(*ParticleLine*)
 
 
 particleLine[
@@ -211,12 +232,11 @@ particleLine[
     , label_
     , opts1_: {}
         , opts2_: {}
-    , flip_: False
     , arrowWidth_: Automatic
     , shiftFactors_: 2
   ] :=
   Module[{
-      el = First@fermionLine[points, {label}, flip, arrowWidth, shiftFactors]
+      el = First@fermionLine[points, {label}, arrowWidth, shiftFactors]
     },
     With[{
         line = Flatten[{opts1}]~Join~Rest[First[el]],
@@ -226,7 +246,9 @@ particleLine[
     ]
   ];
 
-*)
+
+(* ::Section::Closed:: *)
+(*End*)
 
 
 End[]
