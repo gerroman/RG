@@ -418,7 +418,7 @@ ansiwindows[str_String, color_:Gray] := With[{
   StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
 If[$OperatingSystem == "Windows",
-  SetOptions[log, {"verbose"->False, "colorize"->{(*
+  SetOptions[log, {"verbose"->True, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
   "[date]" -> ansiwindows["[date]", Darker@Magenta],
   "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
