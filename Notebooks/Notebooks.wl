@@ -299,8 +299,10 @@ Print[
     RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]
   ]
 ];
-If[$Notebooks, Print[
-  ToString@StringForm["[git]: `` - [notebook]",
-    RG`Scripts`gitRef[NotebookDirectory[]]
-  ]
-]];
+
+(* [NOTE]: disable git for notebook *)
+(* If[$Notebooks, Print[ *)
+(*   ToString@StringForm["[git]: `` - [notebook]", *)
+(*     RG`Scripts`gitRef[NotebookDirectory[]] *)
+(*   ] *)
+(* ]]; *)
