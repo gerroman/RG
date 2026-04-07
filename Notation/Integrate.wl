@@ -4,7 +4,8 @@ BeginPackage["RG`Notation`Integrate`", {"RG`Notation`Force`", "RG`Notation`D`"}]
 
 
 integrate::usage = "integrate[expr, region] represent an integral"
-changeIntegrateVars::usage = "changeIntegrateVars[va -> f[vb], vb -> g[va]] \[LongDash]  change integration variable va->vb in the integral w.r.t. va"
+changeIntegrateVars::usage = "changeIntegrateVars[{x -> f[y]}, {y -> g[x]}] \[LongDash]  change integration variable x->y in the indefinite integral w.r.t. x
+changeIntegrateVars[{{x->f[y]},{y->g[x]}}] \[LongDash] another form"
 pullIntegrateFactors::usage = "pullIntegrateFactors[va] \[LongDash] pull out constant factor off the integrals w.r.t. va"
 groupIntegrals::usage = "groupIntegrals[va]  \[LongDash] group sum of integrals w.r.t. variable va"
 substitute::usage = "substitute[{eqs}, {oldvars}, {newvars}] \[LongDash] return lists for forward and backward substitution rules"
@@ -129,26 +130,37 @@ changeIntegrateVars[rulex:{_Rule..}, ruley:{_Rule..}, opts:OptionsPattern[]] := 
   With[{det = Factor[Det[Outer[D, fs, ys]]]},
     ReplaceAll[
       integrate[expr_, Sequence@@xs] :>
-        integrate[
-          (expr //. rulex) *
-            If[OptionValue[Abs], Abs[det], det],
-          Sequence@@ys
-        ]
+        integrate[(expr //. rulex) * If[OptionValue[Abs], Abs[det], det], Sequence@@ys]
     ]
   ]
 ];
 changeIntegrateVars[rules:{{_Rule..}, {_Rule..}}, opts:OptionsPattern[]] := (
   changeIntegrateVars[rules[[1]], rules[[2]], opts]
 );
-changeIntegrateVars[eqs:{_Equal..}, xs_List, ys_List, opts:OptionsPattern[]] := (
-  changeIntegrateVars[substitute[eqs, xs, ys], opts]
-);
-changeIntegrateVars[eqs:(_Equal).., xs_List, ys_List, opts:OptionsPattern[]] := (
-  changeIntegrateVars[substitute[{eqs}, xs, ys], opts]
-);
-changeIntegrateVars[eqs_Equal, xs_Symbol, ys_Symbol, opts:OptionsPattern[]] := (
-  changeIntegrateVars[substitute[{eqs}, {xs}, {ys}], opts]
-);
+
+changeIntegrateVars[rulex:Rule[x_Symbol, xtoy_], ruley:Rule[y_Symbol, ytox_], opts:OptionsPattern[]] := (
+  With[{d = D[xtoy, y]},
+    ReplaceAll[{
+      integrate[expr_, x] :> integrate[(expr /. rulex) * If[OptionValue[Abs], Abs[d], d], y],
+      integrate[expr_, {x, xmin_, xmax_}] :> integrate[(expr /. rulex) * d, {y, ytox/.x->xmin, ytox/.x->xmax}]
+    }]
+  ]
+)
+changeIntegrateVars[{{rulex:Rule[x_Symbol, xtoy_]}, {ruley:Rule[y_Symbol, ytox_]}}, opts:OptionsPattern[]] := changeIntegrateVars[rulex, ruley, opts]
+
+changeIntegrateVars[{rulex:Rule[x_Symbol, xtoy_]}, {ruley:Rule[y_Symbol, ytox_]}, opts:OptionsPattern[]] := changeIntegrateVars[rulex, ruley, opts]
+
+
+(* [NOTE]: substitute[] can be called explicitly *)
+(* changeIntegrateVars[eqs:{_Equal..}, xs_List, ys_List, opts:OptionsPattern[]] := ( *)
+(*   changeIntegrateVars[substitute[eqs, xs, ys], opts] *)
+(* ); *)
+(* changeIntegrateVars[eqs:(_Equal).., xs_List, ys_List, opts:OptionsPattern[]] := ( *)
+(*   changeIntegrateVars[substitute[{eqs}, xs, ys], opts] *)
+(* ); *)
+(* changeIntegrateVars[eqs_Equal, xs_Symbol, ys_Symbol, opts:OptionsPattern[]] := ( *)
+(*   changeIntegrateVars[substitute[{eqs}, {xs}, {ys}], opts] *)
+(* ); *)
 
 
 pullIntegrateFactors[va_/; FreeQ[va, integrate]] := ReplaceAll[{
