@@ -30,6 +30,8 @@ ReduceGZeros::usage = "ReduceGZeros[expr] \[LongDash] reduce trailing zeros of a
 rule`Li2::usage = "rule`Li2 \[LongDash] rule for useful relations between dilogarithms"
 rule`scaleG::usage = "rule`scaleG[factor] \[LongDash] allow to scale Goncharov polylogarithms` argument"
 
+checkComplexRelation::usage = "checkComplexRelation[func1, func2] \[LongDash] check relations between the two functions {func1, func2}"
+
 
 Begin["`Private`"];
 
@@ -210,6 +212,30 @@ rule`Li2 = {
   (*6: real-argument-1 *) PolyLog[2, x_/;(-1<=x<=1)] :> -PolyLog[2, (1-x)/(1+x)] + PolyLog[2,-(1-x)/(1+x)] + Pi^2/4 + PolyLog[2,-x] + Log[x] * Log[(1+x)/(1-x)],
   (*7: real-argument-2 *) PolyLog[2, x_/;(x > 1)] :> -PolyLog[2, 1/x] + Pi^2/3 - 1/2*Log[x]^2 - I * Pi * Log[x]
 }
+
+
+points = Range[0, 2 + 1/2, 1/6];
+points = Union @ Flatten @ Array[points  * Exp[I Pi # / 8]&, 15, 0];
+
+
+checkComplexRelation[func1_, func2_] := With[{
+  func = Function[{z},
+    With[{expr1 = func1[z], expr2 = func2[z]},
+      Style[{Re[z], Im[z]}, Which[
+        HoldForm[expr1] === HoldForm[expr2], Darker@Yellow
+        Abs[expr1 - expr2] < 10^(-12), Darker@Green,
+        True, Darker@Red
+      ]]
+    ]
+  ]},
+  ListPlot[func/@points,
+    AspectRatio->1,
+    PlotRange->{{-3,3},{-3,3}},
+    PlotTheme->"Detailed",
+    PlotStyle->{PointSize[Large]},
+    Epilog->{Gray, Thin, Dashed, Circle[]}
+  ]
+]
 
 
 End[]
