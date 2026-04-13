@@ -27,6 +27,10 @@ ExpandGProduct::usage = "ExpandGProduct[G[{i1,\[Ellipsis]},x]*G[{j1,\[Ellipsis]}
 ReduceGZeros::usage = "ReduceGZeros[expr] \[LongDash] reduce trailing zeros of all Gs appearing in the expr, convert G[{0..},x] to power of Log[x]"
 
 
+rule`Li2::usage = "rule`Li2 \[LongDash] rule for useful relations between dilogarithms"
+rule`scaleG::usage = "rule`scaleG[factor] \[LongDash] allow to scale Goncharov polylogarithms` argument"
+
+
 Begin["`Private`"];
 
 
@@ -181,10 +185,31 @@ Global`G /: Series[Global`G[idxs:{as___, a_}, z_], {z_, 0, order_}] := With[{l =
 (*\:0415\:0441\:043b\:0438 \:0438\:043d\:0434\:0435\:043a\:0441\:044b G \:043d\:0430 \:043f\:043e\:0441\:043b\:0435\:0434\:043d\:0438\:0445 \:043c\:0435\:0441\:0442\:0430\:0445 \:043d\:0435\:043d\:0443\:043b\:0435\:0432\:044b\:0435, \:0442\:043e \:043c\:043e\:0436\:043d\:043e \:043e\:0434\:043d\:043e\:0432\:0440\:0435\:043c\:0435\:043d\:043d\:043e \:043c\:0430\:0441\:0441\:0448\:0442\:0430\:0431\:0438\:0440\:043e\:0432\:0430\:0442\:044c \:0430\:0440\:0433\:0443\:043c\:0435\:043d\:0442 \:0438 \:0438\:043d\:0434\:0435\:043a\:0441\:044b \:043d\:0430 \:043e\:0434\:0438\:043d \:0438 \:0442\:043e\:0442 \:0436\:0435 \:0444\:0430\:043a\:0442\:043e\:0440*)
 
 
+rule`scaleG[] = {
+  Global`G[l_List, x_] :> Global`G[l / x, 1] /; Last[l] =!= 0
+}
 rule`scaleG[factor_] := {
-  Global`G[l_List, \[Xi]_] :> Global`G[l * factor, \[Xi] * factor] /; Last[l] =!= 0
+  Global`G[l_List, x_] :> Global`G[l * factor, x * factor] /; Last[l] =!= 0
 }
 (* ScaleG[factor_] := expr \[Function] ReplaceAll[expr, rule`scaleG[factor]] *)
+
+
+(* ::Section:: *)
+(* Часто используемые функциональные cвойства дилогарифмов *)
+
+
+rule`Li2 = {
+  (*1: reflection-1 *) PolyLog[2, z_] :> -PolyLog[2, 1 - z] + Pi^2/6 - Log[1-z] * Log[z],
+  (*2: reflection-2 *) PolyLog[2, z_] :> -PolyLog[2, 1 / z] - Pi^2/6 - 1/2 * Log[-z]^2,
+  (*4: reflection-3 *) PolyLog[2, z_] :> -PolyLog[2, -z / (1 - z)] - 1/2 * Log[1-z]^2,
+  (*3: duplication  *) PolyLog[2, z_] :> -PolyLog[2, -z] + 1/2 * PolyLog[2, z^2],
+  (*5: reflection - dupliction *) PolyLog[2, z_] :> (
+    PolyLog[2, 1 + z] - 1/2 *PolyLog[2, 1 - z^2] - Pi^2/12
+    + Log[1 + z] * Log[-z] - 1/2 Log[1 - z^2] * Log[z^2]
+  ),
+  (*6: real-argument-1 *) PolyLog[2, x_/;(-1<=x<=1)] :> -PolyLog[2, (1-x)/(1+x)] + PolyLog[2,-(1-x)/(1+x)] + Pi^2/4 + PolyLog[2,-x] + Log[x] * Log[(1+x)/(1-x)],
+  (*7: real-argument-2 *) PolyLog[2, x_/;(x > 1)] :> -PolyLog[2, 1/x] + Pi^2/3 - 1/2*Log[x]^2 - I * Pi * Log[x]
+}
 
 
 End[]
