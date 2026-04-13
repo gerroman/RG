@@ -232,7 +232,7 @@ checkComplexRelation[func1_, func2_, max_:3/2, n1_:9, n2_:16] := With[{
 			PlotRange -> {{-max,max},{-max,max}},
 			GridLines->Automatic,
 			PlotStyle->{PointSize[Large]},
-			Epilog->{Gray, Thin, Dashed, Circle[]}
+			Epilog->{Opacity[0.5], Gray, Thick, Circle[]}
 		] // Labeled[#, TraditionalForm[func1[Global`z] == func2[Global`z]]] &
 	]
 ]
