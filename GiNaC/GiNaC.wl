@@ -214,27 +214,27 @@ rule`Li2 = {
 }
 
 
-points = Range[0, 2 + 1/2, 1/6];
-points = Union @ Flatten @ Array[points  * Exp[I Pi # / 8]&, 15, 0];
-
-
-checkComplexRelation[func1_, func2_] := With[{
-  func = Function[{z},
-    With[{expr1 = func1[z], expr2 = func2[z]},
-      Style[{Re[z], Im[z]}, Which[
-        HoldForm[expr1] === HoldForm[expr2], Darker@Yellow
-        Abs[expr1 - expr2] < 10^(-12), Darker@Green,
-        True, Darker@Red
-      ]]
-    ]
-  ]},
-  ListPlot[func/@points,
-    AspectRatio->1,
-    PlotRange->{{-3,3},{-3,3}},
-    PlotTheme->"Detailed",
-    PlotStyle->{PointSize[Large]},
-    Epilog->{Gray, Thin, Dashed, Circle[]}
-  ]
+checkComplexRelation[func1_, func2_, max_:3/2, n1_:9, n2_:16] := With[{
+		p1 = Range[0, max, max/n1]
+	},
+	With[{
+			func = Function[{z}, With[{expr1 = func1[z], expr2 = func2[z]},
+				Style[{Re[z], Im[z]}, Which[
+					HoldForm[expr1] === HoldForm[expr2], Yellow,
+					Abs[expr1 - expr2] < 10^(-12), Darker@Green,
+					True, Darker@Red
+				]]
+			]],
+			p2 = Union@Flatten@Array[p1 * Exp[I Pi # / n2]&, 2*n2, 0]
+		},
+		ListPlot[func /@ p2,
+			AspectRatio->1,
+			PlotRange -> {{-max,max},{-max,max}},
+			GridLines->Automatic,
+			PlotStyle->{PointSize[Large]},
+			Epilog->{Gray, Thin, Dashed, Circle[]}
+		] // Labeled[#, TraditionalForm[func1[Global`z] == func2[Global`z]]] &
+	]
 ]
 
 
