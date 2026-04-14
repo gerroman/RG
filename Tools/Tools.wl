@@ -38,6 +38,9 @@ reindex::usage="reindex[expr, pattern, func] \[LongDash] search subexpressions m
 replace them with array of func values"
 
 
+powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
+
+
 Begin["`Private`"];
 
 
@@ -180,6 +183,13 @@ reindex[expr_, pattern_, func_] := Module[{
   Echo[rules];
   ReplaceAll[expr, rules]
 ]
+
+
+powersPattern[xs_List] := (Subsets[xs] // Reverse //
+	Map[#^_. &, #, {2}] & //
+	Apply[Times, #, {1}] & //
+	PowerExpand // ReplaceAll[x_ y_Optional :> y]
+);
 
 
 End[]
