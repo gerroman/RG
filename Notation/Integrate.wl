@@ -20,6 +20,9 @@ integrateDelta::usage="integrateDelta[expr] \[LongDash] integrate simple DiracDe
 integrateDelta[expr, z] \[LongDash] integrate simple DiracDelta functions containing z as a variable";
 
 
+integrateByParts::usage="integrateByParts[u,v,var,func]"
+
+
 Begin["`Private`"]
 
 
@@ -285,6 +288,41 @@ force[integrate, x_, opts:OptionsPattern[]] := ReplaceAll[#, {
   integrate[expr_, {x, a_, b_}] :> Integrate[expr, {x, a, b}, opts],
   integrate[expr_, x] :> Integrate[expr, x, opts]
 }]&;
+
+
+(* ::Text:: *)
+(*\:0414\:0438\:0444\:0444\:0435\:0440\:0435\:043d\:0446\:0438\:0440\:043e\:0432\:0430\:043d\:0438\:0435 \:043f\:043e \:043f\:0430\:0440\:0430\:043c\:0435\:0442\:0440\:0443 \:0438\:043d\:0442\:0435\:0433\:0440\:0430\:043b\:043e\:0432*)
+
+
+d[integrate[expr_,{var_,a_,b_}],x_]:=integrate[d[expr,x],{var,a,b}]+at[expr,{var,b}]d[b,x]-at[expr,{var,a}]d[a,x]
+d[integrate[expr_,var_],x_]:=integrate[d[expr,x],var]
+
+
+(* ::Text:: *)
+(* \:0414\:0438\:0444\:0444\:0435\:0440\:0435\:043d\:0446\:0438\:0440\:043e\:0432\:0430\:043d\:0438\:0435 \:043b\:0438\:043d\:0435\:0439\:043d\:043e\:0439 \:043a\:043e\:043c\:0431\:0438\:043d\:0430\:0446\:0438\:0438 \:0438\:043d\:0442\:0435\:0433\:0440\:0430\:043b\:043e\:0432 *)
+
+
+d[f_*(int_integrate),x_]:=d[f,x]*int+f*d[int,x]
+d[a_. int1_integrate+b_. int2_integrate,x_]:=d[a int1,x]+d[b int2, x]
+
+
+(* ::Text:: *)
+(* Нулевые интегралы *)
+
+
+integrate[0,__]=0;
+integrate[_,{_,a_,a_}]=0;
+
+
+integrateByParts[u_,v_,var_,func_:Identity]:=With[{expr=func[u D[v,var]],expr1=func[u d[v,var]]},
+ReplaceAll[{
+integrate[expr,{var,a_,b_}]:>at[u v,{var,b}]-at[u v,{var,a}]-integrate[v*d[u,var],{var,a,b}],
+integrate[expr,var]:>u v-integrate[v*d[u,var],var],
+integrate[expr1,{var,a_,b_}]:>at[u v,{var,b}]-at[u v,{var,a}]-integrate[v*d[u,var],{var,a,b}],
+integrate[expr1,var]:>u v-integrate[v*d[u,var],var]
+}]
+]
+
 
 
 End[]

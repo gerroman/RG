@@ -32,6 +32,8 @@ rule`scaleG::usage = "rule`scaleG[factor] \[LongDash] allow to scale Goncharov p
 
 checkComplexRelation::usage = "checkComplexRelation[func1, func2] \[LongDash] check relations between the two functions {func1, func2}"
 
+rndx::usage="rndx[i] reindex tau$.. symbols"
+
 
 Begin["`Private`"];
 
@@ -150,7 +152,7 @@ ExpandGProduct[Global`G[l1_, x_] * Global`G[l2_, x_]] := (
 SetAttributes[ReduceGZeros,Listable]
 ReduceGZeros[Global`G[b:{0..}, x_]] := With[{n=Length[b]}, Power[Log[x], n]/n!];
 ReduceGZeros[Global`G[{a__, b:0..}, x_]] := (
-	log[{a, b}];
+	(* log[{a, b}]; *)
 	ReduceGZeros[Global`G[{b}, x]] * Global`G[{a}, x] 
 	- ReduceGZeros[ExpandGProduct[Global`G[{b}, x] Global`G[{a}, x]] - Global`G[{a, b}, x]]
 );
@@ -236,6 +238,9 @@ checkComplexRelation[func1_, func2_, max_:3/2, n1_:9, n2_:16] := With[{
 		] // Labeled[#, TraditionalForm[func1[Global`z] == func2[Global`z]]] &
 	]
 ]
+
+
+rndx[i_:0]:=Block[{Echo=#&},reindex[#,s_Symbol/;SymbolName[s]~StringStartsQ~"tau",ToExpression[ToString@StringForm["\[Xi]``",#+i]]&]]&
 
 
 End[]
