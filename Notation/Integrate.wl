@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["RG`Notation`Integrate`", {"RG`Notation`Force`", "RG`Notation`D`"}]
+BeginPackage["RG`Notation`Integrate`", {"RG`Notation`Force`", "RG`Notation`D`", "RG`Notation`At`"}]
 
 
 integrate::usage = "integrate[expr, region] represent an integral"
