@@ -19,7 +19,7 @@ RG`Notation`sum/:Format[RG`Notation`sum[expr_, var_], TraditionalForm] := Displa
 RG`Notation`sum/:Format[RG`Notation`sum[expr_, {var_, i_, j_}], TraditionalForm] := DisplayForm[
   RowBox[{
     UnderoverscriptBox[
-      ToBoxes["\[Sum]", TraditionalForm],
+      ToBoxes[Global`\[CapitalSigma], TraditionalForm],
       ToBoxes[var == i, TraditionalForm],
       ToBoxes[j,TraditionalForm]
     ]
