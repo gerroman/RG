@@ -41,6 +41,9 @@ replace them with array of func values"
 powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
 
+MapMonitor::usage = "MapMonitor[func, list] use Monitor[] while mapping func on list"
+
+
 Begin["`Private`"];
 
 
@@ -190,6 +193,14 @@ powersPattern[xs_List] := (Subsets[xs] // Reverse //
 	Apply[Times, #, {1}] & //
 	PowerExpand // ReplaceAll[x_ y_Optional :> y]
 );
+
+
+MapMonitor[func_, l_List] := Block[{k = 0, length = Length[l]},
+  Monitor[
+    MapIndexed[(k = #2[[1]]; func[#1]) &, l],
+    Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
+  ]
+];
 
 
 End[]
