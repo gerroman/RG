@@ -263,6 +263,22 @@ getHash[fname_String, nMax_:10] := Module[{f, s, n=0, hash=$Failed},
 ];
 
 
+getDate[fname_String, nMax_:10] := Module[{f, s, n=0, date=$Failed},
+  f = OpenRead[fname];
+  While[((s = ReadLine[f]) =!= EndOfFile) && ((n += 1) < nMax),
+    If[StringStartsQ[s, "(* [date]: "],
+      date = StringTake[s, {12, -3}];
+      log[date, "prefix"->"[date]: "];
+    ];
+  ];
+  Close[f];
+  If[date === $Failed,
+    error["can not find [date] comment"]
+  ];
+  Return[date]
+];
+
+
 getFileSize[fname_String] := With[
   {bytes=FileInformation[fname, "ByteCount"]},
   Which[
@@ -303,6 +319,7 @@ RG`Scripts`Export[
     Return[fnameFull];
   ];
   If[Not[force] && FileExistsQ[fnameFull],
+    getDate[fnameFull];
     log[getFileSize[fnameFull], "prefix"->"[size]: "];
     hashPrev = getHash[fnameFull];
     If[hashPrev === hash,
