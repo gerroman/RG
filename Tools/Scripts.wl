@@ -101,7 +101,8 @@ Options[log] = {
     "[init]" -> "\033[1;36m[init]\033[0m",
     "[warning]" -> "\033[0;33m[warning]\033[0m",
     "[args]" -> "\033[1;34m[args]\033[0m"
-  }
+  },
+  "CarriageReturn"->"\r"
 };
 log[expr_String, opts:OptionsPattern[]] := With[{
     message = StringJoin[OptionValue["prefix"], expr, OptionValue["endl"]]
@@ -112,7 +113,7 @@ log[expr_String, opts:OptionsPattern[]] := With[{
     WriteString[
       OptionValue["stream"],
       StringJoin[
-        "\r",
+        OptionValue["CarriageReturn"],
         StringReplace[message, OptionValue["colorize"]],
         "\n"
       ]
@@ -128,7 +129,7 @@ log[expr_StringForm, opts:OptionsPattern[]] := With[{
     WriteString[
       OptionValue["stream"],
       StringJoin[
-        "\r",
+        OptionValue["CarriageReturn"],
         StringReplace[message, OptionValue["colorize"]],
         "\n"
       ]
@@ -154,7 +155,7 @@ log[expr_, opts:OptionsPattern[]] := With[{
     WriteString[
       OptionValue["stream"],
       StringJoin[
-        "\r",
+        OptionValue["CarriageReturn"],
         StringReplace[message, OptionValue["colorize"]],
         "\n"
       ]
