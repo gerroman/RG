@@ -240,7 +240,15 @@ checkComplexRelation[func1_, func2_, max_:3/2, n1_:9, n2_:16] := With[{
 ]
 
 
-rndx[i_:0]:=Block[{Echo=#&},reindex[#,s_Symbol/;SymbolName[s]~StringStartsQ~"tau",ToExpression[ToString@StringForm["\[Xi]``",#+i]]&]]&
+RG`Tools`reindex[expr_, pattern_, func_] := With[{syms = DeleteDuplicates[Cases[expr, pattern, All]]},
+  With[rules = Thread[syms -> Array[func, Length[syms]]];
+    ReplaceAll[expr, rules]
+  ]
+];
+rndx[i_:0] := RG`Tools`reindex[#,
+  s_Symbol/;SymbolName[s]~StringStartsQ~"tau",
+  ToExpression[ToString@StringForm["\[Xi]``", #+i]]&
+]&
 
 
 End[]
