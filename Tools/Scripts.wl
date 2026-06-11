@@ -267,9 +267,9 @@ getFileSize[fname_String] := With[
   {bytes=FileInformation[fname, "ByteCount"]},
   Which[
     bytes < 1024, ToString@StringForm["`` bytes", bytes],
-    bytes < 1048576, ToString@StringForm["`` Kb", N[bytes/1024,2]],
-    bytes < 1073741824, ToString@StringForm["`` Mb", N[bytes/1048576,2]],
-    True, ToString@StringForm["`` Gb", N[bytes/1073741824,2]]
+    bytes < 1048576, ToString@StringForm["`` Kb", N[bytes/1024,3]],
+    bytes < 1073741824, ToString@StringForm["`` Mb", N[bytes/1048576,3]],
+    True, ToString@StringForm["`` Gb", N[bytes/1073741824,3]]
   ]
 ]
 
