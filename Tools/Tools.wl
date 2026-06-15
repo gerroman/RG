@@ -189,18 +189,39 @@ reindex[expr_, pattern_, func_] := Module[{
 
 
 powersPattern[xs_List] := (Subsets[xs] // Reverse //
-	Map[#^_. &, #, {2}] & //
-	Apply[Times, #, {1}] & //
-	PowerExpand // ReplaceAll[x_ y_Optional :> y]
+  Map[#^_. &, #, {2}] & //
+  Apply[Times, #, {1}] & //
+  PowerExpand // ReplaceAll[x_ y_Optional :> y]
 );
 
 
-MapMonitor[func_, l_List] := Block[{k = 0, length = Length[l]},
+MapMonitor[func_, l_List] := If[$Notebooks,
+(* using progress indicator *)
+Block[{k = 0, length = Length[l]},
   Monitor[
     MapIndexed[(k = #2[[1]]; func[#1]) &, l],
     Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
   ]
-];
+],
+(* using stderr *)
+Module[{mylength = Length[l], myfunc, myi=0, timing, result},
+  WriteString["stderr", "\n[begin]: "];
+  Write["stderr", DateString[]];
+  myfunc = (
+    myi+=1;
+    WriteString["stderr", "\b\b\b\b. "];
+    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
+    WriteString["stderr", "%"];
+    func[#]
+  )&;
+  {timing, result} = AbsoluteTiming[Map[myfunc, l]];
+  WriteString["stderr", "\n[end]: "];
+  Write["stderr", DateString[]];
+  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
+  Write["stderr", timing];
+  Return[result];
+]
+]
 
 
 End[]
