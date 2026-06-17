@@ -42,6 +42,7 @@ powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possibl
 
 
 MapMonitor::usage = "MapMonitor[func, list] use Monitor[] while mapping func on list"
+MapAtMonitor::usage = "MapMonitor[func, expr, level] use Monitor[] while mapping func on expr"
 
 
 Begin["`Private`"];
@@ -222,6 +223,29 @@ Module[{mylength = Length[l], myfunc, myi=0, timing, result},
   Return[result];
 ]
 ]
+
+
+MapAtMonitor[func_, expr_, level_] := Module[{
+    mylength, myfunc, myi=0, timing, result
+  },
+  mylength = 0;
+  MapAt[(mylength+=1)&, expr, level];
+  WriteString["stderr", "\n[begin]: "];
+  Write["stderr", DateString[]];
+  myfunc = (
+    myi+=1;
+    WriteString["stderr", "\b\b\b\b. "];
+    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
+    WriteString["stderr", "%"];
+    func[#]
+  )&;
+  {timing, result} = AbsoluteTiming[MapAt[myfunc, expr, level]];
+  WriteString["stderr", "\n[end]: "];
+  Write["stderr", DateString[]];
+  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
+  Write["stderr", timing];
+  Return[result];
+];
 
 
 End[]
