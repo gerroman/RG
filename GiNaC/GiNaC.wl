@@ -241,7 +241,7 @@ checkComplexRelation[func1_, func2_, max_:3/2, n1_:9, n2_:16] := With[{
 
 
 RG`Tools`reindex[expr_, pattern_, func_] := With[{syms = DeleteDuplicates[Cases[expr, pattern, All]]},
-  With[rules = Thread[syms -> Array[func, Length[syms]]];
+  With[{rules = Thread[syms -> Array[func, Length[syms]]]},
     ReplaceAll[expr, rules]
   ]
 ];
