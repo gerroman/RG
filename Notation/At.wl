@@ -8,13 +8,13 @@ Begin["`Private`"]
 
 
 at /: Format[at[expr_, {var_, a_}], TraditionalForm] := DisplayForm[
-  SubscriptBox[""[expr], ToBoxes[var == a, TraditionalForm]]
+  SubscriptBox[""[expr], ToBoxes[var -> a, TraditionalForm]]
 ]
 at /: Format[at[expr_, {var_, a_, b_}], TraditionalForm] := DisplayForm[
   SubsuperscriptBox[
     ToBoxes[""[expr],TraditionalForm],
-    ToBoxes[var == a, TraditionalForm],
-    ToBoxes[var == b, TraditionalForm]
+    ToBoxes[var -> a, TraditionalForm],
+    ToBoxes[var -> b, TraditionalForm]
   ]
 ]
 
