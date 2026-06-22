@@ -540,6 +540,6 @@ EndPackage[];
 
 systemStamp[];
 timeStamp[];
-Global`forceFlag = argparse["force", False];
-SetOptions[RG`Scripts`Export, "force"->Global`forceFlag];
+(* Global`forceFlag = argparse["force", False]; *)
+(* SetOptions[RG`Scripts`Export, "force"->Global`forceFlag]; *)
 log[StringForm["working directory: '``'", Directory[]], "prefix"->"[path]: "];
