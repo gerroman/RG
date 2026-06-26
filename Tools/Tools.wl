@@ -1,6 +1,7 @@
 (* ::Package:: *)
 
 
+Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
 Get["RG/Tools/Rules.wl"];
 
 
