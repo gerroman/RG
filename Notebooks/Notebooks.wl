@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["RG`Notebooks`"]
+BeginPackage["RG`Notebooks`", {"RG`Tools`"}]
 
 
 colorize::usage="colorize[pattern] \[LongDash] colorize matches for the pattern
@@ -289,16 +289,16 @@ End[];
 
 
 
-Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
-Needs["RG`Tools`"];
+(* Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]]; *)
+(* Needs["RG`Tools`"]; *)
 
-Print["[info]: " <> RG`Scripts`Private`systemString];
-Print["[date]: " <> RG`Scripts`Private`timeString];
-Print[
-  ToString@StringForm["[git]: `` - [RG-package]",
-    RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]]
-  ]
-];
+(* Print["[info]: " <> RG`Scripts`Private`systemString]; *)
+(* Print["[date]: " <> RG`Scripts`Private`timeString]; *)
+(* Print[ *)
+(*   ToString@StringForm["[git]: `` - [RG-package]", *)
+(*     RG`Scripts`gitRef[FileNameJoin[{$UserBaseDirectory, "Applications", "RG"}]] *)
+(*   ] *)
+(* ]; *)
 
 (* [NOTE]: disable git for notebook *)
 (* If[$Notebooks, Print[ *)
