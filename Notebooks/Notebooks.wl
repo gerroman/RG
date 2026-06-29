@@ -306,3 +306,5 @@ End[];
 (*     RG`Scripts`gitRef[NotebookDirectory[]] *)
 (*   ] *)
 (* ]]; *)
+
+SetOptions[log, "verbose"->True];
