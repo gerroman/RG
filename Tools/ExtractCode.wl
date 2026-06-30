@@ -57,7 +57,7 @@ If[FileExistsQ[ofname] && Not[force], (
 Write["stderr", ToString@StringForm["[info]: extracting code from file '``' ... ", ifname]];
 UsingFrontEnd[
   With[{nb = NotebookOpen[ifname,Visible->False]}, (
-    data = Riffle[NotebookImport[nb, "Input"|"Code"->"InputText"],"\n\n\n"];
+    data = Riffle[NotebookImport[nb, ("Input"|"Code"|"VerificationTest"|"ExpectedOutput")->"InputText"],"\n\n\n"];
     hash = Hash[data];
     NotebookClose[nb];
   )]
