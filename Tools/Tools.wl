@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-
 Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
 Get["RG/Tools/Rules.wl"];
 
@@ -181,11 +180,11 @@ solve[expr_, var_] := solve[{expr}, {var}]
 
 
 reindex[expr_, pattern_, func_] := Module[{
-    syms = DeleteDuplicates[Cases[expr, pattern, All]],
+    syms = Union[Cases[expr, pattern, All]],
     rules
   },
   rules = Thread[syms -> Array[func, Length[syms]]];
-  Echo[rules];
+  (*Echo[rules];*)
   ReplaceAll[expr, rules]
 ]
 
