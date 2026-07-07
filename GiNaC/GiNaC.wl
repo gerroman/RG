@@ -41,7 +41,7 @@ Begin["`Private`"];
 EvalG::nofile="can not find G.exe to evaluate Goncharov polylogarithms numerically"
 With[{fname=FileNameJoin[{"RG", "GiNaC", "bin", "G.exe"}]},
 If[FindFile[fname] =!= $Failed, (
-    Print[fname];
+    (* Print[fname]; *)
     Install[fname];
     Global`G /: N[Global`G[zs_List, y_]] := Complex @@ EvalG[N@Re[zs], N@Im[zs], N@y];
     Global`H /: N[Global`H[ms_List, y_]] := Complex @@ EvalH[ms, N@y];
@@ -257,4 +257,4 @@ End[]
 EndPackage[]
 
 
-Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]];
+(* Print[ToString@StringForm["[info]: '``' loaded", FileNameTake[$InputFileName, -3]]]; *)
