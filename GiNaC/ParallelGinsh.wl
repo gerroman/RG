@@ -88,7 +88,6 @@ ginshListN[exprList : {(_G | _H | _MZV) ..}, precision_Integer] :=
 
 
 Quiet@If[
- RunProcess[$ginsh, "ExitCode", "exit();"] === 0, 
- Print["Use ginshN[ex,p] to evaluate expression which contains GPLs and related constants"],
+ RunProcess[$ginsh, "ExitCode", "exit();"] =!= 0,
  Print[Style["ginsh not found. Visit https://ginac.de/ to install GinaC.", {Bold, Red}]]
 ]
