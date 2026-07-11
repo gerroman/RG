@@ -43,7 +43,7 @@ powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possibl
 
 (* ::Text:: *)
 (* Exporting code *)
-write::usage="write[filename, code] write code to file in binary format using UTF-8 encoding"
+WriteCode::usage="WriteCode[filename, code] write code to file in binary format using UTF-8 encoding"
 
 
 Begin["`Private`"];
@@ -197,9 +197,9 @@ powersPattern[xs_List] := (Subsets[xs] // Reverse //
 );
 
 
-Options[write] = {force -> False};
-write[fname_String, code_String, opts:OptionsPattern[]] := (
-  If[FileExistsQ[fname] && Not@OptionValue[force], (
+Options[WriteCode] = {"force" -> False};
+WriteCode[fname_String, code_String, opts:OptionsPattern[]] := (
+  If[FileExistsQ[fname] && Not@OptionValue["force"], (
     warning[StringForm["file '``' does exist, use force->True option to overwrite", fname]];
     Return[fname]
   )];
