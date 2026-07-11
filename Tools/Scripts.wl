@@ -458,8 +458,12 @@ If[$OperatingSystem == "Windows",
 ];
 
 
-gitRef[path_String] := With[{
-  result = RunProcess[{"git", "log", "-n", "1"}, All, ProcessDirectory -> path]},
+Options[gitRef] = {"git" -> "git"};
+If[$OperatingSystem == "Windows", 
+	SetOptions[gitRef, {"git" -> FileNameJoin[{"C:", "Program Files", "Git", "bin", "git.exe"}]}]
+];
+gitRef[path_String, opts:OptionsPattern[]] := With[{git=OptionValue["git"], realPath=FindFile[path]},
+  With[{result = RunProcess[{git, "-C", realPath, "log", "-n", "1"}, All, ProcessDirectory -> realPath]},
   If[result["ExitCode"] == 0,
     First@StringSplit[result["StandardOutput"], EndOfLine],
     (
@@ -468,7 +472,7 @@ gitRef[path_String] := With[{
       "unknown"
     )
   ]
-];
+]];
 
 
 clear::usage="clear[pattern] \[LongDash] clear temporary variables matching pattern"
