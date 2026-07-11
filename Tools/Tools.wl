@@ -41,8 +41,9 @@ replace them with array of func values"
 powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
 
-MapMonitor::usage = "MapMonitor[func, list] use Monitor[] while mapping func on list"
-MapAtMonitor::usage = "MapMonitor[func, expr, level] use Monitor[] while mapping func on expr"
+(* ::Text:: *)
+(* Exporting code *)
+write::usage="write[filename, code] write code to file in binary format using UTF-8 encoding"
 
 
 Begin["`Private`"];
@@ -196,56 +197,20 @@ powersPattern[xs_List] := (Subsets[xs] // Reverse //
 );
 
 
-MapMonitor[func_, l_List] := If[$Notebooks,
-(* using progress indicator *)
-Block[{k = 0, length = Length[l]},
-  Monitor[
-    MapIndexed[(k = #2[[1]]; func[#1]) &, l],
-    Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
-  ]
-],
-(* using stderr *)
-Module[{mylength = Length[l], myfunc, myi=0, timing, result},
-  WriteString["stderr", "\n[begin]: "];
-  Write["stderr", DateString[]];
-  myfunc = (
-    myi+=1;
-    WriteString["stderr", "\b\b\b\b. "];
-    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
-    WriteString["stderr", "%"];
-    func[#]
-  )&;
-  {timing, result} = AbsoluteTiming[Map[myfunc, l]];
-  WriteString["stderr", "\n[end]: "];
-  Write["stderr", DateString[]];
-  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
-  Write["stderr", timing];
-  Return[result];
-]
-]
-
-
-MapAtMonitor[func_, expr_, level_] := Module[{
-    mylength, myfunc, myi=0, timing, result
-  },
-  mylength = 0;
-  MapAt[(mylength+=1)&, expr, level];
-  WriteString["stderr", "\n[begin]: "];
-  Write["stderr", DateString[]];
-  myfunc = (
-    myi+=1;
-    WriteString["stderr", "\b\b\b\b. "];
-    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
-    WriteString["stderr", "%"];
-    func[#]
-  )&;
-  {timing, result} = AbsoluteTiming[MapAt[myfunc, expr, level]];
-  WriteString["stderr", "\n[end]: "];
-  Write["stderr", DateString[]];
-  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
-  Write["stderr", timing];
-  Return[result];
-];
+Options[write] = {force -> False};
+write[fname_String, code_String, opts:OptionsPattern[]] := (
+  If[FileExistsQ[fname] && Not@OptionValue[force], (
+    warning[StringForm["file '``' does exist, use force->True option to overwrite", fname]];
+    Return[fname]
+  )];
+  log[StringForm["writing to the file '``' ...", ExpandFileName[fname]]];
+  With[{file = OpenWrite[fname, BinaryFormat -> True]},
+    BinaryWrite[file, ToCharacterCode[code, "UTF-8"]];
+    Close[file]
+  ];
+  log["complete"];
+  Return[fname]
+);
 
 
 End[]
