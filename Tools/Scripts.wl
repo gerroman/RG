@@ -465,7 +465,7 @@ If[$OperatingSystem == "Windows",
 gitRef[path_String, opts:OptionsPattern[]] := With[{git=OptionValue["git"], realPath=FindFile[path]},
   With[{result = RunProcess[{git, "-C", realPath, "log", "-n", "1"}, All, ProcessDirectory -> realPath]},
   If[result["ExitCode"] == 0,
-    First@StringSplit[result["StandardOutput"], EndOfLine],
+    StringRiffle[DeleteCases[Map[StringTrim, StringSplit[result["StandardOutput"], EndOfLine]],""], "\n"],
     (
       warning[StringForm["can not define git reference for '``'", ExpandFileName[path]]];
       (*warning[result["StandardError"]];*)
