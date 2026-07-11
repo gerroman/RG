@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
-Get["RG/Tools/Rules.wl"];
+Get[FileNameJoin[{"RG","Tools","Rules.wl"}]];
 
 
 BeginPackage["RG`Tools`"]
