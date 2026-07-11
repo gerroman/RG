@@ -20,7 +20,7 @@ echo::usage = "echo[expr] \[LongDash] prints and return expr";
 timeStamp::usage = "timeStamp[] \[LongDash] print timeString[]"
 systemStamp::usage = "systemStamp[] \[LongDash] print systemString[]"
 fileStamp::usage = "fileStamp[] \[LongDash] print file loads"
-gitRef::usage="gitRef[path] \[LongDash] return reference string assuming path under git version control system"
+gitRef::usage="gitRef[stream] \[LongDash] return reference string assuming path under git version control system"
 
 
 (* ::Text:: *)
@@ -438,7 +438,7 @@ ansiwindows[str_String, color_:Gray] := With[{
   StringJoin[FromCharacterCode[27], "[38;2;", rgb, "m", str, FromCharacterCode[27], "[0m"]
 ]
 If[$OperatingSystem == "Windows",
-  SetOptions[log, {"verbose"->False, "colorize"->{(*
+  SetOptions[log, {"verbose"->True, "colorize"->{(*
   "[info]" -> ansiwindows["[info]", Darker@Blue],
   "[date]" -> ansiwindows["[date]", Darker@Magenta],
   "[usage]" -> ansiwindows["[usage]", Darker@Yellow],
@@ -462,17 +462,20 @@ Options[gitRef] = {"git" -> "git"};
 If[$OperatingSystem == "Windows", 
 	SetOptions[gitRef, {"git" -> FileNameJoin[{"C:", "Program Files", "Git", "bin", "git.exe"}]}]
 ];
-gitRef[path_String, opts:OptionsPattern[]] := With[{git=OptionValue["git"], realPath=FindFile[path]},
-  With[{result = RunProcess[{git, "-C", realPath, "log", "-n", "1"}, All, ProcessDirectory -> realPath]},
-  If[result["ExitCode"] == 0,
-    StringRiffle[DeleteCases[Map[StringTrim, StringSplit[result["StandardOutput"], EndOfLine]],""], "\n"],
-    (
-      warning[StringForm["can not define git reference for '``'", ExpandFileName[path]]];
-      (*warning[result["StandardError"]];*)
-      "unknown"
-    )
-  ]
-]];
+gitRef[path_String, opts: OptionsPattern[]] := Module[{
+		git = OptionValue["git"],
+		result,
+		command
+	},
+	command = {git, "-C", path, "log", "-n", "1"};
+	result = RunProcess[command, All(*, ProcessDirectory -> path*)];
+	If[result["ExitCode"] =!= 0, (
+		warning[StringForm["failed call '``' ... ", StringRiffle[command, " "]]];
+		warning[StringRiffle[DeleteCases[Map[StringTrim, StringSplit[result["StandardError"], EndOfLine]],""], "\n"]];
+		Return[$Failed];
+	)];	
+	StringRiffle[DeleteCases[Map[StringTrim, StringSplit[result["StandardOutput"], EndOfLine]],""], "\n"]
+];
 
 
 clear::usage="clear[pattern] \[LongDash] clear temporary variables matching pattern"
