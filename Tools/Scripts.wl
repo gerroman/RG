@@ -523,54 +523,64 @@ end[opts:OptionsPattern[]] := If[$Notebooks,
 
 
 MapMonitor[func_, l_List] := If[$Notebooks,
-(* using progress indicator *)
-Block[{k = 0, length = Length[l]},
-  Monitor[
-    MapIndexed[(k = #2[[1]]; func[#1]) &, l],
-    Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
-  ]
-],
-(* using stderr *)
-Module[{mylength = Length[l], myfunc, myi=0, timing, result},
-  WriteString["stderr", "\n[begin]: "];
-  Write["stderr", DateString[]];
-  myfunc = (
-    myi+=1;
-    WriteString["stderr", "\b\b\b\b. "];
-    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
-    WriteString["stderr", "%"];
-    func[#]
-  )&;
-  {timing, result} = AbsoluteTiming[Map[myfunc, l]];
-  WriteString["stderr", "\n[end]: "];
-  Write["stderr", DateString[]];
-  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
-  Write["stderr", timing];
-  Return[result];
-]
+	(* using progress indicator *)
+	Block[{k = 0, length = Length[l]},
+		Monitor[
+			MapIndexed[(k = #2[[1]]; func[#1]) &, l],
+			Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
+		]
+	],
+	(* using stderr *)
+	Module[{mylength = Length[l], myfunc, myi=0, timing, result},
+		WriteString["stderr", "\n[begin]: "];
+		Write["stderr", DateString[]];
+		myfunc = (
+			myi+=1;
+			WriteString["stderr", "\b\b\b\b. "];
+			WriteString["stderr", ToString[Round[100 * myi / mylength]]];
+			WriteString["stderr", "%"];
+			func[#]
+		)&;
+		{timing, result} = AbsoluteTiming[Map[myfunc, l]];
+		WriteString["stderr", "\n[end]: "];
+		Write["stderr", DateString[]];
+		WriteString["stderr", "[info]: elapsed time, [seconds] = "];
+		Write["stderr", timing];
+		Return[result];
+	]
 ]
 
 
-MapAtMonitor[func_, expr_, level_] := Module[{
-    mylength, myfunc, myi=0, timing, result
-  },
-  mylength = 0;
-  MapAt[(mylength+=1)&, expr, level];
-  WriteString["stderr", "\n[begin]: "];
-  Write["stderr", DateString[]];
-  myfunc = (
-    myi+=1;
-    WriteString["stderr", "\b\b\b\b. "];
-    WriteString["stderr", ToString[Round[100 * myi / mylength]]];
-    WriteString["stderr", "%"];
-    func[#]
-  )&;
-  {timing, result} = AbsoluteTiming[MapAt[myfunc, expr, level]];
-  WriteString["stderr", "\n[end]: "];
-  Write["stderr", DateString[]];
-  WriteString["stderr", "[info]: elapsed time, [seconds] = "];
-  Write["stderr", timing];
-  Return[result];
+MapAtMonitor[func_, expr_, level_] :=   If[$Notebooks,
+	(* using progress indicator *)
+	Block[{myi, mylength = 0},
+		MapAt[(mylength+=1)&, expr, level];
+		Monitor[
+			MapAt[(myi+=1; func[#])&, expr, level],
+			Row[{ProgressIndicator[myi/mylength], StringForm["``/``", myi, mylength]}, "\t"]
+		]
+	] 
+	,
+	(* using stderr *)
+	Module[{mylength, myfunc, myi=0, timing, result	},
+		mylength = 0;
+		MapAt[(mylength+=1)&, expr, level];
+		WriteString["stderr", "\n[begin]: "];
+		Write["stderr", DateString[]];
+		myfunc = (
+			myi+=1;
+			WriteString["stderr", "\b\b\b\b. "];
+			WriteString["stderr", ToString[Round[100 * myi / mylength]]];
+			WriteString["stderr", "%"];
+			func[#]
+		)&;
+		{timing, result} = AbsoluteTiming[MapAt[myfunc, expr, level]];
+		WriteString["stderr", "\n[end]: "];
+		Write["stderr", DateString[]];
+		WriteString["stderr", "[info]: elapsed time, [seconds] = "];
+		Write["stderr", timing];
+		Return[result];
+	]
 ];
 
 
