@@ -534,7 +534,7 @@ MapMonitor[func_, l_List] := If[$Notebooks,
 	Block[{k = 0, length = Length[l]},
 		Monitor[
 			MapIndexed[(k = #2[[1]]; func[#1]) &, l],
-			Row[{ProgressIndicator[k/length], StringForm["``/``", k, length]}, "\t"]
+			Row[{ProgressIndicator[k/length], StringForm["``/``", k-1, length]}, "\t"]
 		]
 	],
 	(* using stderr *)
