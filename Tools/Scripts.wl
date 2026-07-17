@@ -560,7 +560,7 @@ MapMonitor[func_, l_List] := If[$Notebooks,
 
 MapAtMonitor[func_, expr_, level_] :=   If[$Notebooks,
 	(* using progress indicator *)
-	Block[{myi, mylength = 0},
+	Block[{myi = 0, mylength = 0},
 		MapAt[(mylength+=1)&, expr, level];
 		Monitor[
 			MapAt[(myi+=1; func[#])&, expr, level],
