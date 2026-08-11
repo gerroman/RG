@@ -14,7 +14,7 @@ EXAMPLES:
 Needs["RG`Scripts`", "RG/Tools/Scripts.wl"]
 
 
-main[] := Module[{argc, argv, result, fname, report, succeeded, failed},
+main[] := Module[{argc, argv, result, fname, report, succeeded, failed, time},
   {argc, argv} = RG`Scripts`argparse[];
   If[argc == 0, Return[Null]];
   If[(argc == 2 && argv[[2]] == "-h") || (argc == 1),
@@ -26,14 +26,22 @@ main[] := Module[{argc, argv, result, fname, report, succeeded, failed},
   report = TestReport[fname];
   succeeded = report["TestsSucceededCount"];
   failed = report["TestsFailedCount"];
-  result = ToString[
-    StringForm["[``]:\tSucceed: ``,\tFailed: ``", 
+  time = report["TimeElapsed"];
+  result = ToString@StringForm["[``]: Succeed: ``, Failed: ``, TimeElapsed: ``", 
       FileNameTake[fname, -1], 
       succeeded, 
-      failed
-    ]
-  ];
+      failed,
+      time
+    ];
   Write["stderr", result];
+  If[failed > 0, Function[idx, Write["stderr",
+      ToString[StringForm["[Test #``]: `` == `` != ``", idx,
+        Sequence@@(ToString[report["TestResults"][[idx,1,#]], InputForm]& /@
+          {"Input","ActualOutput","ExpectedOutput"}
+        )
+      ]]
+    ]] /@ report["TestsFailedIndices"]
+  ];
 ];
 
 
