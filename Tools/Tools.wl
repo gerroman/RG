@@ -40,6 +40,8 @@ replace them with array of func values"
 
 powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
+FlatCollect::usage="FlatCollect[expr, pattern, func]"
+
 
 (* ::Text:: *)
 (* Exporting code *)
@@ -211,6 +213,14 @@ WriteCode[fname_String, code_String, opts:OptionsPattern[]] := (
   log["complete"];
   Return[fname]
 );
+
+
+
+FlatCollect[expr_, pattern_, func_:Identity] := (
+  Collect[expr, pattern, RG`Tools`Private`Hold@*func] //
+    Expand //
+    ReplaceAll[RG`Tools`Private`Hold->Identity]
+)
 
 
 End[]
