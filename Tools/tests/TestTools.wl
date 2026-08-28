@@ -9,13 +9,6 @@ VerificationTest[
 
 
 VerificationTest[
-	{Hold[x], Hold[y]} // release[y]
-	,
-	{Hold[x], y}
-]
-
-
-VerificationTest[
 	Abs[Sqrt[x^2z]y] // powerExpand[x|z]
 	,
 	x Sqrt[z] Abs[y]
@@ -65,7 +58,7 @@ VerificationTest[
 
 
 VerificationTest[
-	eq[Sin[30 Degree]]
+	equation[Sin[30 Degree]]
 	,
 	HoldForm[Sin[30 Degree]]==1/2
 ]
@@ -86,4 +79,5 @@ VerificationTest[
 
 
 RG`Scripts`echo[RG`Tools`head[$InputFileName, 10]]
+
 RG`Scripts`echo[RG`Tools`sizeOf[Range[10]]]

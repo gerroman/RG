@@ -9,13 +9,6 @@ VerificationTest[
 
 
 VerificationTest[
-	{Hold[x], Hold[y]} //. rule`release[y]
-	,
-	{Hold[x], y}
-]
-
-
-VerificationTest[
 	Abs[Sqrt[x^2z]y] //. rule`powerExpand[x|z]
 	,
 	x Sqrt[z] Abs[y]
