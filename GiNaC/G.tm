@@ -14,3 +14,21 @@
 :ArgumentTypes:  {IntegerList, Real}
 :ReturnType:     Manual
 :End:
+
+
+:Begin:
+:Function:       EvalMZV
+:Pattern:        EvalMZV[ms_List, sgn_List]
+:Arguments:      {ms, sgn}
+:ArgumentTypes:  {IntegerList, IntegerList}
+:ReturnType:     Real
+:End:
+
+
+:Begin:
+:Function:       EvalLi
+:Pattern:        EvalLi[ms_List, xs_List]
+:Arguments:      {ms, xs}
+:ArgumentTypes:  {IntegerList, RealList}
+:ReturnType:     Real
+:End:

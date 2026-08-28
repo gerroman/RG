@@ -67,6 +67,40 @@ void EvalH(int* p_ms, long nMs, double xValue)
 }
 
 
+double EvalMZV(int* p_ms, long size, int* p_sgns, long size_sgns)
+{
+  assert(size == size_sgns);
+  GiNaC::lst ms;
+  GiNaC::lst sgns;
+  while (size--) {
+    ms.append(*p_ms);
+    sgns.append(*p_sgns);
+    p_ms++;
+    p_sgns++;
+  }
+  GiNaC::ex mzv = GiNaC::zeta(ms, sgns).evalf();
+  double mzvalue = GiNaC::ex_to<GiNaC::numeric>(mzv).to_double();
+  return mzvalue;
+}
+
+
+double EvalLi(int* p_ms, long size_ms, double* p_xs, long size_xs)
+{
+  GiNaC::lst ms;
+  GiNaC::lst xs;
+  assert(size_ms == size_xs);
+  while (size_ms--) {
+    ms.append(*p_ms);
+    xs.append(*p_xs);
+    p_ms++;
+    p_xs++;
+  }
+  GiNaC::ex li = GiNaC::Li(ms, xs).evalf();
+  double livalue = GiNaC::ex_to<GiNaC::numeric>(li).to_double();
+  return livalue;
+}
+
+
 int main(int argc, char* argv[])
 {
   return WSMain(argc, argv);
