@@ -1,10 +1,10 @@
 (* ::Package:: *)
 
-Quiet@Needs["RG`Scripts`", FileNameJoin[{"RG","Tools","Scripts.wl"}]];
+Quiet@Needs["RG`Scripts`", "RG/Tools/Scripts.wl"];
 Get[FileNameJoin[{"RG","Tools","Rules.wl"}]];
 
 
-BeginPackage["RG`Tools`"]
+BeginPackage["RG`Tools`", {"RG`Scripts`"}]
 
 
 hold::usage="hold[x] \[LongDash] replace {x -> Hold[x]}."
@@ -41,6 +41,9 @@ replace them with array of func values"
 powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possible powers of xs";
 
 FlatCollect::usage="FlatCollect[expr, pattern, func]"
+
+
+ReplaceCases::usage="ReplaceCases[expr, pattern, func] — search for cases matching pattern in the 'expr' and replace with func applyed to it"
 
 
 (* ::Text:: *)
@@ -221,6 +224,15 @@ FlatCollect[expr_, pattern_, func_:Identity] := (
     Expand //
     ReplaceAll[RG`Tools`Private`Hold->Identity]
 )
+
+
+ReplaceCases[expr_, pattern_, func_] := With[
+  {cases=Union@Cases[expr, pattern,All]},
+  With[
+    {rule=Thread[cases->MapMonitor[func, cases]]},
+    ReplaceAll[expr, rule]
+  ]
+]
 
 
 End[]
