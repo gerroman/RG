@@ -14,6 +14,16 @@ EXAMPLES:
 Needs["RG`Scripts`", "RG/Tools/Scripts.wl"]
 
 
+fmt[string_String, max_Integer /; max >= 20] := Which[
+  StringLength[string] > max, StringJoin[
+    StringTake[string, max - 10],
+    "...",
+    StringTake[string, -7]
+  ],
+  True, StringPadRight[string, max, "."]
+];
+
+
 main[] := Module[{argc, argv, result, fname, report, succeeded, failed, time, memory},
   {argc, argv} = RG`Scripts`argparse[];
   If[argc == 0, Return[Null]];
@@ -28,8 +38,8 @@ main[] := Module[{argc, argv, result, fname, report, succeeded, failed, time, me
   failed = report["TestsFailedCount"];
   time = 1`6 *report["TimeElapsed"];
   memory = UnitConvert[1`6 * Total[Map[#["MemoryUsed"]&, report["TestResults"]]], "Megabytes"];
-  result = ToString@StringForm["[``]: Succeed: ``, Failed: ``, TimeElapsed: ``, MemoryUsed: ``",
-    FileNameTake[fname, -1],
+  result = ToString@StringForm["[``]:\tSucceed: ``,\tFailed: ``,\tTimeElapsed: ``,\tMemoryUsed: ``",
+    fmt[FileNameTake[fname, -1], 20],
     succeeded,
     failed,
     time,
