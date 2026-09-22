@@ -539,7 +539,7 @@ MapMonitor[func_, l_List] := If[$Notebooks,
 	],
 	(* using stderr *)
 	Module[{mylength = Length[l], myfunc, myi=0, timing, result},
-		WriteString["stderr", "\n[begin]: "];
+		WriteString["stderr", "\r[begin]: "];
 		Write["stderr", DateString[]];
 		myfunc = (
 			myi+=1;
@@ -572,7 +572,7 @@ MapAtMonitor[func_, expr_, level_] :=   If[$Notebooks,
 	Module[{mylength, myfunc, myi=0, timing, result	},
 		mylength = 0;
 		MapAt[(mylength+=1)&, expr, level];
-		WriteString["stderr", "\n[begin]: "];
+		WriteString["stderr", "\r[begin]: "];
 		Write["stderr", DateString[]];
 		myfunc = (
 			myi+=1;
