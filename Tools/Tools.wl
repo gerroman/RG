@@ -43,7 +43,10 @@ powersPattern::usage = "powersPattern[{x1, ...}] return patterns for all possibl
 FlatCollect::usage="FlatCollect[expr, pattern, func]"
 
 
-ReplaceCases::usage="ReplaceCases[expr, pattern, func] — search for cases matching pattern in the 'expr' and replace with func applyed to it"
+ReplaceCases::usage="\
+ReplaceCases[expr, pattern, func] — search for cases matching pattern in the 'expr' and replace with func applyed to it\
+ReplaceCases[pattern, func] — represents an operator form of ReplaceCases[], which can be applied to an expression\
+"
 
 
 (* ::Text:: *)
@@ -233,6 +236,7 @@ ReplaceCases[expr_, pattern_, func_] := With[
     ReplaceAll[expr, rule]
   ]
 ]
+ReplaceCases[pattern_, func_] := Function[expr, ReplaceCases[expr, pattern, func]]
 
 
 End[]
